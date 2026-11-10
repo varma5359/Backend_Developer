@@ -97,6 +97,32 @@ urlpatterns = [
 ]
 ```
 
+### File: `profiles/templates/profiles/employee_list.html`
+
+```html
+<h1>Employee Directory</h1>
+<a href="{% url 'employee_create' %}">Add employee</a>
+<ul>
+{% for employee in employees %}
+    <li>{{ employee.employee_code }} — {{ employee.full_name }} — {{ employee.department }}</li>
+{% empty %}
+    <li>No employees have been registered.</li>
+{% endfor %}
+</ul>
+```
+
+### File: `profiles/templates/profiles/employee_form.html`
+
+```html
+<h1>Add Employee</h1>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Save employee</button>
+</form>
+<a href="{% url 'employee_list' %}">Back to employee list</a>
+```
+
 ## 5. Understand the important statements
 
 ### profiles/urls.py
