@@ -1,372 +1,620 @@
 # Day 17: Encapsulation, Abstraction and Polymorphism
 
 **Pathway:** Python Backend Developer Career Pathway (Django)  
-**Phase:** 1 — Python Programming Foundations and OOP  
-**Estimated time:** 2–3 hours  
-**Difficulty:** Beginner to Intermediate  
-**Prerequisites:** Day 16 — previous OOP lesson  
-**Tools:** Python 3, VS Code and terminal  
+**Phase:** 1B — Object-Oriented Programming  
+**Time:** 2–3 hours | **Level:** Beginner to Intermediate  
+**Prerequisites:** Days 13–16 — OOP fundamentals and inheritance  
+**Tools:** Python 3.10+, VS Code and terminal  
 **Approved mini-project:** Banking Operations Simulator
 
-> **Trainer approach:** First understand the problem, then run the smallest example, inspect the output and only then extend the code. Do not memorize a definition without being able to explain the example.
+---
 
 ## 1. Learning objectives
 
-By the end of this lesson, you should be able to:
-1. Explain Encapsulation, Abstraction and Polymorphism in simple language.
-2. Identify the problem this OOP concept solves.
-3. Write and run a small Python example.
-4. Explain the important statements and predict the output.
-5. Apply the concept in Banking Operations Simulator.
-6. Describe one relevant backend development use case.
+By the end of this lesson, you can:
+1. Explain encapsulation and why state should be changed through meaningful methods.
+2. Understand Python's public, protected-by-convention and name-mangled attributes.
+3. Explain abstraction as exposing an interface while hiding implementation details.
+4. Create an abstract base class using the abc module.
+5. Explain polymorphism using a shared method name.
+6. Use overriding to provide different behavior.
+7. Choose between these concepts in a practical design.
+8. Build a small Banking Operations Simulator.
 
-## 2. Why this concept matters
+## 2. One business problem, three design ideas
 
-A banking-style application should not allow unrelated code to change an account balance without validation. Different notification or payment implementations may also provide the same operation in different ways.
+Imagine a banking application.
 
-A backend developer should be able to read code written by other developers and understand why the code is divided into classes and methods. OOP gives a vocabulary for discussing responsibilities, reusable behavior and object state.
+A bank account has a balance. The application should not let every part of the program change that balance to an invalid value.
 
-## 3. Key terms
+The application may support multiple payment methods, but each payment method should provide a common operation such as `pay()`.
 
-Encapsulation groups data and behavior and controls state changes. Abstraction exposes essential operations while hiding implementation detail. Polymorphism allows different objects to respond to the same operation in their own way.
+The application should allow callers to use that operation without needing to know every internal processing step.
 
-| Term | Meaning |
-|---|---|
-| Class | A definition describing the structure and behavior of objects |
-| Object | One instance created from a class |
-| Attribute | Data associated with an object or class |
-| Method | A function defined inside a class |
-| Instance | A particular object created from a class |
-| Responsibility | The work that a class or method is expected to perform |
+These requirements introduce three OOP concepts:
 
-## 4. Start with the problem before the syntax
+- **Encapsulation:** group data and the operations that control it.
+- **Abstraction:** expose the essential operation and hide unnecessary implementation detail.
+- **Polymorphism:** different objects respond to the same operation in their own way.
 
-Ask these questions before writing code:
-1. What real-world concept are we representing?
-2. What information must be stored?
-3. What actions must be supported?
-4. Which information belongs to one object?
-5. Which behavior can be reused?
-6. What invalid situations must be prevented?
-7. How will we prove the result is correct?
+## 3. Encapsulation
 
-This small analysis prevents you from creating classes without a clear purpose.
+Encapsulation means grouping related data and methods together and controlling how the object's state is changed.
 
-## 5. Main worked example
+Think of a bank account:
+- It stores a balance.
+- It supports deposit.
+- It supports withdrawal.
+- It should reject invalid transactions.
 
-Save this code in `day_17/main.py` and run `python main.py`.
+A weak design allows arbitrary code to assign any balance. A better design provides methods that validate changes.
+
+### 3.1 First example without controlled updates
 
 ```python
-from abc import ABC, abstractmethod
+class BankAccount:
+    def __init__(self, balance):
+        self.balance = balance
 
+account = BankAccount(1000)
+account.balance = -5000
+
+print(account.balance)
+```
+
+Output: `-5000`.
+
+The assignment is allowed. The class has not protected its business rule.
+
+### 3.2 Control changes through methods
+
+```python
+class BankAccount:
+    def __init__(self, opening_balance):
+        if opening_balance < 0:
+            raise ValueError("Opening balance cannot be negative")
+        self.balance = opening_balance
+
+    def deposit(self, amount):
+        if amount <= 0:
+            raise ValueError("Deposit must be positive")
+        self.balance += amount
+
+    def withdraw(self, amount):
+        if amount <= 0:
+            raise ValueError("Withdrawal must be positive")
+        if amount > self.balance:
+            raise ValueError("Insufficient balance")
+        self.balance -= amount
+
+account = BankAccount(1000)
+account.deposit(500)
+account.withdraw(200)
+print(account.balance)
+```
+
+Output: `1300`.
+
+The methods enforce the rules for normal use. However, `balance` is still public and can be assigned directly. We will look at Python's naming conventions next.
+
+## 4. Public, protected-by-convention and name-mangled attributes
+
+Python does not use the same strict access modifiers as languages such as Java.
+
+### 4.1 Public attribute
+
+```python
+class Employee:
+    def __init__(self, name):
+        self.name = name
+
+employee = Employee("Anil")
+print(employee.name)
+```
+
+A public attribute is intended to be accessed directly.
+
+### 4.2 Single leading underscore
+
+```python
+class Employee:
+    def __init__(self, salary):
+        self._salary = salary
+```
+
+A single underscore is a convention meaning: "This is an internal implementation detail; use it carefully."
+
+It does not prevent access. It is not a security boundary.
+
+### 4.3 Double leading underscore
+
+```python
 class BankAccount:
     def __init__(self, balance):
         self.__balance = balance
 
+    def get_balance(self):
+        return self.__balance
+
+account = BankAccount(1000)
+print(account.get_balance())
+```
+
+Output: `1000`.
+
+A double leading underscore triggers name mangling. Python internally changes the attribute name to include the class name, which helps avoid accidental name clashes in subclasses.
+
+It does not encrypt the value or make it impossible to access. Do not describe it as strong security.
+
+## 5. A practical encapsulation example
+
+```python
+class BankAccount:
+    def __init__(self, account_holder, opening_balance):
+        if opening_balance < 0:
+            raise ValueError("Opening balance cannot be negative")
+
+        self.account_holder = account_holder
+        self.__balance = opening_balance
+
     def deposit(self, amount):
         if amount <= 0:
-            raise ValueError("Amount must be positive")
+            raise ValueError("Deposit amount must be positive")
         self.__balance += amount
+
+    def withdraw(self, amount):
+        if amount <= 0:
+            raise ValueError("Withdrawal amount must be positive")
+        if amount > self.__balance:
+            raise ValueError("Insufficient balance")
+        self.__balance -= amount
 
     def get_balance(self):
         return self.__balance
 
-class Notification(ABC):
+
+account = BankAccount("Asha", 5000)
+account.deposit(1000)
+account.withdraw(750)
+print(account.get_balance())
+```
+
+Output: `5250`.
+
+The balance is stored as `__balance`. The class provides methods that validate deposits and withdrawals.
+
+Important: name mangling is not a substitute for application security. It does not stop a malicious user from accessing data through an exposed API. Authentication, authorization, database permissions and secure application design are separate concerns.
+
+## 6. Abstraction
+
+Abstraction means exposing the essential operations while hiding implementation details that callers do not need to manage.
+
+Think of an ATM:
+- You choose withdraw.
+- You enter an amount.
+- The system performs internal checks and processing.
+- You receive the result.
+
+You do not need to know every internal database or network operation to use the withdraw operation.
+
+In Python, abstraction can be represented using abstract base classes and abstract methods.
+
+## 7. Abstract base classes
+
+Python's `abc` module provides tools for defining abstract base classes.
+
+An abstract method declares an operation that a concrete child class must implement before it can be instantiated.
+
+### 7.1 Basic example
+
+```python
+from abc import ABC, abstractmethod
+
+class Payment(ABC):
     @abstractmethod
-    def send(self, message):
+    def pay(self, amount):
+        pass
+```
+
+Explanation:
+- ABC is the base class for abstract base classes.
+- `@abstractmethod` marks a method that concrete subclasses must implement.
+- `pass` is a placeholder; it is not the implementation.
+
+Trying to create `Payment()` directly raises TypeError because the abstract method has not been implemented.
+
+### 7.2 Implement the abstract method
+
+```python
+from abc import ABC, abstractmethod
+
+class Payment(ABC):
+    @abstractmethod
+    def pay(self, amount):
         pass
 
-class EmailNotification(Notification):
-    def send(self, message):
-        print("EMAIL:", message)
+class CardPayment(Payment):
+    def pay(self, amount):
+        print("Processing card payment:", amount)
 
-class SMSNotification(Notification):
-    def send(self, message):
-        print("SMS:", message)
+class UpiPayment(Payment):
+    def pay(self, amount):
+        print("Processing UPI payment:", amount)
 
-def notify(channel, message):
-    channel.send(message)
+card = CardPayment()
+upi = UpiPayment()
 
-account = BankAccount(1000)
-account.deposit(250)
-print(account.get_balance())
-notify(EmailNotification(), "Deposit complete")
-notify(SMSNotification(), "Deposit complete")
+card.pay(500)
+upi.pay(750)
 ```
 
-### Expected output
+Output:
 
 ```text
-1250\nEMAIL: Deposit complete\nSMS: Deposit complete
+Processing card payment: 500
+Processing UPI payment: 750
 ```
 
-### Read the code step by step
+Both child classes satisfy the abstract contract by implementing `pay`.
 
-1. BankAccount groups balance data and the methods that operate on it; this is encapsulation.
-2. The double underscore triggers name mangling, not encryption or strong security.
-3. deposit() validates the amount before changing the stored balance.
-4. Notification is an abstract base class; @abstractmethod declares an operation concrete subclasses must implement.
-5. EmailNotification and SMSNotification implement send() differently. notify() can work with either object, demonstrating polymorphism.
+This is a teaching simulation, not a real payment gateway integration.
 
-### Run it yourself
+## 8. Polymorphism
 
-1. Create the file in VS Code.
-2. Type the code rather than blindly copying it.
-3. Save the file.
-4. Open the integrated terminal.
-5. Run `python main.py`.
-6. Compare your output with the expected output.
-7. Change one value and run it again.
-8. Explain what changed and why.
+Polymorphism means that different object types can be used through a common operation, while each object can provide its own behavior.
 
-## 6. Understand the flow
+The word can be remembered as "many forms".
+
+### 8.1 Same method name, different behavior
+
+```python
+class Developer:
+    def work(self):
+        print("Writing and testing code")
+
+class Manager:
+    def work(self):
+        print("Planning and reviewing work")
+
+class HR:
+    def work(self):
+        print("Managing recruitment activities")
+
+employees = [Developer(), Manager(), HR()]
+
+for employee in employees:
+    employee.work()
+```
+
+Output:
 
 ```text
-Requirement
-    ↓
-Identify the objects and responsibilities
-    ↓
-Define the class or classes
-    ↓
-Create objects
-    ↓
-Call methods / exchange objects
-    ↓
-Inspect output and validate behavior
+Writing and testing code
+Planning and reviewing work
+Managing recruitment activities
 ```
 
-The flow is a thinking guide, not a Python command sequence. A small exercise may use only one class. A larger application may use multiple cooperating objects.
+The loop does not need to know the exact class of each object. It calls the shared method name, and each object responds with its own implementation.
 
-## 7. How to read and debug OOP code
+### 8.2 Polymorphism with inheritance
 
-When an example does not behave as expected:
-1. Check the class name and spelling.
-2. Check indentation inside the class.
-3. Check that the object was created.
-4. Check the values passed to the initializer or method.
-5. Print the relevant attribute values.
-6. Check whether a method changes the intended object.
-7. Re-run the smallest reproducible example.
+```python
+class Employee:
+    def work(self):
+        print("Employee performs assigned work")
 
-| Symptom | Likely area to inspect |
-|---|---|
-| AttributeError | Attribute or method name, object initialization |
-| TypeError | Number or order of arguments |
-| NameError | Variable or class name is not defined in the current scope |
-| Wrong object's value changes | Object reference passed to the method |
-| Method does not override | Method name or inheritance declaration |
-| Abstract class cannot be instantiated | Required abstract method is not implemented |
+class Developer(Employee):
+    def work(self):
+        print("Developer writes software")
 
-Do not fix several unrelated lines at once. Identify the exact failing statement first.
+class Manager(Employee):
+    def work(self):
+        print("Manager leads a team")
 
-## 8. Industry scenario
+roles = [Developer(), Manager(), Employee()]
 
-A banking-style application should not allow unrelated code to change an account balance without validation. Different notification or payment implementations may also provide the same operation in different ways.
+for role in roles:
+    role.work()
+```
 
-A professional implementation would also consider input validation, access control, error handling, tests, database persistence and concurrent requests. The class examples in this lesson are learning exercises, not production-ready services.
+The child methods override the parent method. This is runtime polymorphism in a common OOP teaching example.
 
-## 9. When to use the concept and when to avoid overengineering
+### 8.3 Duck typing
 
-- Use a class when related state and behavior need a clear reusable structure.
-- Keep a simple value as a variable when a class adds no meaningful behavior.
-- Give each class a focused responsibility.
-- Avoid a class hierarchy just to save a few lines.
-- Prefer composition when one object contains or manages another object.
-- Add abstractions when they clarify a real variation or contract, not merely to make the code look advanced.
+Python also supports polymorphism through duck typing. If an object supports the operation the caller needs, the caller can often use it without requiring a shared parent class.
 
-## 10. Common beginner mistakes
+```python
+class PDFReport:
+    def export(self):
+        print("Exporting PDF report")
 
-| Mistake | Why it causes trouble | Better approach |
+class CSVReport:
+    def export(self):
+        print("Exporting CSV report")
+
+def export_report(report):
+    report.export()
+
+export_report(PDFReport())
+export_report(CSVReport())
+```
+
+Output:
+
+```text
+Exporting PDF report
+Exporting CSV report
+```
+
+The function only requires an object that provides an `export()` method.
+
+## 9. Compare encapsulation, abstraction and polymorphism
+
+| Concept | Main question | Example |
 |---|---|---|
-| Memorizing OOP terms without running code | Definitions are hard to apply | Trace a real example |
-| Creating one huge class | Responsibilities become mixed | Split meaningful responsibilities |
-| Duplicating common behavior | Updates must be repeated | Reuse a parent class when an is-a relationship exists |
-| Using inheritance for every relationship | Creates confusing hierarchies | Use composition for has-a relationships |
-| Ignoring object state | Methods may update the wrong instance | Inspect attributes before and after a call |
-| Assuming Python underscore names are secure | Naming conventions are not access-control security | Use application-level authorization and safe design |
-| Writing a method without a clear purpose | Class becomes difficult to understand | Name methods after meaningful actions |
+| Encapsulation | How do we group data and control valid changes? | BankAccount.deposit() |
+| Abstraction | What operation should the caller see? | Payment.pay() contract |
+| Polymorphism | How can different objects support the same operation differently? | CardPayment.pay() and UpiPayment.pay() |
 
-## 11. Guided practice
+They solve different design problems. Do not use the terms as if they mean the same thing.
 
-Complete each exercise in a separate small file or notebook cell.
+## 10. Complete mini-project — Banking Operations Simulator
 
-### Exercise A — identify the design
+### 10.1 Requirements
 
-Write down:
-- The class or classes you need.
-- The data each class should store.
-- The methods each class should expose.
-- One invalid input or state to test.
+Build a small local simulation that:
+1. Creates a bank account.
+2. Stores the balance as an internal attribute.
+3. Allows deposits and withdrawals.
+4. Rejects invalid amounts.
+5. Defines an abstract payment method.
+6. Implements two payment types.
+7. Uses one function to process different payment objects.
 
-### Exercise B — modify the example
+This project does not connect to a real bank or payment provider. It is designed to teach OOP behavior and validation.
 
-Change one attribute, method or class responsibility. Run the code again and record the changed output.
-
-### Exercise C — explain it aloud
-
-Explain the code as if you are teaching a fresher:
-1. What problem does it solve?
-2. What does each class represent?
-3. Which object is being used?
-4. Which method is called?
-5. What output proves it worked?
-
-## 12. Approved mini-project — Banking Operations Simulator
-
-**Objective:** Build a small, understandable Python application using the day's OOP concept.
-
-### Functional requirements
-
-1. Create BankAccount with a name and an internally managed balance.
-2. Implement deposit(), withdraw() and get_balance().
-3. Reject non-positive amounts and insufficient funds.
-4. Create an abstract Notification class with send().
-5. Implement EmailNotification and SMSNotification.
-6. Write one function that accepts either notification object and calls send().
-
-### Suggested project structure
+### 10.2 Project structure
 
 ```text
-projects/day_17/
-├── README.md
+day_17_banking_simulator/
 ├── main.py
-├── models.py
-└── tests/
-    └── manual_test_cases.md
+└── README.md
 ```
 
-For the first attempt, you may keep the code in one file. Split it into modules only after the working version is understood.
+### 10.3 Complete runnable code
 
-### Implementation milestones
+```python
+from abc import ABC, abstractmethod
 
-| Milestone | Work | Evidence |
+
+class BankAccount:
+    def __init__(self, account_holder, opening_balance):
+        if opening_balance < 0:
+            raise ValueError("Opening balance cannot be negative")
+
+        self.account_holder = account_holder
+        self.__balance = opening_balance
+
+    def deposit(self, amount):
+        if amount <= 0:
+            raise ValueError("Deposit must be positive")
+
+        self.__balance += amount
+        return self.__balance
+
+    def withdraw(self, amount):
+        if amount <= 0:
+            raise ValueError("Withdrawal must be positive")
+
+        if amount > self.__balance:
+            raise ValueError("Insufficient balance")
+
+        self.__balance -= amount
+        return self.__balance
+
+    def get_balance(self):
+        return self.__balance
+
+
+class PaymentMethod(ABC):
+    @abstractmethod
+    def pay(self, amount):
+        pass
+
+
+class CardPayment(PaymentMethod):
+    def pay(self, amount):
+        if amount <= 0:
+            raise ValueError("Payment must be positive")
+        print("Card payment simulated:", amount)
+
+
+class UpiPayment(PaymentMethod):
+    def pay(self, amount):
+        if amount <= 0:
+            raise ValueError("Payment must be positive")
+        print("UPI payment simulated:", amount)
+
+
+def process_payment(payment_method, amount):
+    payment_method.pay(amount)
+
+
+account = BankAccount("Asha", 5000)
+
+print("Opening balance:", account.get_balance())
+account.deposit(1000)
+print("After deposit:", account.get_balance())
+account.withdraw(750)
+print("After withdrawal:", account.get_balance())
+
+card = CardPayment()
+upi = UpiPayment()
+
+process_payment(card, 500)
+process_payment(upi, 300)
+```
+
+### 10.4 Expected output
+
+```text
+Opening balance: 5000
+After deposit: 6000
+After withdrawal: 5250
+Card payment simulated: 500
+UPI payment simulated: 300
+```
+
+### 10.5 Walkthrough
+
+1. BankAccount groups account data and operations.
+2. The balance is stored in a name-mangled attribute.
+3. deposit validates the amount before adding it.
+4. withdraw validates the amount and checks available balance.
+5. get_balance provides a controlled read operation.
+6. PaymentMethod defines an abstract pay contract.
+7. CardPayment implements that contract.
+8. UpiPayment implements the same contract differently.
+9. process_payment accepts an object that supports pay.
+10. Passing either payment object demonstrates polymorphism.
+
+### 10.6 Test cases
+
+| Test | Action | Expected result |
 |---|---|---|
-| 1 | Read the requirement and list the classes | Short design notes |
-| 2 | Implement the smallest class or object | First successful run |
-| 3 | Add required attributes and methods | Updated terminal output |
-| 4 | Implement the main workflow | Demonstration run |
-| 5 | Test normal and invalid cases | Test-case table |
-| 6 | Explain the design | README and short walkthrough |
+| 1 | Open account with 5000 | Account created |
+| 2 | Open account with -1 | ValueError |
+| 3 | Deposit 1000 | Balance becomes 6000 |
+| 4 | Deposit 0 | ValueError |
+| 5 | Withdraw 750 | Balance becomes 5250 |
+| 6 | Withdraw more than balance | ValueError |
+| 7 | Instantiate PaymentMethod | TypeError |
+| 8 | Use CardPayment.pay | Card simulation message |
+| 9 | Use UpiPayment.pay | UPI simulation message |
 
-### Validation checklist
+## 11. Security and production limitations
 
-- [ ] Valid deposits and withdrawals update the balance.
-- [ ] Invalid operations do not change the balance.
-- [ ] Both notification classes work through the same function.
-- [ ] The learner explains that name mangling is not a security boundary.
+This is an in-memory teaching simulator. It is not a production banking system.
 
-### Submission requirements
+A real banking application also needs:
+- Authentication and authorization.
+- Secure database storage.
+- Database transactions and concurrency controls.
+- Audit records.
+- Idempotency and duplicate request protection.
+- Secure communication.
+- Provider integration and verification.
+- Fraud detection and operational monitoring.
 
-- Source code.
-- README with problem statement and run instructions.
-- At least three test cases.
-- Expected and actual output.
-- Short explanation of each class and method.
-- Limitations and one possible future improvement.
+Do not infer that a private-looking Python attribute protects real financial information. OOP encapsulation is a code-organization and state-management technique, not a complete security system.
 
-### Optional extension
+## 12. Common mistakes and troubleshooting
 
-Add one additional requirement only after all core requirements pass. Explain why the extension belongs in the existing class or requires a new responsibility.
+| Symptom | Cause | Fix |
+|---|---|---|
+| Cannot instantiate abstract class | An abstract method is not implemented | Implement every required abstract method |
+| AttributeError for balance | Wrong attribute name or method | Use the intended getter or inspect spelling |
+| Negative balance appears | Validation missing or state changed outside methods | Enforce rules in state-changing operations |
+| Child does not satisfy abstract contract | Method name/signature is wrong | Match the abstract operation |
+| Polymorphic function fails | Object does not provide the expected method | Check the required interface |
+| Think double underscore is encryption | Misunderstanding name mangling | Treat it as a naming mechanism, not security |
 
-## 13. AI-assisted learning guide
+## 13. Practice exercises
 
-Use AI as a mentor, not as a replacement for your own implementation.
+1. Add a transfer method to BankAccount that withdraws from one account and deposits into another. Validate both operations.
+2. Create a Notification abstract base class with send(message).
+3. Implement EmailNotification and SMSNotification.
+4. Write a function that accepts any notification object and calls send.
+5. Create a Shape abstract class with area(), then implement Circle and Rectangle.
+6. Demonstrate a public attribute, a single-underscore attribute and a double-underscore attribute. Explain the difference.
+7. Explain why name mangling does not secure an API.
 
-| Assistance level | Prompt |
-|---|---|
-| Hint | Give one small hint for Banking Operations Simulator; do not give the solution |
-| Plan | Break the project into small implementation steps |
-| Example | Show a tiny example of the specific concept only |
-| Guided implementation | Help with one method, then wait for my output |
-| Explanation | Explain each statement and object state |
-| Debugging | Inspect my exact error and identify the root cause |
-| Review | Compare my implementation with the requirements and tests |
+## 14. Interview questions
 
-**Planning prompt**
+**1. What is encapsulation?**  
+Grouping data and behavior together and providing controlled ways to interact with object state.
 
-"Help me plan Banking Operations Simulator. List the classes, responsibilities, attributes, methods, test cases and implementation order. Do not write the complete solution."
+**2. What is abstraction?**  
+Exposing essential operations while hiding implementation details that callers do not need.
 
-**Implementation prompt**
+**3. What is polymorphism?**  
+Different object types supporting a common operation with type-specific behavior.
 
-"Guide me through the first step only. Explain the code and wait until I run it before moving to the next step."
+**4. What does a single underscore mean in Python?**  
+It is a convention indicating an internal or non-public implementation detail.
 
-**Debugging prompt**
+**5. What does a double leading underscore do?**  
+It triggers name mangling to reduce accidental name clashes; it is not encryption.
 
-"Here is my code, input and exact error. Identify the failing statement, explain the cause and suggest the smallest correction. Do not rewrite the whole project."
+**6. What is an abstract class?**  
+A class that defines an interface or shared contract and may not be instantiated until required abstract methods are implemented.
 
-**Review prompt**
+**7. What is an abstract method?**  
+A method marked with @abstractmethod that concrete subclasses are expected to implement.
 
-"Review my implementation against the approved requirements. Identify missing behavior, edge cases and design problems. Explain each finding before suggesting a change."
+**8. What is duck typing?**  
+Using an object based on the operations it supports rather than requiring a specific class.
 
-## 14. Daily quiz — multiple-choice questions
+**9. Difference between overriding and overloading?**  
+Overriding replaces inherited behavior in a child class. Python does not support traditional signature-based method overloading in the same way as some statically typed languages; default arguments or dispatch techniques are commonly used.
 
-### Q1. Which statement best describes today's main concept?
-A. It is a Python feature used to organize related data and behavior.  
-B. It removes the need for testing.  
-C. It automatically saves every object to PostgreSQL.  
-D. It replaces all functions in Python.
+**10. Is encapsulation the same as security?**  
+No. Encapsulation organizes access to object state. Application security requires separate controls.
 
-**Correct answer: A.** The concept helps organize related state and behavior. It does not automatically provide database persistence or remove the need for tests.
+## 15. MCQs
 
-### Q2. What should you inspect when the output is incorrect?
-A. Only the filename.  
-B. Object creation, values, method calls and state changes.  
-C. Delete the class.  
-D. Ignore the output.
+**Q1. Which concept groups data and methods and controls state changes?**  
+A. Encapsulation  
+B. Looping  
+C. Compilation  
+D. Importing  
+**Answer: A.** Encapsulation groups state and behavior.
 
-**Correct answer: B.** OOP behavior depends on the object, its data and the method being called.
+**Q2. Which decorator marks an abstract method?**  
+A. @classmethod  
+B. @abstractmethod  
+C. @staticmethod  
+D. @property  
+**Answer: B.** It marks an operation that concrete subclasses must implement.
 
-### Q3. Which is the best project practice?
-A. Put all behavior into one giant method.  
-B. Avoid all validation.  
-C. Give each class a clear responsibility and test normal and invalid cases.  
-D. Store secrets in the source code.
+**Q3. Different classes implement the same pay() operation. Which concept is demonstrated?**  
+A. Polymorphism  
+B. File handling  
+C. Recursion  
+D. Indexing  
+**Answer: A.** Different objects respond to the same operation in their own way.
 
-**Correct answer: C.** Clear responsibilities and validation make the project easier to understand and maintain.
+**Q4. Does a double underscore make an attribute encrypted?**  
+A. Yes  
+B. No  
+C. Only in Django  
+D. Only on Windows  
+**Answer: B.** It triggers name mangling, not encryption.
 
-### Q4. Why should you not treat the example as production-ready?
-A. Python cannot run classes.  
-B. A classroom example does not include all production concerns such as persistence, security, concurrency and monitoring.  
-C. Methods cannot be tested.  
-D. Objects cannot store data.
+**Q5. What does duck typing focus on?**  
+A. Object capabilities and supported operations  
+B. Variable spelling only  
+C. Database size  
+D. File permissions  
+**Answer: A.** The caller uses the operation an object provides.
 
-**Correct answer: B.** The demonstration teaches one concept; production systems need additional engineering controls.
+**Q6. What happens if an abstract method is not implemented by a concrete child?**  
+A. It can remain abstract and cannot be instantiated  
+B. Python invents an implementation  
+C. It returns zero  
+D. It deletes the parent class  
+**Answer: A.** The class remains abstract until the required method is implemented.
 
-### Q5. What is the strongest evidence that your mini-project is complete?
-A. A project folder exists.  
-B. You watched a video.  
-C. The code is long.  
-D. Required scenarios pass, output is recorded and you can explain the implementation.
+## 16. Daily completion checklist
 
-**Correct answer: D.** Completion requires working behavior and the ability to explain and verify it.
+- [ ] I can explain encapsulation.
+- [ ] I understand public, underscore and name-mangled attributes.
+- [ ] I can explain why name mangling is not security.
+- [ ] I can explain abstraction.
+- [ ] I can define an abstract base class.
+- [ ] I can implement an abstract method.
+- [ ] I can explain polymorphism and duck typing.
+- [ ] I completed Banking Operations Simulator.
+- [ ] I tested invalid deposits and withdrawals.
 
-## 15. Interview preparation
-
-**Q1. Explain encapsulation, abstraction and polymorphism in your own words.**  
-**Answer:** Encapsulation groups data and behavior and controls state changes. Abstraction exposes essential operations while hiding implementation detail. Polymorphism allows different objects to respond to the same operation in their own way.
-
-**Practical follow-up:** Explain the main worked example and identify the class, object, method and state involved.
-
-**Q2. Where can this concept help a backend developer?**  
-**Answer:** It helps structure reusable application code and model business responsibilities. Django uses Python classes extensively, so a strong OOP foundation makes framework code easier to understand.
-
-**Q3. What is one mistake a beginner should avoid?**  
-**Answer:** Do not add complexity without a clear requirement. Keep responsibilities understandable, validate inputs and test the behavior.
-
-**Follow-up:** What would you add before using this learning example in a production service?  
-**Answer:** Tests, error handling, authorization where needed, safe data persistence, configuration management, logging and operational monitoring.
-
-## 16. Day completion checklist
-
-- [ ] Read the lesson and explain the key terms.
-- [ ] Run the worked example successfully.
-- [ ] Explain the important statements.
-- [ ] Complete the guided exercises.
-- [ ] Build Banking Operations Simulator.
-- [ ] Validate normal and invalid scenarios.
-- [ ] Complete all five MCQs.
-- [ ] Answer the interview questions without copying.
-- [ ] Submit source code, README and evidence.
-
-**Next lesson:** Day 18 — Complete OOP Integration, Revision and Practical Design.
-
+**Next lesson:** Day 18 — Complete OOP Integration and Revision.
