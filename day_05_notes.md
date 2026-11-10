@@ -4,61 +4,97 @@
 **Phase:** 1 — Python Programming Foundations  
 **Estimated time:** 2–3 hours  
 **Difficulty:** Beginner  
-**Prerequisites:** Days 1–4 — variables, operators and input/output  
+**Prerequisites:** Days 1–4 — variables, data types, operators and input/output  
 **Required tools:** Python 3, VS Code and terminal  
 **Approved mini-project:** Employee Eligibility Checker
 
-## 1. Learning objectives
+> **Beginner note:** A computer follows the instructions we write. It does not automatically understand what is fair, correct or suitable. We must teach it the rules. Today you will learn how to write those rules using conditions.
 
-- Explain how conditions control program flow.
-- Use `if`, `elif` and `else`.
+## 1. What will you learn?
+
+By the end of this lesson, you should be able to:
+- Explain why a program needs decision-making.
+- Use `if`, `else` and `elif`.
+- Compare values using comparison operators.
 - Combine conditions using `and`, `or` and `not`.
-- Understand indentation, branch order and truth values.
-- Translate simple business rules into Python conditions.
+- Understand indentation and the order of conditions.
+- Use conditions to make a simple business decision.
 
-## 2. Why do programs need decisions?
+## 2. Why do we need conditions?
 
-A program often needs to choose what to do based on information.
+Imagine a college registration system. A student can register only if the student is at least 18 years old. The application needs to check the student's age.
 
-Examples in backend applications:
+Another example: an employee can request a training benefit only if:
+- The employee is active.
+- The employee has completed one year of service.
+- The required training is complete.
 
-- Is a registration form complete?
-- Is an employee active?
-- Is an order eligible for a discount?
-- Does a user have permission to view a report?
-- Is a payment amount valid?
+These are rules. A program needs to check the rules and choose what to do.
 
-A condition is an expression that evaluates to a truth value: `True` or `False`. Python uses that result to decide which block to execute.
+A **condition** is an expression that evaluates to either `True` or `False`.
 
-## 3. The if statement
+Example:
+```python
+age = 21
+print(age >= 18)
+```
 
-Use `if` when an action should happen only when a condition is true.
+Output:
+```text
+True
+```
 
+Explanation:
+- `age` contains 21.
+- `>=` means greater than or equal to.
+- 21 is greater than or equal to 18, so the answer is `True`.
+
+Change age to 16 and run the code again. The result becomes `False`.
+
+## 3. The if statement — execute code only when a condition is true
+
+Syntax:
+```python
+if condition:
+    statements
+```
+
+The colon `:` marks the beginning of the block. The indented statements belong to the if block.
+
+Beginner example:
 ```python
 age = 22
 
 if age >= 18:
-    print("Eligible to register")
+    print("You are eligible to register")
+
+print("Program completed")
 ```
 
 Output:
-
 ```text
-Eligible to register
+You are eligible to register
+Program completed
 ```
 
-Explanation:
+Line-by-line:
+1. `age = 22` stores the age.
+2. `if age >= 18:` checks whether the age is at least 18.
+3. Because the condition is true, Python executes the indented print statement.
+4. The final print statement is outside the if block, so it runs regardless of the condition.
 
-- `age >= 18` is the condition.
-- The colon `:` marks the start of the block.
-- The indented `print()` belongs to the if block.
-- If the condition is false, the block is skipped.
+Now change age to 16:
 
-Python uses indentation to identify blocks. Use consistent four-space indentation.
+Output:
+```text
+Program completed
+```
 
-## 4. if and else
+The eligibility message is skipped because the condition is false.
 
-Use `else` to define what happens when the `if` condition is false.
+## 4. The else statement — what should happen when the condition is false?
+
+Sometimes the program needs to choose between two alternatives. Use `else` for the alternative branch.
 
 ```python
 age = 16
@@ -69,114 +105,195 @@ else:
     print("Minor")
 ```
 
-Output: `Minor`
-
-Only one of the two branches executes.
-
-## 5. if, elif and else
-
-Use `elif` when there are multiple possible conditions.
-
-```python
-score = 76
-
-if score >= 90:
-    grade = "A"
-elif score >= 75:
-    grade = "B"
-elif score >= 60:
-    grade = "C"
-else:
-    grade = "Needs improvement"
-
-print(grade)
+Output:
+```text
+Minor
 ```
 
-Output: `B`
+How Python works:
+- It checks the if condition first.
+- If true, it executes the if block and skips else.
+- If false, it skips the if block and executes else.
+- Exactly one of these two branches executes.
 
-Python checks branches from top to bottom and executes the first matching branch. Order matters. If `score >= 60` were placed first, a score of 95 would match it and later branches would never be reached.
+Try age 25. The output will be `Adult`.
 
-## 6. Combining conditions
+## 5. The elif statement — check more than two possibilities
 
-### and
+Suppose an exam system assigns a grade:
+- 90 or above: A
+- 75 to 89: B
+- 60 to 74: C
+- Below 60: Needs improvement
 
-All conditions must be true.
+There are more than two possible outcomes. Use `elif`, which means "else if".
 
 ```python
-experience = 2
-training_completed = True
+score = 78
 
-if experience >= 1 and training_completed:
-    print("Eligible for review")
+if score >= 90:
+    print("Grade A")
+elif score >= 75:
+    print("Grade B")
+elif score >= 60:
+    print("Grade C")
+else:
+    print("Needs improvement")
+```
+
+Output: `Grade B`
+
+Important: Python checks conditions from top to bottom. When it finds the first true condition, it runs that block and skips the remaining branches.
+
+Why order matters:
+- If `score >= 60` were checked first, a score of 95 would match it.
+- Python would print Grade C and never reach the Grade A condition.
+- Therefore, check the highest threshold first in this example.
+
+## 6. Comparison operators inside conditions
+
+| Operator | Meaning | Example | Result |
+|---|---|---|---|
+| `==` | Equal to | `5 == 5` | True |
+| `!=` | Not equal to | `5 != 3` | True |
+| `>` | Greater than | `8 > 4` | True |
+| `<` | Less than | `2 < 4` | True |
+| `>=` | Greater than or equal | `5 >= 5` | True |
+| `<=` | Less than or equal | `4 <= 5` | True |
+
+Example:
+```python
+salary = 45000
+
+if salary > 30000:
+    print("Salary is above 30000")
+```
+
+Output: `Salary is above 30000`
+
+Remember: `=` assigns a value; `==` compares values.
+
+## 7. The and operator — every condition must be true
+
+Suppose an employee is eligible only if:
+- Employment status is active.
+- Experience is at least one year.
+
+Both requirements must be satisfied. Use `and`.
+
+```python
+employment_status = "active"
+experience = 2
+
+if employment_status == "active" and experience >= 1:
+    print("Eligible for training benefit")
 else:
     print("Not eligible")
 ```
 
-### or
+Output: `Eligible for training benefit`
 
-At least one condition must be true.
+Change experience to 0. The output becomes `Not eligible`.
+
+Think of `and` as "this must be true AND that must also be true".
+
+## 8. The or operator — at least one condition must be true
+
+Suppose an internal report can be viewed by an admin or a manager.
 
 ```python
 role = "manager"
 
 if role == "admin" or role == "manager":
-    print("Can view team report")
+    print("Access allowed")
+else:
+    print("Access denied")
 ```
 
-### not
+Output: `Access allowed`
 
-Reverses a truth value.
+If the role is admin, the condition is true. If the role is manager, it is also true. If it is student, both sides are false.
+
+Think of `or` as "this condition OR that condition can be true".
+
+## 9. The not operator — reverse a Boolean value
+
+`not` changes True to False and False to True.
 
 ```python
 is_blocked = False
 
 if not is_blocked:
-    print("Account is not blocked")
+    print("Account can continue")
 ```
 
-Use parentheses to make complex conditions easier to read:
+Output: `Account can continue`
+
+Read `not is_blocked` as "the account is not blocked".
+
+## 10. Combine conditions and use parentheses
+
+A more realistic rule may say: the user must be active and must be either an admin or a manager.
 
 ```python
 is_active = True
-is_manager = False
-is_admin = True
+role = "manager"
 
-if is_active and (is_manager or is_admin):
-    print("Access review dashboard")
+if is_active and (role == "admin" or role == "manager"):
+    print("Can access the management report")
+else:
+    print("Access denied")
 ```
 
-## 7. Nested conditions
+Output: `Can access the management report`
 
-A nested condition is an `if` statement inside another conditional block.
+The parentheses make the intended grouping clear:
+1. Check whether the role is admin or manager.
+2. Check whether the account is active.
+3. Both the active check and role check must pass.
+
+Use parentheses when they make a complex condition easier to read.
+
+## 11. Nested if — one decision inside another
+
+A nested if is an if statement inside another if block.
 
 ```python
-age = 25
+age = 22
 identity_verified = True
 
 if age >= 18:
     if identity_verified:
         print("Registration can continue")
     else:
-        print("Complete identity verification")
+        print("Please verify your identity")
 else:
     print("Minimum age requirement not met")
 ```
 
-Nesting can express a sequence of decisions. Avoid excessive nesting; a long chain of conditions is harder to maintain. Later, functions can help separate complex business rules.
+Output: `Registration can continue`
 
-## 8. Truth values and empty values
+Read it step by step:
+1. Check age.
+2. If age is at least 18, check identity verification.
+3. If identity is verified, allow registration to continue.
+4. If age is below 18, the inner check is never reached.
 
-Python treats some values as false in a condition:
+Nested conditions are useful when one decision depends on another. Too many nested blocks can become difficult to read, so keep the logic simple.
 
+## 12. Truthy and falsy values
+
+Python can use values other than True and False directly in a condition.
+
+Common falsy values include:
 - `False`
 - `None`
-- Numeric zero
-- Empty string `""`
-- Empty list `[]`
-- Empty dictionary `{}`
+- `0`
+- `""` (empty string)
+- `[]` (empty list)
+- `{}` (empty dictionary)
 
 Example:
-
 ```python
 email = ""
 
@@ -186,73 +303,85 @@ else:
     print("Email was provided")
 ```
 
-This checks whether the string is empty. It does not prove that a non-empty value is a valid email address.
+Output: `Email is required`
 
-## 9. Common mistakes
+This checks whether the string is empty. It does not prove that a non-empty email is valid.
+
+## 13. Common mistakes
 
 | Mistake | Why it happens | Correction |
 |---|---|---|
-| Using `=` instead of `==` | Assignment is confused with comparison | Use `==` to compare values |
-| Incorrect indentation | Block structure is unclear | Indent each block consistently |
-| Broad condition first | Later branches become unreachable | Put specific conditions before broad ones |
-| Using `or` instead of `and` | Business rule is translated incorrectly | Write the rule in plain language first |
-| Assuming non-empty means valid | Presence and correctness are different | Apply the actual validation rule |
-| Too many nested blocks | Decisions are mixed together | Simplify or separate logic |
+| Using `=` in a condition | Confusing assignment with comparison | Use `==` |
+| Missing colon | Forgetting Python block syntax | Add `:` after if/elif/else |
+| Incorrect indentation | Python uses indentation to define blocks | Use consistent four-space indentation |
+| Wrong elif order | A broad condition matches too early | Put more restrictive conditions first |
+| Using or instead of and | Translating the rule incorrectly | Write the business rule in plain English first |
+| Treating a non-empty email as valid | Presence is not the same as validity | Use an appropriate validation rule |
 
-## 10. Industry scenario
+## 14. Industry scenario
 
-An HR portal checks whether an employee can request a training reimbursement. The rule may require the employee to be active, have completed at least one year of service and have submitted the required training proof.
+An employee portal receives a request for training reimbursement. The backend checks the employee's status, service duration and training completion. The backend must perform these checks when the request arrives. Hiding a button in the frontend is not sufficient because users can send requests through other means.
 
-The backend must evaluate the approved business rules. Hiding or showing a button in the frontend is not sufficient security; the backend must enforce the rule when the request arrives.
+Today you are learning the decision logic. Authentication and database-backed permissions will be taught in later phases.
 
-## 11. Approved mini-project — Employee Eligibility Checker
+## 15. Interview preparation
 
-**Objective:** Decide whether an employee meets a clearly defined training-program eligibility policy.
+**Q1. What is the difference between if, elif and else?**
 
-### Rules for this exercise
+Answer: `if` checks the first condition. `elif` checks another condition if earlier conditions were false. `else` runs when none of the preceding conditions matched.
 
+Follow-up: Can we use multiple elif blocks?  
+Answer: Yes. We can use as many elif branches as needed before an optional else.
+
+**Q2. What is the difference between and and or?**
+
+Answer: `and` requires all conditions to be true. `or` requires at least one condition to be true.
+
+Follow-up: Which operator is suitable when an employee must be active and have at least one year of experience?  
+Answer: `and`, because both requirements must be satisfied.
+
+**Q3. Why is indentation important in Python?**
+
+Answer: Indentation identifies which statements belong to a block, such as an if or else block. Incorrect indentation can cause an error or change the program's logic.
+
+## 16. Approved mini-project — Employee Eligibility Checker
+
+**Objective:** Decide whether an employee meets a training-program eligibility policy.
+
+### Rules
 An employee is eligible only when:
-
-- Employment status is `active`.
-- Experience is at least one year.
-- Required training is completed.
+1. Employment status is `active`.
+2. Experience is at least one year.
+3. Required training is completed.
 
 ### Requirements
-
-1. Collect employee name.
-2. Collect employment status.
-3. Collect years of experience.
-4. Collect training completion as yes/no.
-5. Normalize text input with `.strip().lower()`.
-6. Evaluate all three requirements.
-7. Display an eligibility decision.
-8. Explain which requirement was not met.
-
-### Suggested structure
-
-```text
-employee_eligibility_checker/
-└── eligibility.py
-```
+1. Store employee name, employment status, experience and training completion.
+2. Normalize status text using `.strip().lower()` if you collect it as input.
+3. Check each requirement.
+4. Display Eligible or Not eligible.
+5. Explain which requirement was not met.
+6. Test all three requirements separately.
 
 ### Test cases
 
-| Status | Experience | Training | Expected result |
+| Status | Experience | Training complete | Expected |
 |---|---:|---|---|
 | active | 2 | yes | Eligible |
 | active | 0 | yes | Not eligible |
 | inactive | 3 | yes | Not eligible |
 | active | 2 | no | Not eligible |
 
-Test each failed requirement separately. Convert experience to a number before comparing it. Assume valid numeric input for the first implementation; robust input error handling is covered on Day 12.
+For the first version, use values assigned in the file. You can add terminal input as an extension.
 
-## 12. Key takeaways
+## 17. Daily practice and completion check
 
-- `if` executes a block when its condition is true.
-- `elif` checks another condition; `else` handles the remaining case.
-- `and` requires all conditions; `or` requires at least one.
-- `not` reverses a truth value.
-- Python uses indentation to define conditional blocks.
-- Translate business rules into plain language before writing conditions.
+1. Write an if statement to check whether a number is positive.
+2. Write if/else to check whether a person is at least 18.
+3. Assign a grade using if/elif/else.
+4. Check whether a user is active and is an admin.
+5. Explain the difference between and, or and not.
+6. Explain why condition order matters.
+
+You have completed Day 5 when you can translate a plain-English rule into a correct Python condition and explain why each branch runs.
 
 **Next lesson:** Day 6 — Loops: for, while, break and continue.
