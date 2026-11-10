@@ -1,94 +1,86 @@
-# Day 25: Interview Questions — Client-server architecture and how websites work
+# Day 25: Interview Questions — SQL Filtering, Sorting, Joins, Grouping and Aggregate Functions
 
-**Pathway:** Python Backend Developer (Django)  
-**Phase:** 2 — Web Fundamentals, SQL and Development Tools
+**Pathway:** Python Backend Developer Career Pathway (Django)  
+**Phase:** 2 — Web Fundamentals, SQL and Development Tools  
+**Related notes:** [Day 25 class notes](day_25_notes.md)  
+**Approved mini-project:** Sales Database Analyzer
 
-## 1. Core technical questions
+## Core questions
 
-### Q1. What is a client-server architecture?
-**Answer:**
-- The client requests a resource or operation; the server receives, processes and responds. A browser and web backend are common examples.
-- The concept should be demonstrated with observable output.
-- In production, verify input validation, error handling and security.
+### Q1. What is the difference between WHERE and HAVING?
+**Answer:** WHERE filters individual rows before grouping. HAVING filters grouped results after aggregation.
 
-**Example:** An online shopping website loads product information from a backend.
+**Example:** WHERE can select delivered orders. HAVING can keep only customer groups whose total revenue exceeds a threshold.
 
-**Follow-up:** How would you test the explanation with a real request, command or query?
+**Follow-up:** Can HAVING be used without GROUP BY? Some SQL engines permit it, but for normal grouped reporting use GROUP BY and HAVING together.
 
-### Q2. What does DNS do?
-**Answer:**
-- DNS resolves a hostname to network address records; it does not itself serve the webpage.
-- The concept should be demonstrated with observable output.
-- In production, verify input validation, error handling and security.
+### Q2. What is the difference between INNER JOIN and LEFT JOIN?
+**Answer:** INNER JOIN returns rows with matching records on both sides. LEFT JOIN returns every row from the left table and matching right-side values; unmatched right-side columns are NULL.
 
-**Example:** An online shopping website loads product information from a backend.
+**Follow-up:** How would you find customers who have no orders? Use LEFT JOIN and filter where the order key is NULL.
 
-**Follow-up:** How would you test the explanation with a real request, command or query?
+### Q3. What does GROUP BY do?
+**Answer:** It groups rows with the same selected key values so aggregate functions can calculate summaries for each group.
 
-### Q3. What is the main purpose of client?
-**Answer:** A client sends a request; a server processes it and returns a response. DNS resolves a domain to an address; a browser then connects to the service.
+### Q4. Explain COUNT, SUM and AVG.
+**Answer:** COUNT counts rows or non-null values, SUM adds numeric values and AVG calculates the average of numeric values.
 
-**Follow-up:** What would go wrong if the concept were misunderstood?
+### Q5. Why is parameterized SQL important?
+**Answer:** Parameters keep supplied values separate from SQL syntax and help prevent SQL injection. Validate business rules as well.
 
-### Q4. Which tools are appropriate for this lesson?
-**Answer:** Python and VS Code for demonstrations, terminal commands for execution, and HTTP/browser inspection or structured data tools as appropriate.
+## Scenario-based questions
 
-**Follow-up:** What would change in a deployed Django service?
+### Q6. A retail manager wants revenue by customer and order status. How would you design the query?
+**Suggested answer:** Join customers and orders on customer_id, group by customer and status, calculate SUM(amount) and COUNT(order_id), and sort by revenue.
 
-### Q5. How do you verify the implementation?
-**Answer:** Define expected inputs and outputs, run normal and edge cases, inspect actual responses or database state, and document failures.
+### Q7. The report omits customers who have never placed an order. What should you inspect?
+**Suggested answer:** Check whether the query uses INNER JOIN. Use LEFT JOIN if all customers must appear, including those with no orders.
 
-**Follow-up:** Why is a successful command not always proof of correct business behavior?
+## Practical coding questions
 
-## 2. Scenario-based interview questions
+1. Write a query to return orders above 3,000.
+2. Sort orders from highest to lowest amount.
+3. Calculate total revenue.
+4. Calculate total revenue per customer.
+5. Return customers with no orders.
+6. Explain why WHERE and HAVING are not interchangeable.
 
-### Q6. An online shopping website loads product information from a backend. What should the developer verify?
-**Answer:**
-- Define the expected result before implementation.
-- Check that the chosen client behavior matches the requirement.
-- Validate inputs and inspect actual results.
-- Record reproducible test evidence.
+## Project viva — Sales Database Analyzer
 
-**Follow-up:** What error case would you test first?
+Be ready to explain:
+- Table design and keys.
+- Why the join condition is needed.
+- How NULL values affect LEFT JOIN results.
+- Why COUNT(order_id) may differ from COUNT(*).
+- How aggregate values were validated manually.
+- How query parameters were supplied.
+- What business decision the output could support.
 
-### Q7. A beginner's output differs from the expected result. How do you troubleshoot?
-**Answer:**
-- Reproduce the issue with the smallest sample.
-- Check tool installation, file location and input.
-- Inspect exceptions, response status or SQL result.
-- Change one variable at a time and rerun.
-- Document the fix and regression test.
+## Common mistakes
 
-**Follow-up:** How would you explain the root cause to a non-technical colleague?
+| Mistake | Correct understanding |
+|---|---|
+| WHERE filters aggregate results | HAVING filters grouped aggregates |
+| INNER JOIN keeps unmatched left rows | LEFT JOIN is needed for that |
+| GROUP BY sorts results | ORDER BY sorts results |
+| SQL string concatenation is safe | Use parameter placeholders |
+| NULL is the same as zero | NULL represents missing/unknown value |
 
-## 3. Project and practical questions
+## Rapid revision
+- WHERE — row filter.
+- ORDER BY — result sorting.
+- INNER JOIN — matching rows.
+- LEFT JOIN — all left rows plus matches.
+- GROUP BY — category grouping.
+- HAVING — group filter.
+- COUNT — count.
+- SUM — total.
+- AVG — mean.
 
-### Q8. Explain your Client-Server Communication Simulator.
-**Answer:**
-- I defined the inputs, operations and expected outputs.
-- I implemented a small demonstration of client-server architecture and how websites work.
-- I tested normal and edge cases.
-- I captured evidence and documented limitations.
-- I did not assume a learning exercise was production-ready.
-
-**Follow-up:** Which part would you improve first for production use?
-
-### Q9. What mistakes should you avoid in this project?
-**Answer:**
-- Skipping validation.
-- Failing to verify observable results.
-- Mixing unrelated responsibilities.
-- Hardcoding secrets or private data.
-- Ignoring error cases.
-
-**Follow-up:** What is one automated test you would add?
-
-## 4. Rapid revision
-- **client:** explain its role in client-server architecture and how websites work.
-- **server:** explain its role in client-server architecture and how websites work.
-- **DNS:** explain its role in client-server architecture and how websites work.
-- **IP address:** explain its role in client-server architecture and how websites work.
-- **port:** explain its role in client-server architecture and how websites work.
-- **request-response:** explain its role in client-server architecture and how websites work.
-
-**Interview preparation tip:** Give a definition, show a small practical example, explain a failure mode, and state how you would verify it.
+## Final checklist
+- [ ] Explain WHERE and HAVING.
+- [ ] Compare INNER JOIN and LEFT JOIN.
+- [ ] Write a grouped aggregate query.
+- [ ] Explain NULL behavior.
+- [ ] Explain SQL parameterization.
+- [ ] Present Sales Database Analyzer and its evidence.
