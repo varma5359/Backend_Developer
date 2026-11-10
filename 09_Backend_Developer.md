@@ -124,9 +124,24 @@ The backend is responsible for:
 | 11 | File handling: reading, writing and working with CSV and JSON. | File-Based User Management System |
 | 12 | Exception handling, debugging and basic logging. | Error Handling and Report Generator |
 
+## Phase 1B — Object-Oriented Programming (OOP)
+
+**Days 13–18**
+
+**Phase outcome:** Students should understand how to model data and behavior using classes and objects, initialize instances, choose method types, reuse behavior through inheritance and apply encapsulation, abstraction and polymorphism.
+
+| Day | Approved learning topic | Approved independent mini-project |
+|---:|---|---|
+| 13 | Introduction to OOP, classes and objects | Student Object Manager |
+| 14 | Constructors, `__init__`, `self` and instance variables | Employee Profile System |
+| 15 | Instance methods, class methods and static methods | Employee Utility Manager |
+| 16 | Inheritance and method overriding | Employee Role Management System |
+| 17 | Encapsulation, abstraction and polymorphism | Banking Operations Simulator |
+| 18 | Complete OOP integration and revision | Library Management System |
+
 ## Phase 2 — Web Fundamentals, SQL and Development Tools
 
-**Days 13–20**
+**Days 19–26**
 
 **Phase outcome:** Students should understand how web applications communicate, how databases store information and how developers manage source code.
 
@@ -143,7 +158,7 @@ The backend is responsible for:
 
 ## Phase 3 — Django Fundamentals
 
-**Days 21–35**
+**Days 27–41**
 
 **Phase outcome:** Students should be able to create Django projects, understand the framework architecture and build basic server-rendered web applications.
 
@@ -167,7 +182,7 @@ The backend is responsible for:
 
 ## Phase 4 — Django ORM, Forms and Authentication
 
-**Days 36–48**
+**Days 42–54**
 
 **Phase outcome:** Students should be able to develop database-driven Django applications with CRUD operations, user accounts, authentication and access control.
 
@@ -189,7 +204,7 @@ The backend is responsible for:
 
 ## Phase 5 — REST API Development with Django REST Framework
 
-**Days 49–63**
+**Days 55–69**
 
 **Phase outcome:** Students should be able to create professional REST APIs that communicate with frontend and mobile applications.
 
@@ -213,7 +228,7 @@ The backend is responsible for:
 
 ## Phase 6 — Advanced Backend Development
 
-**Days 64–75**
+**Days 70–81**
 
 **Phase outcome:** Students should understand practical backend engineering concerns beyond basic CRUD and API development.
 
@@ -234,7 +249,7 @@ The backend is responsible for:
 
 ## Phase 7 — Testing, Deployment and Production Readiness
 
-**Days 76–82**
+**Days 82–88**
 
 **Phase outcome:** Students should be able to test backend applications, prepare deployment configurations and understand basic production operations.
 
@@ -250,7 +265,7 @@ The backend is responsible for:
 
 ## Phase 8 — End-to-End Backend Capstone
 
-**Days 83–90**
+**Days 89–96**
 
 **Phase outcome:** Students should build, test, document and present a complete Django backend application.
 
