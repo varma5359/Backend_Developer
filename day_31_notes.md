@@ -38,14 +38,12 @@ Create or open the following files. Keep the folder names and Python import path
 
 ```python
 from django.http import HttpResponse
-from django.shortcuts import render
 
 def welcome(request):
     return HttpResponse("Welcome to the backend application")
 
 def welcome_user(request, username):
-    context = {"username": username}
-    return render(request, "profiles/welcome.html", context)
+    return HttpResponse(f"Welcome, {username}")
 ```
 
 ### File: `profiles/urls.py`
@@ -98,7 +96,7 @@ urlpatterns = [
 ### Expected result
 
 ```text
-/profiles/welcome/ → Welcome to the backend application\n/profiles/welcome/Asha/ → page rendered with username Asha when the template is created on Day 32.
+/profiles/welcome/ → Welcome to the backend application\n/profiles/welcome/Asha/ → Welcome, Asha
 ```
 
 ## 7. Important Django concepts
