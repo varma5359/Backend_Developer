@@ -26,11 +26,26 @@ This index tracks the detailed trainer manuscripts and interview guides created 
 
 **Phase 1 assessment:** Python Employee Management System — included in [Day 12 notes](day_12_notes.md).
 
+## Phase 2 — Web Fundamentals, SQL and Development Tools (Days 13–20)
+
+| Day | Approved topic | Class notes | Interview |
+|---:|---|---|---|
+| 13 | Client-server architecture and how websites work | [Notes](day_13_notes.md) | [Interview](day_13_interview.md) |
+| 14 | HTTP, HTTPS, requests, responses and HTTP methods | [Notes](day_14_notes.md) | [Interview](day_14_interview.md) |
+| 15 | HTTP status codes, headers, request body and response body | [Notes](day_15_notes.md) | [Interview](day_15_interview.md) |
+| 16 | JSON, XML basics and data exchange between applications | [Notes](day_16_notes.md) | [Interview](day_16_interview.md) |
+| 17 | Relational database concepts, tables, primary keys and foreign keys | [Notes](day_17_notes.md) | [Interview](day_17_interview.md) |
+| 18 | SQL fundamentals: CREATE, INSERT, SELECT, UPDATE and DELETE | [Notes](day_18_notes.md) | [Interview](day_18_interview.md) |
+| 19 | SQL filtering, sorting, joins, grouping and aggregate functions | [Notes](day_19_notes.md) | [Interview](day_19_interview.md) |
+| 20 | Git, GitHub, repositories, commits, branches and merge basics | [Notes](day_20_notes.md) | [Interview](day_20_interview.md) |
+
+**Phase 2 assessment:** Web-Connected Employee Database Workflow — included in [Day 20 notes](day_20_notes.md).
+
 ## Remaining phases
 
 | Phase | Days | Module | Status |
 |---|---:|---|---|
-| 2 | 13–20 | Web fundamentals, SQL and development tools | Not yet authored |
+| 2 | 13–20 | Web fundamentals, SQL and development tools | Completed |
 | 3 | 21–35 | Django fundamentals | Not yet authored |
 | 4 | 36–48 | Django ORM, forms and authentication | Not yet authored |
 | 5 | 49–63 | REST API development with Django REST Framework | Not yet authored |
