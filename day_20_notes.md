@@ -1,25 +1,25 @@
-# Day 20: Git, GitHub, repositories, commits, branches and merge basics
+# Day 20: HTTP, HTTPS, requests, responses and HTTP methods
 
 **Pathway:** Python Backend Developer Career Pathway (Django)  
 **Phase:** 2 — Web Fundamentals, SQL and Development Tools  
 **Time:** 2–3 hours | **Level:** Beginner  
-**Prerequisites:** Python foundations (Days 1–12), Day 19  
-**Tools:** Python 3, VS Code, terminal, Git  
-**Approved mini-project:** Version-Controlled Python Project
+**Prerequisites:** Python foundations (Days 1–12), Day 13  
+**Tools:** Python 3, VS Code, terminal  
+**Approved mini-project:** HTTP Request Explorer
 
 ## 1. Learning objectives
-1. Define the central terms of git, github, repositories, commits, branches and merge basics.
+1. Define the central terms of http, https, requests, responses and http methods.
 2. Explain how this concept supports backend applications.
 3. Run and interpret a working example.
 4. Diagnose a common mistake or failure.
-5. Apply the concept in **Version-Controlled Python Project**.
+5. Apply the concept in **HTTP Request Explorer**.
 
 ## 2. Concept and motivation
-Git tracks file history locally. GitHub hosts repositories and collaboration. Commits record snapshots; branches allow parallel work; merges combine histories.
+HTTP defines request/response messages. HTTPS is HTTP protected in transit by TLS. GET reads; POST submits; PUT replaces; PATCH partially updates; DELETE removes a resource according to API semantics.
 
 **Why it matters:** Backend developers must reason about communication, data, and reproducible software changes. A correct implementation should produce observable evidence rather than rely on assumptions.
 
-**Key vocabulary:** `repository`, `working tree`, `staging area`, `commit`, `branch`, `merge`, `remote`, `push`.
+**Key vocabulary:** `HTTP`, `HTTPS`, `TLS`, `GET`, `POST`, `PUT`, `PATCH`, `DELETE`.
 
 ## 3. How it works
 Input or request → validation/processing → result → inspection and verification.
@@ -27,34 +27,35 @@ Input or request → validation/processing → result → inspection and verific
 **Use it when:** You need the relevant behavior in a web or data workflow. **Avoid:** Treating a successful example as proof that production concerns (authentication, error handling, scalability or concurrent use) are solved.
 
 ## 4. Step-by-step practical demonstration
-Create a new folder named `day_20` in VS Code. Save this example in `commands.txt`.
+Create a new folder named `day_20` in VS Code. Save this example in `demo.py`.
 
-Run these commands one at a time in a terminal, not as Python:
+Run the code below in Python:
 
-```bash
-git --version
-git init
-git status
-git add .
-git commit -m "Add initial Python billing script"
-git switch -c feature/readme
-git status
-git switch main
-git merge feature/readme
+```python
+import urllib.request
+
+request = urllib.request.Request(
+    "https://httpbin.org/get",
+    method="GET",
+    headers={"Accept": "application/json"}
+)
+with urllib.request.urlopen(request, timeout=10) as response:
+    print("Status:", response.status)
+    print("Type:", response.headers.get("Content-Type"))
 ```
 
-**How to run:** Run each command in a new test project; configure git user.name and user.email first; default branch may be master, so use git branch -M main after the initial commit if needed.
+**How to run:** python explore_http.py (requires internet access)
 
 **Expected result:**
 ```text
-Repository initialized; a commit is created; a feature branch is created and can be merged after changes.
+Status: 200; Type: application/json (when service is available)
 ```
 
 **Code walkthrough:**
-- git init creates the local repository metadata.\n- git add stages changes; git commit records them.\n- git switch creates or changes branches; git merge integrates history.\n- Always check git status before committing or merging.
+- urllib.request.Request defines the URL, HTTP method and headers.\n- urlopen sends the request and waits for a response.\n- response.status is the HTTP status; headers carry response metadata.\n- A network or service failure can raise an exception.
 
 ## 5. Industry scenario
-Two developers improve a billing application without overwriting each other's changes. The developer should define the expected result, check failures, and communicate the outcome clearly to other team members.
+A frontend fetches products and submits a new order through an API. The developer should define the expected result, check failures, and communicate the outcome clearly to other team members.
 
 ## 6. Common mistakes and troubleshooting
 | Problem | Check |
@@ -65,9 +66,9 @@ Two developers improve a billing application without overwriting each other's ch
 | Invalid or untrusted input | Validate before processing; never trust client data |
 | Security concern | Use HTTPS for remote communication, parameterized SQL, and no secrets in source control |
 
-## 7. Independent mini-project — Version-Controlled Python Project
+## 7. Independent mini-project — HTTP Request Explorer
 
-**Goal:** Demonstrate git, github, repositories, commits, branches and merge basics with a small, testable application or workflow. **Estimated project time:** 30–75 minutes.
+**Goal:** Demonstrate http, https, requests, responses and http methods with a small, testable application or workflow. **Estimated project time:** 30–75 minutes.
 
 **Required deliverables:**
 1. Write a short problem statement and input/output specification.
@@ -86,10 +87,9 @@ projects/day_20/
 ```
 
 **Validation checklist:**
-1. Create a repo and commit a Python file.
-2. Create a feature branch and make a distinct commit.
-3. Merge it into main.
-4. Verify git log and git status.
+1. Inspect GET request and response.
+2. Compare HTTP and HTTPS URL schemes.
+3. Explain which method suits creating a record.
 
 **Security and reliability:** Do not commit credentials, personal information or production secrets. Use local test data and handle errors explicitly.
 
@@ -100,29 +100,29 @@ projects/day_20/
 ## 8. AI-assisted learning guide
 | Level | Ask the AI mentor |
 |---|---|
-| Hint | Give one hint for Version-Controlled Python Project; don't solve it |
+| Hint | Give one hint for HTTP Request Explorer; don't solve it |
 | Plan | Break the project into input, process, output and tests |
-| Example | Explain a tiny example of repository |
+| Example | Explain a tiny example of HTTP |
 | Guided implementation | Help me implement only the first step, then wait |
 | Explanation | Explain the demonstration line by line |
 | Debugging | Analyze my exact error message and propose a minimal fix |
 | Review | Check my implementation against the validation checklist |
 
-**Planning prompt:** "Help me plan Version-Controlled Python Project with requirements, sample inputs and test cases. Do not write the complete solution."
+**Planning prompt:** "Help me plan HTTP Request Explorer with requirements, sample inputs and test cases. Do not write the complete solution."
 
 **Implementation prompt:** "Guide me through one step at a time. Explain each command or line before continuing."
 
 **Debugging/review prompt:** "Review my output, identify the root cause of any failure and explain how to verify the correction."
 
 ## 9. Daily MCQs
-**Q1. Which statement best describes repository?**  
-A. Git tracks file history locally.  
+**Q1. Which statement best describes HTTP?**  
+A. HTTP defines request/response messages.  
 B. It is only a Python variable  
 C. It always requires Django  
 D. It replaces all validation  
-**Answer: A.** Git tracks file history locally. — this is the appropriate choice for the stated scenario.
+**Answer: A.** HTTP defines request/response messages. — this is the appropriate choice for the stated scenario.
 
-**Q2. What is the most useful evidence that Version-Controlled Python Project works?**  
+**Q2. What is the most useful evidence that HTTP Request Explorer works?**  
 A. A project name  
 B. Observed output matching documented test cases  
 C. A screenshot of the editor alone  
@@ -151,17 +151,17 @@ D. No technical details
 **Answer: A.** Setup, execution and validation instructions — this is the appropriate choice for the stated scenario.
 
 ## 10. Interview practice
-### Q1. What is the difference between Git and GitHub?
-**Answer:** Git is a distributed version-control system; GitHub is a platform that hosts Git repositories and collaboration features.
+### Q1. How does HTTPS differ from HTTP?
+**Answer:** HTTPS uses TLS to protect HTTP communication in transit, including confidentiality and integrity.
 
-**Practical example:** Two developers improve a billing application without overwriting each other's changes.
+**Practical example:** A frontend fetches products and submits a new order through an API.
 
 **Follow-up:** How would you verify this behavior in a real backend application?
 
-### Q2. What is a merge conflict?
-**Answer:** A conflict arises when Git cannot automatically reconcile competing changes; a developer must inspect and resolve them.
+### Q2. How do PUT and PATCH differ?
+**Answer:** PUT generally replaces the target resource representation; PATCH applies a partial modification. Actual behavior is defined by the API.
 
-**Practical example:** Two developers improve a billing application without overwriting each other's changes.
+**Practical example:** A frontend fetches products and submits a new order through an API.
 
 **Follow-up:** How would you verify this behavior in a real backend application?
 
@@ -169,25 +169,9 @@ D. No technical details
 - [ ] Explain the core terminology without notes.
 - [ ] Run the demonstration and verify output.
 - [ ] Explain important statements or commands.
-- [ ] Complete Version-Controlled Python Project.
+- [ ] Complete HTTP Request Explorer.
 - [ ] Validate at least three cases.
 - [ ] Answer five MCQs and two interview questions.
 - [ ] Submit source, README and evidence.
 
-## 12. Phase 2 cumulative assessment — Web-Connected Employee Database Workflow
-
-**Scenario:** A small HR department needs an employee data service concept demonstration. Combine web request/response knowledge, JSON payloads, a relational employee database, SQL queries and Git version control.
-
-**Requirements:** Design employee and department tables with primary/foreign keys; create, query, update and delete sample employee records; produce JSON representations of selected records; document GET/POST/PUT/PATCH/DELETE semantics and appropriate status codes; commit work on a feature branch and merge it safely. A local simulation is sufficient—Django is introduced in Phase 3.
-
-**Evidence:** Schema, SQL script, sample JSON, HTTP request/response examples, terminal output, Git history and README.
-
-**Validation:** Duplicate primary key rejected; invalid foreign key rejected when enforcement is enabled; UPDATE/DELETE restricted with WHERE; JSON parses successfully; Git working tree clean after merge.
-
-**Rubric:** Concepts 20%, correctness 30%, reasoning 20%, code quality 15%, testing 10%, communication 5% = **100%**.
-
-**Phase interview questions:** (1) Trace browser-to-server communication. (2) Explain HTTP methods and status codes. (3) Compare JSON and XML. (4) Explain primary/foreign keys. (5) Explain JOIN and GROUP BY. (6) Explain Git branch versus commit.
-
-**Common mistakes:** Confusing 401 and 403, using unparameterized SQL, omitting WHERE, assuming JSON validates itself, committing credentials, and claiming an HTTP simulation is a deployed API.
-
-**Phase 2 complete. Next: Phase 3 — Django Fundamentals (Days 21–35).**
+**Next lesson:** Day 15.
