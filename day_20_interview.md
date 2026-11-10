@@ -1,37 +1,37 @@
-# Day 20: Interview Questions — Git, GitHub, repositories, commits, branches and merge basics
+# Day 20: Interview Questions — HTTP, HTTPS, requests, responses and HTTP methods
 
 **Pathway:** Python Backend Developer (Django)  
 **Phase:** 2 — Web Fundamentals, SQL and Development Tools
 
 ## 1. Core technical questions
 
-### Q1. What is the difference between Git and GitHub?
+### Q1. How does HTTPS differ from HTTP?
 **Answer:**
-- Git is a distributed version-control system; GitHub is a platform that hosts Git repositories and collaboration features.
+- HTTPS uses TLS to protect HTTP communication in transit, including confidentiality and integrity.
 - The concept should be demonstrated with observable output.
 - In production, verify input validation, error handling and security.
 
-**Example:** Two developers improve a billing application without overwriting each other's changes.
+**Example:** A frontend fetches products and submits a new order through an API.
 
 **Follow-up:** How would you test the explanation with a real request, command or query?
 
-### Q2. What is a merge conflict?
+### Q2. How do PUT and PATCH differ?
 **Answer:**
-- A conflict arises when Git cannot automatically reconcile competing changes; a developer must inspect and resolve them.
+- PUT generally replaces the target resource representation; PATCH applies a partial modification. Actual behavior is defined by the API.
 - The concept should be demonstrated with observable output.
 - In production, verify input validation, error handling and security.
 
-**Example:** Two developers improve a billing application without overwriting each other's changes.
+**Example:** A frontend fetches products and submits a new order through an API.
 
 **Follow-up:** How would you test the explanation with a real request, command or query?
 
-### Q3. What is the main purpose of repository?
-**Answer:** Git tracks file history locally. GitHub hosts repositories and collaboration. Commits record snapshots; branches allow parallel work; merges combine histories.
+### Q3. What is the main purpose of HTTP?
+**Answer:** HTTP defines request/response messages. HTTPS is HTTP protected in transit by TLS. GET reads; POST submits; PUT replaces; PATCH partially updates; DELETE removes a resource according to API semantics.
 
 **Follow-up:** What would go wrong if the concept were misunderstood?
 
 ### Q4. Which tools are appropriate for this lesson?
-**Answer:** Python and VS Code for demonstrations, terminal commands for execution, and Git/GitHub for repository operations.
+**Answer:** Python and VS Code for demonstrations, terminal commands for execution, and HTTP/browser inspection or structured data tools as appropriate.
 
 **Follow-up:** What would change in a deployed Django service?
 
@@ -42,10 +42,10 @@
 
 ## 2. Scenario-based interview questions
 
-### Q6. Two developers improve a billing application without overwriting each other's changes. What should the developer verify?
+### Q6. A frontend fetches products and submits a new order through an API. What should the developer verify?
 **Answer:**
 - Define the expected result before implementation.
-- Check that the chosen repository behavior matches the requirement.
+- Check that the chosen HTTP behavior matches the requirement.
 - Validate inputs and inspect actual results.
 - Record reproducible test evidence.
 
@@ -63,10 +63,10 @@
 
 ## 3. Project and practical questions
 
-### Q8. Explain your Version-Controlled Python Project.
+### Q8. Explain your HTTP Request Explorer.
 **Answer:**
 - I defined the inputs, operations and expected outputs.
-- I implemented a small demonstration of git, github, repositories, commits, branches and merge basics.
+- I implemented a small demonstration of http, https, requests, responses and http methods.
 - I tested normal and edge cases.
 - I captured evidence and documented limitations.
 - I did not assume a learning exercise was production-ready.
@@ -84,13 +84,13 @@
 **Follow-up:** What is one automated test you would add?
 
 ## 4. Rapid revision
-- **repository:** explain its role in git, github, repositories, commits, branches and merge basics.
-- **working tree:** explain its role in git, github, repositories, commits, branches and merge basics.
-- **staging area:** explain its role in git, github, repositories, commits, branches and merge basics.
-- **commit:** explain its role in git, github, repositories, commits, branches and merge basics.
-- **branch:** explain its role in git, github, repositories, commits, branches and merge basics.
-- **merge:** explain its role in git, github, repositories, commits, branches and merge basics.
-- **remote:** explain its role in git, github, repositories, commits, branches and merge basics.
-- **push:** explain its role in git, github, repositories, commits, branches and merge basics.
+- **HTTP:** explain its role in http, https, requests, responses and http methods.
+- **HTTPS:** explain its role in http, https, requests, responses and http methods.
+- **TLS:** explain its role in http, https, requests, responses and http methods.
+- **GET:** explain its role in http, https, requests, responses and http methods.
+- **POST:** explain its role in http, https, requests, responses and http methods.
+- **PUT:** explain its role in http, https, requests, responses and http methods.
+- **PATCH:** explain its role in http, https, requests, responses and http methods.
+- **DELETE:** explain its role in http, https, requests, responses and http methods.
 
 **Interview preparation tip:** Give a definition, show a small practical example, explain a failure mode, and state how you would verify it.
