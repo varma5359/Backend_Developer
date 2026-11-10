@@ -1,80 +1,87 @@
-# Day 35: Interview Questions — Django Migrations: makemigrations and migrate
+# Day 35: Interview Guide — Django Migrations: makemigrations and migrate
 
 **Pathway:** Python Backend Developer Career Pathway (Django)  
 **Phase:** 3 — Django Fundamentals  
-**Related notes:** [Day 35 class notes](day_35_notes.md)  
+**Related class notes:** [Day 35 notes](day_35_notes.md)  
 **Approved mini-project:** Database Migration Practice
 
 ## 1. Core technical questions
 
-### Q1. Explain django migrations: makemigrations and migrate.
-**Answer:** Migrations are version-controlled instructions that describe changes to the database schema. makemigrations detects model changes and creates migration files. migrate applies unapplied migrations to the configured database. Model code and the actual database schema are related but separate; editing models.py alone does not automatically change database tables.
+### Q1. Explain today's concept.
+**Answer:** A model describes the database structure Django expects. A migration is a version-controlled instruction describing a schema change. makemigrations creates migration files from model changes. migrate applies unapplied migrations to the selected database. Creating a migration and applying it are two separate actions.
 
-### Q2. Which files are involved?
-**Answer:** Terminal commands, profiles/migrations/0001_initial.py. Explain the responsibility of each file and how it connects to the rest of the Django application.
+**Follow-up:** Explain how this concept appears in the Student Portal.
 
-### Q3. Why is this feature important?
-**Answer:** It helps keep application structure, presentation, data or schema changes understandable and maintainable.
+### Q2. Which files or commands are involved?
+**Answer:** `profiles/models.py`, `profiles/migrations/0001_initial.py (generated)`, `db.sqlite3 (local database file)`. Explain what each one is responsible for and how they connect.
 
-### Q4. What is one common beginner mistake?
-**Answer:** A migration file is generated after model changes. Always verify the exact file path, configuration and command output.
+**Follow-up:** What error might occur if a file is missing or incorrectly configured?
 
-### Q5. How do you verify the result?
-**Answer:** Run Django's system check, execute the required command, inspect the browser or migration status and test an edge case.
+### Q3. What does Django do automatically, and what must the developer write?
+**Answer:** Django supplies framework mechanisms and conventions. The developer defines the application's requirements, configuration, business rules, correct file connections and tests.
+
+### Q4. How do you verify your work?
+**Answer:** Run `python manage.py check`, execute the relevant commands, inspect the output and test the actual browser/database behavior. Include an edge case.
 
 ## 2. Scenario-based questions
 
-### Q6. A feature is missing from the browser or database. What do you check?
+### Q5. The feature does not work even though the code is present. What do you inspect?
 **Suggested answer:**
-1. Verify the current project folder and active environment.
-2. Inspect the relevant Django file.
-3. Check app registration and settings.
-4. Read the complete terminal error.
-5. Run python manage.py check.
-6. Correct one issue and verify again.
+1. Reproduce the problem.
+2. Read the complete error.
+3. Check the current folder and Python environment.
+4. Inspect the named file and nearby lines.
+5. Check imports, app registration, URL patterns and file paths.
+6. Run Django checks.
+7. Repeat the actual test.
 
-### Q7. Why should the learner understand the generated files?
-**Suggested answer:** Generated files are part of the application structure. Understanding them helps the developer review changes, troubleshoot errors and collaborate safely.
+### Q6. A learner says the command succeeded, so the task is complete. Is that enough?
+**Suggested answer:** No. A command may create a file or run a server without proving the expected feature works. Demonstrate the result, test an edge case and explain the implementation.
+
+### Q7. How would you explain this work to a teammate?
+**Suggested answer:** Describe the requirement, relevant files, command sequence, execution flow, expected output, tests and one error/fix.
 
 ## 3. Practical discussion
 
 Be prepared to:
-- Identify each relevant file.
-- Explain the important configuration.
-- Demonstrate the expected result.
-- Explain one error and its resolution.
-- Describe what should be committed to Git.
-- Identify one production concern.
+- Identify the exact file path.
+- Explain important code statements.
+- Demonstrate the required commands.
+- Explain the observed result.
+- Modify one small part and predict the effect.
+- Test a normal and edge case.
+- Describe a safe debugging method.
 
 ## 4. Mini-project viva — Database Migration Practice
 
 1. What problem does the project solve?
-2. Which files did you create or update?
-3. Why are those files located there?
-4. Which command did you run?
-5. How did you verify the result?
-6. What error did you encounter?
-7. How did you fix it?
-8. What would you improve next?
-9. What should not be committed to Git?
-10. How would you explain the project to a teammate?
+2. What are the functional requirements?
+3. Which files did you create or update?
+4. Which commands did you run?
+5. What does the important code do?
+6. How did you verify the normal case?
+7. Which edge case did you test?
+8. What error did you encounter?
+9. How did you fix it?
+10. What would you improve next?
 
 ## 5. Rapid revision
 
-- **1.** Create or update the Employee model from Day 34.
-- **2.** Run python manage.py makemigrations profiles.
-- **3.** Open the generated file inside profiles/migrations/.
-- **4.** Read the CreateModel operation and field definitions.
-- **5.** Run python manage.py showmigrations profiles.
-- **6.** Apply changes using python manage.py migrate.
-- **7.** Run showmigrations again and inspect the applied marker.
-- **8.** Change one field and repeat the workflow.
+- Define the concept.
+- Name the important files.
+- Explain the execution flow.
+- Demonstrate the project.
+- Run checks.
+- Explain one failure and its fix.
 
 ## 6. Readiness checklist
 
-- [ ] Explain the concept in simple words.
-- [ ] Identify the correct files.
-- [ ] Explain the command or configuration.
-- [ ] Demonstrate the mini-project.
-- [ ] Explain one troubleshooting case.
-- [ ] Answer follow-up questions.
+- [ ] I can explain the concept clearly.
+- [ ] I can identify the relevant files.
+- [ ] I can reproduce the example.
+- [ ] I can explain the important code.
+- [ ] I can verify the result.
+- [ ] I can answer a scenario question.
+- [ ] I can present Database Migration Practice independently.
+
+**Trainer note:** Ask the learner to explain why a step is needed and predict what changes when one value or setting is modified.

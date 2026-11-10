@@ -2,92 +2,200 @@
 
 **Pathway:** Python Backend Developer Career Pathway (Django)  
 **Phase:** 3 — Django Fundamentals  
-**Estimated time:** 2–3 hours | **Level:** Beginner to Intermediate  
-**Prerequisites:** Days 27–40 — Django setup, URLs, views, templates and models  
-**Tools:** Python, Django, VS Code, terminal and browser  
+**Duration:** 2–3 hours | **Level:** Beginner to Intermediate  
+**Prerequisites:** Days 27–40 as relevant; project setup, URL routing, views, templates, models, migrations and forms  
+**Environment:** Windows, VS Code, PowerShell, Python virtual environment, Django 5.2.19  
+**Continuous project:** `student_portal` / `config` / `profiles`  
 **Approved mini-project:** Django Student Management Website
 
-> **Trainer guidance:** Explain the browser request first, then show the file that handles it. Make students test GET and POST separately. A form should never save data before validation.
+> **Trainer standard:** This is an integration lesson. Students must understand the journey from the browser request to the database and back to the browser. Do not let them copy the complete files without tracing each step.
 
 ## 1. Learning objectives
 
-- Explain django application integration and complete request-response flow.
-- Identify the file responsible for each part of the workflow.
-- Implement the example step by step.
-- Explain the difference between GET and POST handling.
-- Validate normal and invalid input.
-- Complete Django Student Management Website.
+1. Connect root URLs, app URLs, views, forms, models and templates.
+2. Build a student list and registration workflow.
+3. Trace GET and POST requests from browser to database and back.
+4. Test valid input, invalid input and persisted records.
 
-## 2. Concept introduction
+## 2. Business requirement
 
-A complete Django feature connects URL routing, views, models, forms, templates and database operations. Each component has a responsibility. The URL selects a view, the view coordinates work, the form validates input, the model represents stored data and the template renders the response.
+A working Django feature is not one file. It is a connected system. The root URL configuration includes the app URL configuration. The app URL selects a view. The view queries a model or validates a form. The model communicates with the database. A template renders the data and Django returns an HTTP response. When the form is valid, the view saves and redirects.
 
-## 3. End-to-end flow
+The goal is to make the student registration workflow understandable and reproducible. A junior developer should be able to identify the file responsible for a behavior and debug the flow when it fails.
+
+## 3. Mental model
 
 ```text
-Browser form
-   ↓ POST request
-Application URL pattern
-   ↓
-View receives HttpRequest
-   ↓
-Form binds request.POST
-   ↓
-form.is_valid()
-   ↓
-cleaned_data / validation errors
-   ↓
-ModelForm.save()
-   ↓
-Database
-   ↓
-Redirect or rendered response
+Browser
+  |
+  | HTTP request
+  v
+config/urls.py
+  |
+  | include()
+  v
+profiles/urls.py
+  |
+  | selects a view
+  v
+profiles/views.py
+  |
+  +----> profiles/forms.py (bind and validate POST)
+  |
+  +----> profiles/models.py (ORM)
+  |              |
+  |              v
+  |          Database
+  |
+  +----> templates (render HTML)
+  |
+  v
+HTTP response / redirect
+  |
+  v
+Browser
 ```
 
-## 4. File-by-file implementation
+## 4. Files involved
 
-### File: `profiles/urls.py`
+- `config/urls.py`
+- `profiles/urls.py`
+- `profiles/views.py`
+- `profiles/forms.py`
+- `profiles/models.py`
+- `profiles/templates/profiles/student_list.html`
+- `profiles/templates/profiles/student_form.html`
+
+Project structure:
+
+```text
+student_portal/
+├── manage.py
+├── config/
+│   ├── settings.py
+│   └── urls.py
+└── profiles/
+    ├── migrations/
+    ├── admin.py
+    ├── apps.py
+    ├── models.py
+    ├── forms.py
+    ├── views.py
+    ├── urls.py
+    └── templates/
+        └── profiles/
+            ├── student_list.html
+            └── student_form.html
+```
+
+## 5. Prepare the terminal
+
+1. Open the existing Student Portal project.
+2. Open VS Code terminal.
+3. Activate the .venv environment.
+4. Confirm the current directory contains manage.py.
+5. Confirm the Django version.
+
+```powershell
+Get-Location
+python --version
+python -m django --version
+```
+
+## 6. Commands — run in order
+
+```powershell
+python manage.py check
+python manage.py makemigrations
+python manage.py migrate
+python manage.py runserver
+# Visit:
+# http://127.0.0.1:8000/students/
+# http://127.0.0.1:8000/students/register/
+# http://127.0.0.1:8000/admin/
+```
+
+### Understand the steps
+
+### Step 1 — `Confirm models and migrations`
+
+Student must have student_code, full_name and email fields. Apply migrations before using the database. The form and view must use the same model fields.
+
+### Step 2 — `Create app URL patterns`
+
+The app router defines student_list and student_register names. Names are used by redirect() and template URL reversing.
+
+### Step 3 — `Include app routes in the root router`
+
+config/urls.py includes profiles.urls at the empty prefix, so /students/ reaches the app router.
+
+### Step 4 — `Implement student_list`
+
+The view queries Student records ordered by full_name and passes the QuerySet to the template.
+
+### Step 5 — `Implement student_register GET`
+
+GET creates an unbound form so the user can see the blank fields.
+
+### Step 6 — `Implement student_register POST`
+
+POST binds request.POST. If is_valid() returns True, the form is saved and the browser is redirected to student_list.
+
+### Step 7 — `Create student_list.html`
+
+The template loops through the students QuerySet and displays a fallback when there are no rows.
+
+### Step 8 — `Create student_form.html`
+
+The template includes the CSRF token, displays errors, renders fields and submits with POST.
+
+### Step 9 — `Run and verify`
+
+Open list, register a student, confirm redirect and confirm the new record appears in the list and admin.
+
+## 7. Complete implementation
+
+The code is split by filename. Create or update the correct file. Do not paste HTML into Python files.
 
 ```python
+# profiles/urls.py
 from django.urls import path
 from . import views
 
 urlpatterns = [
-    path("employees/", views.employee_list, name="employee_list"),
-    path("employees/add/", views.employee_create, name="employee_create"),
+    path("students/", views.student_list, name="student_list"),
+    path("students/register/", views.student_register, name="student_register"),
 ]
-```
 
-### File: `profiles/views.py`
-
-```python
+# profiles/views.py
 from django.shortcuts import render, redirect
-from .models import Employee
-from .forms import EmployeeForm
+from .models import Student
+from .forms import StudentRegistrationForm
 
-def employee_list(request):
-    employees = Employee.objects.all().order_by("full_name")
+def student_list(request):
+    students = Student.objects.order_by("full_name")
     return render(
         request,
-        "profiles/employee_list.html",
-        {"employees": employees}
+        "profiles/student_list.html",
+        {"students": students},
     )
 
-def employee_create(request):
+def student_register(request):
     if request.method == "POST":
-        form = EmployeeForm(request.POST)
+        form = StudentRegistrationForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect("employee_list")
+            return redirect("student_list")
     else:
-        form = EmployeeForm()
+        form = StudentRegistrationForm()
 
-    return render(request, "profiles/employee_form.html", {"form": form})
-```
+    return render(
+        request,
+        "profiles/student_form.html",
+        {"form": form},
+    )
 
-### File: `config/urls.py`
-
-```python
+# config/urls.py
 from django.contrib import admin
 from django.urls import path, include
 
@@ -95,248 +203,369 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("profiles.urls")),
 ]
+
+<!-- profiles/templates/profiles/student_list.html -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Student Directory</title></head>
+<body>
+    <h1>Student Directory</h1>
+    <a href="{% url 'student_register' %}">Register student</a>
+    <ul>
+    {% for student in students %}
+        <li>{{ student.student_code }} — {{ student.full_name }} — {{ student.email }}</li>
+    {% empty %}
+        <li>No students registered yet.</li>
+    {% endfor %}
+    </ul>
+</body>
+</html>
+
+<!-- profiles/templates/profiles/student_form.html -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Student Registration</title></head>
+<body>
+    <h1>Register Student</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        {{ form.as_p }}
+        <button type="submit">Register</button>
+    </form>
+    <a href="{% url 'student_list' %}">Back to student list</a>
+</body>
+</html>
 ```
 
-### File: `profiles/templates/profiles/employee_list.html`
+### Read before typing
 
-```html
-<h1>Employee Directory</h1>
-<a href="{% url 'employee_create' %}">Add employee</a>
-<ul>
-{% for employee in employees %}
-    <li>{{ employee.employee_code }} — {{ employee.full_name }} — {{ employee.department }}</li>
-{% empty %}
-    <li>No employees have been registered.</li>
-{% endfor %}
-</ul>
+- Confirm the Student model exists and the database has its migration applied.
+- Confirm the form uses exactly the same field names as the model.
+- Confirm both URL names are spelled consistently in urls.py, redirect() and template links.
+- Preserve existing admin and model code from earlier lessons.
+
+## 8. Detailed request-response explanation
+
+### Complete request lifecycle
+When the student opens /students/:
+1. Browser sends a GET request.
+2. Django applies request middleware.
+3. config/urls.py receives URL resolution.
+4. include() delegates to profiles.urls.
+5. The student_list route selects student_list(request).
+6. The view builds a QuerySet from Student.objects.
+7. render() loads student_list.html with context.
+8. Django returns an HTML HttpResponse.
+9. Browser displays the student directory.
+
+### Registration GET lifecycle
+1. Browser requests /students/register/.
+2. URL resolver selects student_register.
+3. request.method is GET.
+4. The view creates an unbound StudentRegistrationForm.
+5. The template renders the blank form and CSRF token.
+6. The browser displays the fields.
+
+### Registration POST lifecycle
+1. Browser submits form fields using POST.
+2. Django CSRF middleware checks the request.
+3. The view creates a bound form from request.POST.
+4. is_valid() runs validation.
+5. If invalid, the same form is rendered with errors and nothing is saved.
+6. If valid, form.save() creates the Student record.
+7. redirect("student_list") returns a redirect response.
+8. Browser makes a new GET request to /students/.
+9. The list view queries the database and displays the new student.
+
+### Why redirect after POST?
+This is the Post/Redirect/Get pattern. Refreshing the list page repeats a GET, not the original form POST, reducing accidental duplicate submissions.
+
+### Why not query the database inside the template?
+The view should prepare data. The template should render it. Keeping database work out of templates makes responsibilities clearer and testing easier.
+
+### What does Django do automatically?
+Django resolves URLs, constructs HttpRequest, runs middleware, loads configured templates, renders template tags, manages ORM queries and creates responses. The developer still defines routes, views, models, form rules, templates and business behavior.
+
+### Scope of this phase assessment
+This project demonstrates listing and registering students. Full update and delete operations are Day 42 in Phase 4. Do not add unfinished CRUD actions and claim they are covered by this lesson.
+
+### Data integrity and security
+- Keep CSRF middleware enabled and include the token in internal POST forms.
+- Validate all data on the server.
+- Use model/database unique constraints for identifiers and email.
+- Restrict admin and sensitive operations with authentication and permissions.
+- Do not expose DEBUG mode or secrets in production.
+
+### Troubleshooting
+- NoReverseMatch: check exact URL names student_list and student_register.
+- TemplateDoesNotExist: check profiles/templates/profiles/ and spelling.
+- Table missing: run migrations and verify database settings.
+- Form invalid: display errors and compare form fields with model fields.
+- CSRF failure: check token, middleware and browser cookies.
+- Duplicate code/email: handle uniqueness validation and database IntegrityError appropriately.
+
+## 9. Verify the application
+
+- [ ] /students/ returns the student directory.
+- [ ] Empty database displays the empty-state message.
+- [ ] Registration GET displays the form.
+- [ ] Invalid POST redisplays errors and does not save.
+- [ ] Valid POST saves one Student record.
+- [ ] Successful POST redirects to the student list.
+- [ ] The new student appears in the list and admin.
+- [ ] The learner can trace the complete GET and POST flows.
+
+Run:
+
+```powershell
+python manage.py check
 ```
 
-### File: `profiles/templates/profiles/employee_form.html`
-
-```html
-<h1>Add Employee</h1>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Save employee</button>
-</form>
-<a href="{% url 'employee_list' %}">Back to employee list</a>
-```
-
-## 5. Understand the important statements
-
-### profiles/urls.py
-
-1. `from django.urls import path` — Imports a Django component or local module.
-2. `from . import views` — Imports a Django component or local module.
-3. ` ` — Part of the workflow; explain how it contributes to validation or response rendering.
-4. `urlpatterns = [` — Part of the workflow; explain how it contributes to validation or response rendering.
-5. `    path("employees/", views.employee_list, name="employee_list"),` — Connects a URL to a view.
-6. `    path("employees/add/", views.employee_create, name="employee_create"),` — Connects a URL to a view.
-7. `]` — Part of the workflow; explain how it contributes to validation or response rendering.
-
-### profiles/views.py
-
-1. `from django.shortcuts import render, redirect` — Imports a Django component or local module.
-2. `from .models import Employee` — Imports a Django component or local module.
-3. `from .forms import EmployeeForm` — Imports a Django component or local module.
-4. ` ` — Part of the workflow; explain how it contributes to validation or response rendering.
-5. `def employee_list(request):` — Defines a view or validation method.
-6. `    employees = Employee.objects.all().order_by("full_name")` — Part of the workflow; explain how it contributes to validation or response rendering.
-7. `    return render(` — Part of the workflow; explain how it contributes to validation or response rendering.
-8. `        request,` — Part of the workflow; explain how it contributes to validation or response rendering.
-9. `        "profiles/employee_list.html",` — Part of the workflow; explain how it contributes to validation or response rendering.
-10. `        {"employees": employees}` — Part of the workflow; explain how it contributes to validation or response rendering.
-11. `    )` — Part of the workflow; explain how it contributes to validation or response rendering.
-12. ` ` — Part of the workflow; explain how it contributes to validation or response rendering.
-13. `def employee_create(request):` — Defines a view or validation method.
-14. `    if request.method == "POST":` — Part of the workflow; explain how it contributes to validation or response rendering.
-15. `        form = EmployeeForm(request.POST)` — Part of the workflow; explain how it contributes to validation or response rendering.
-16. `        if form.is_valid():` — Runs form validation before saving.
-17. `            form.save()` — Persists the validated model form.
-18. `            return redirect("employee_list")` — Part of the workflow; explain how it contributes to validation or response rendering.
-19. `    else:` — Part of the workflow; explain how it contributes to validation or response rendering.
-20. `        form = EmployeeForm()` — Part of the workflow; explain how it contributes to validation or response rendering.
-21. ` ` — Part of the workflow; explain how it contributes to validation or response rendering.
-22. `    return render(request, "profiles/employee_form.html", {"form": form})` — Part of the workflow; explain how it contributes to validation or response rendering.
-
-### config/urls.py
-
-1. `from django.contrib import admin` — Imports a Django component or local module.
-2. `from django.urls import path, include` — Imports a Django component or local module.
-3. ` ` — Part of the workflow; explain how it contributes to validation or response rendering.
-4. `urlpatterns = [` — Part of the workflow; explain how it contributes to validation or response rendering.
-5. `    path("admin/", admin.site.urls),` — Connects a URL to a view.
-6. `    path("", include("profiles.urls")),` — Connects a URL to a view.
-7. `]` — Part of the workflow; explain how it contributes to validation or response rendering.
-
-## 6. GET and POST
-
-| Method | Typical form behavior |
-|---|---|
-| GET | Display an empty form or retrieve the page |
-| POST | Receive submitted values, validate and save when valid |
-
-Do not use GET to change application state. A successful POST often redirects to a page that displays the saved record. This pattern is known as Post/Redirect/Get.
-
-## 7. Validation and security rules
-
-- Always call form.is_valid() before using cleaned_data or saving a ModelForm.
-- Display field errors and non-field errors.
-- Keep CSRF protection enabled for internal browser forms.
-- Do not trust browser-side validation alone; server-side validation is required.
-- Never place passwords or secret keys in form HTML or source code.
-- Validate permissions before allowing a user to create or modify protected records.
-
-## 8. Common errors
-
-| Symptom | What to inspect |
-|---|---|
-| Form does not save | is_valid(), model constraints and database errors |
-| CSRF verification failed | csrf_token in the form and CSRF middleware |
-| Field not found | ModelForm Meta.fields and model field names |
-| Form always invalid | Display form.errors and inspect field validation |
-| Duplicate email/code | Unique model constraints and validation feedback |
-| View handles only GET | Add correct POST branch |
-| Redirect name does not resolve | URL pattern name and namespace |
-
-## 9. Industry scenario
-
-A complete Django feature connects URL routing, views, models, forms, templates and database operations. Each component has a responsibility. The URL selects a view, the view coordinates work, the form validates input, the model represents stored data and the template renders the response.
-
-## 10. Approved mini-project — Django Student Management Website
-
-**Objective:** Django Student Management Website.
-
-### Required tasks
-
-1. Confirm the profiles app is installed.
-2. Confirm Employee model and migrations are ready.
-3. Confirm EmployeeForm validates and saves data.
-4. Create a list view that queries employees.
-5. Create a create view that handles GET and POST.
-6. Connect both views using profiles/urls.py.
-7. Include profiles.urls in the root URLconf.
-8. Create list and form templates.
-9. Run system checks and the development server.
-10. Create a record, view the list and verify the database/admin result.
-
-### Suggested structure
+Expected output when project configuration is valid:
 
 ```text
-projects/day_41/
-├── manage.py
-├── config/
-└── profiles/
-    ├── models.py
-    ├── forms.py
-    ├── urls.py
-    ├── views.py
-    └── templates/
-        └── profiles/
+System check identified no issues (0 silenced).
 ```
 
-### Validation checklist
+Then test the complete browser flow. A system check does not create student records or prove the form works.
 
-- [ ] All components are connected through the correct imports and URLs.
-- [ ] GET form displays correctly.
-- [ ] Invalid POST displays validation errors.
-- [ ] Valid POST saves one record.
-- [ ] Successful save redirects to the employee list.
-- [ ] The list view displays the saved record.
-- [ ] The learner can trace the complete request-response flow.
+## 10. Common errors and fixes
 
-### Test scenarios
+| Symptom | Likely cause | What to inspect |
+|---|---|---|
+| NoReverseMatch | URL name mismatch | urlpatterns, redirect name and template url tag |
+| TemplateDoesNotExist | Wrong template location | profiles/templates/profiles/ |
+| no such table | Migration not applied | showmigrations and migrate |
+| Form invalid | Model field validation failed | form.errors and model constraints |
+| CSRF verification failed | Token missing or middleware/cookie issue | csrf_token and CSRF middleware |
+| Duplicate student code/email | Unique constraint | Existing records and validation messages |
+| App route returns 404 | Root include or app pattern missing | config/urls.py and profiles/urls.py |
+| Student not shown | Wrong database/query/context | QuerySet, context key and database settings |
 
-| Scenario | Expected behavior |
-|---|---|
-| GET form page | Empty form is displayed |
-| POST missing required field | Validation error is displayed |
-| POST invalid field value | Field-specific error is displayed |
-| POST valid values | Record is saved and user is redirected |
-| Open list page | Saved record is visible |
-| POST without CSRF token | Request is rejected when CSRF protection is enabled |
+### Debugging process
+
+1. Reproduce the issue with a known input.
+2. Identify whether it is a URL, view, form, model, template or database problem.
+3. Read the traceback or form errors.
+4. Check the exact file path and spelling.
+5. Run Django checks.
+6. Correct one issue at a time.
+7. Retest both normal and invalid flows.
+8. Verify the saved record in the admin or shell.
+
+## 11. Industry scenario
+
+A training institute registers students through a portal. The office staff need a list of students and a registration form. Invalid information should not be saved. A successful registration should appear in the student directory.
+
+Discuss:
+- How does the browser request the list?
+- Which view queries the database?
+- How does the form validate submitted values?
+- What happens if the email is invalid?
+- Why is the user redirected after successful registration?
+- How can staff verify the record?
+
+## 12. Approved mini-project — Django Student Management Website
+
+### Objective
+Build the integrated student listing and registration workflow using Django URLs, views, forms, models, templates and the database.
+
+### Ordered tasks
+
+1. Confirm Student model has student_code, full_name and email fields; ensure migration is applied.
+2. Create or verify StudentRegistrationForm from Day 39 and validation from Day 40.
+3. Create student_list view and student_register view.
+4. Create profiles/urls.py routes and include them in config/urls.py.
+5. Create the student list and form templates.
+6. Run check and migrations.
+7. Open the empty student list.
+8. Open registration, submit invalid values and verify no record is saved.
+9. Submit a valid student and verify redirect to list.
+10. Verify the same record through Django admin.
+
+### Acceptance criteria
+
+- [ ] /students/ returns the student directory.
+- [ ] Empty database displays the empty-state message.
+- [ ] Registration GET displays the form.
+- [ ] Invalid POST redisplays errors and does not save.
+- [ ] Valid POST saves one Student record.
+- [ ] Successful POST redirects to the student list.
+- [ ] The new student appears in the list and admin.
+- [ ] The learner can trace the complete GET and POST flows.
 
 ### Submission evidence
+- Complete relevant source files.
+- Migration status and system check output.
+- Screenshot of student list and registration form.
+- Evidence of one invalid submission and one valid submission.
+- Evidence that the new record exists in the database/admin.
+- README with setup and verification steps.
+- Short explanation of the GET and POST lifecycles.
 
-- Source files.
-- Browser screenshots of GET and POST behavior.
-- Database/admin evidence for a valid saved record.
-- Invalid form submission evidence.
-- README with exact commands and file paths.
-- Short explanation of the request-response flow.
+### Scope boundary
+This lesson integrates list and create behavior. Full update and delete CRUD is taught on Day 42. Do not claim that CRUD is complete here.
 
-## 11. AI-assisted implementation
+## 13. AI-assisted implementation guide
 
-**Planning prompt:** "Help me plan Django Student Management Website. Identify the model, form, view, URL and template responsibilities. Give an ordered implementation plan, not the complete code."
+**Planning prompt**
+```text
+Help me plan Django Student Management Website. Break the work into URLs, views, forms,
+models and templates. Do not provide the full solution.
+```
 
-**Guided prompt:** "Help me implement the form GET branch first. Explain the code and wait for my browser result before showing the POST branch."
+**Guided implementation prompt**
+```text
+Guide me through the Student Portal integration one file at a time.
+Explain the request flow and wait for my test result after each step.
+```
 
-**Debugging prompt:** "Here are my form class, view, template and form.errors output. Find the validation or request handling issue and explain the smallest fix."
+**Debugging prompt**
+```text
+Here are my URLs, view, form, model fields, browser URL and complete error.
+Trace the request flow and identify the smallest broken connection.
+Do not rewrite unrelated files.
+```
 
-**Review prompt:** "Review the workflow for server-side validation, CSRF, redirects, data persistence and clear user feedback."
+## 14. Daily MCQs
 
-## 12. Five daily MCQs
+### Q1. What does the root URLconf do in this application?
 
-**Q1. What should happen before a ModelForm is saved?**  
-A. Call form.is_valid().  
-B. Delete the model.  
-C. Disable CSRF.  
-D. Ignore the submitted values.  
-**Answer: A.** Validate the bound form before saving.
+A. Stores student records
+B. Includes the app URLconf and routes admin
+C. Renders CSS
+D. Validates form fields
 
-**Q2. Which method normally displays a blank form?**  
-A. DELETE  
-B. GET  
-C. PATCH  
-D. MERGE  
-**Answer: B.** GET retrieves the page and displays the form.
+**Answer: B.** The root URLconf delegates feature routes to profiles.urls and exposes admin.
 
-**Q3. What does {% csrf_token %} provide?**  
-A. A database primary key.  
-B. A CSS file.  
-C. A CSRF token for a protected form submission.  
-D. A URL converter.  
-**Answer: C.** It helps Django verify that the POST submission includes the expected token.
+### Q2. What happens when a valid registration POST is submitted?
 
-**Q4. Where should important server-side validation happen?**  
-A. Only in browser JavaScript.  
-B. Only in a README.  
-C. In a screenshot.  
-D. In Django form/model validation.  
-**Answer: D.** Client-side checks can be bypassed; validate on the server.
+A. The form is ignored
+B. The view validates, saves and redirects
+C. The database is deleted
+D. The browser receives only a print statement
 
-**Q5. Why redirect after a successful POST?**  
-A. To avoid accidental duplicate form submission on refresh and show the resulting page.  
-B. To disable the database.  
-C. To remove validation.  
-D. To bypass URL routing.  
-**Answer: A.** Post/Redirect/Get is a common browser workflow.
+**Answer: B.** A valid ModelForm is saved and the browser is redirected to the list page.
 
-## 13. Interview preparation
+### Q3. What happens when form.is_valid() returns False?
 
-**Q1. Explain django application integration and complete request-response flow.**  
-**Answer:** A complete Django feature connects URL routing, views, models, forms, templates and database operations. Each component has a responsibility. The URL selects a view, the view coordinates work, the form validates input, the model represents stored data and the template renders the response.
+A. The form is saved anyway
+B. The view renders the bound form with errors
+C. The route is deleted
+D. The server restarts
 
-**Q2. Why is is_valid() important?**  
-**Answer:** It runs validation and populates cleaned_data or errors. Saving should happen only after the form is valid.
+**Answer: B.** Invalid form data is redisplayed so the user can correct it.
 
-**Q3. What is CSRF protection?**  
-**Answer:** It helps protect authenticated browser sessions from unwanted cross-site form submissions.
+### Q4. Why is redirect after successful POST useful?
 
-**Follow-up:** How do you verify a successful submission?  
-**Answer:** Check the redirect, displayed list and actual saved database record.
+A. It removes the database
+B. It implements Post/Redirect/Get and reduces accidental resubmission
+C. It disables validation
+D. It hides the model
 
-## 14. Completion checklist
+**Answer: B.** The browser makes a fresh GET after the POST, so refreshing the result page does not repeat the POST.
 
-- [ ] Explain the form workflow.
-- [ ] Identify model, form, view, URL and template files.
-- [ ] Test GET and POST.
-- [ ] Test invalid and valid data.
-- [ ] Verify CSRF behavior.
-- [ ] Complete Django Student Management Website.
-- [ ] Complete five MCQs.
-- [ ] Answer interview questions.
-- [ ] Submit source, README and evidence.
+### Q5. Which topic is explicitly deferred to Phase 4 Day 42?
 
-**Next lesson:** Phase 3 complete. Next: Phase 4 — Django ORM, Forms and Authentication (Day 42).
+A. Creating and listing students
+B. Full CRUD including update and delete
+C. Django URL routing
+D. Template variables
+
+**Answer: B.** Day 41 integrates list and create; Day 42 covers complete CRUD operations.
+
+## 15. Interview preparation
+
+### Q1. Explain the complete request-response flow.
+**Answer:** A working Django feature is not one file. It is a connected system. The root URL configuration includes the app URL configuration. The app URL selects a view. The view queries a model or validates a form. The model communicates with the database. A template renders the data and Django returns an HTTP response. When the form is valid, the view saves and redirects.
+
+**Follow-up:** Trace GET /students/ and POST /students/register/ separately.
+
+### Q2. Why separate URLs, views, forms, models and templates?
+**Answer:** Each component has a distinct responsibility. URLs select the view, the view coordinates request work, forms validate input, models represent persisted data and templates render the response.
+
+**Follow-up:** Which component would you inspect if a validation error is not displayed?
+
+### Q3. Why redirect after a successful form save?
+**Answer:** The Post/Redirect/Get pattern makes the browser issue a fresh GET after the POST and reduces accidental form resubmission on refresh.
+
+**Follow-up:** Does redirect replace server-side validation?
+
+**Answer:** No. Validation must happen before saving. Redirect is a navigation pattern after success.
+
+### Q4. What is not included in this day's project?
+**Answer:** Full update and delete CRUD are not included. They are the focus of Day 42.
+
+## 16. Completion checklist
+
+- [ ] I can trace a GET request.
+- [ ] I can trace a POST request.
+- [ ] I know the responsibility of every involved file.
+- [ ] I can explain form validation and saving.
+- [ ] I can explain the database query and template context.
+- [ ] I tested invalid and valid data.
+- [ ] I verified the record in the list and admin.
+- [ ] I completed Django Student Management Website.
+- [ ] I can explain the application without reading the notes.
+
+## 17. Trainer validation
+
+Ask the student to register a new record without following the exact code line by line. Ask them to predict what happens for an invalid email, duplicate code, missing route or missing template. They should locate the relevant component and explain the fix.
+
+**Next phase:** Phase 4 — Day 42: CRUD Operations: Create, Read, Update and Delete.
+
+
+## 18. Phase 3 cumulative assessment — Django Student Management Website
+
+**Approved assessment:** Django Student Management Website  
+**Suggested duration:** 2–3 hours  
+**Total:** 100 marks
+
+### Business requirement
+A training institute needs a simple website to register students and display a student directory. The application must reject invalid submissions and persist valid student records.
+
+### Required tasks
+1. Create the Django project and profiles app using the structure taught in Days 27–28.
+2. Configure the app and development settings.
+3. Create root and app URL patterns.
+4. Implement function-based views for listing and registration.
+5. Create a student model and apply migrations.
+6. Register the model in Django admin.
+7. Use ORM queries to retrieve and order students.
+8. Build a ModelForm and server-side validation.
+9. Create templates using inheritance and static CSS.
+10. Demonstrate GET, invalid POST and valid POST behavior.
+11. Verify the saved student in the list and admin.
+12. Explain the complete request-response flow.
+
+### Constraints
+- Use only concepts introduced by Day 41.
+- Keep CSRF protection enabled.
+- Do not expose DEBUG=True on a public server.
+- Do not hardcode credentials or secrets.
+- Full update/delete CRUD belongs to Phase 4 Day 42 and is not required here.
+
+### Evaluation rubric
+
+| Dimension | Marks | Evidence |
+|---|---:|---|
+| Conceptual understanding | 20 | Explain project/app, routing, views, templates, models, forms and request lifecycle |
+| Practical correctness | 30 | Working list and registration workflow; valid record persisted |
+| Problem-solving | 20 | Diagnose one controlled URL, template, validation or migration error |
+| Code organization | 15 | Correct file responsibilities, readable names and reusable templates |
+| Testing and validation | 10 | System check, invalid POST and valid POST evidence |
+| Communication and evidence | 5 | README, screenshots/terminal output and clear explanation |
+| **Total** | **100** | |
+
+### Phase pass criteria
+A learner should not pass only because the project starts. The learner must demonstrate a valid registration, show that invalid input is not saved, locate the files responsible for the workflow and explain the GET and POST lifecycles.
+
+### Interview questions
+1. Trace a GET request from the browser to a Django template.
+2. Trace a POST request through CSRF middleware, form validation and model save.
+3. Explain why migrations are separate from model definitions.
+4. Explain ForeignKey, OneToOneField and ManyToManyField with the college example.
+5. Explain the difference between authentication, authorization, CSRF and validation.
+
+**Phase 3 completion outcome:** The learner can create a basic Django project, configure an app, route requests, write views, render templates, define models, apply migrations, use the ORM, connect model relationships, validate forms and integrate a basic server-rendered student management workflow.

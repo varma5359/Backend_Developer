@@ -2,262 +2,499 @@
 
 **Pathway:** Python Backend Developer Career Pathway (Django)  
 **Phase:** 3 — Django Fundamentals  
-**Estimated time:** 2–3 hours | **Level:** Beginner  
-**Prerequisites:** Days 1–29 — Python, OOP, Django installation and project setup  
-**Tools:** Existing Django project, profiles app, VS Code and browser  
-**Approved mini-project:** Dynamic Welcome Application
+**Duration:** 2–3 hours  
+**Level:** Beginner  
+**Prerequisites:** Day 27 Django introduction and environment setup; Python, OOP and HTTP foundations from earlier phases  
+**Tools:** Windows 10/11, Python, VS Code, PowerShell, Django 5.2.19 and browser  
+**Project continuity:** `student_portal` project, `config` project package, `profiles` application  
+**Approved independent mini-project:** Dynamic Welcome Application
 
-> **Trainer guidance:** Django is file-oriented. Always tell the learner which file to open, what code to add, which command to run and which URL to test. Never assume the learner knows where a file belongs.
+> **Teaching instruction:** Read the explanation before typing. Run commands one at a time. Use the exact filenames. Compare your result with the expected behavior. Do not move on while an earlier step is broken.
 
-## 1. Learning objectives
+---
 
-- Explain django views: function-based views and request-response cycle.
-- Identify the Django file responsible for the behavior.
-- Implement the example step by step.
-- Understand how the browser request reaches the Python code.
-- Verify normal and unmatched or invalid cases.
-- Complete Dynamic Welcome Application.
+## 1. What you will learn
 
-## 2. Concept introduction
+1. Define a function-based view and explain HttpRequest and HttpResponse.
+2. Read query parameters and request methods.
+3. Render a template using a context dictionary.
+4. Trace the request-response lifecycle through a view.
 
-A view is a Python callable that receives an HttpRequest object and returns an HttpResponse. Function-based views are ordinary Python functions with a request parameter. They contain request-specific application logic and decide what response to return.
+## 2. Why this topic exists
 
-## 3. Request flow
+A view is a Python callable that receives an HttpRequest and returns an HttpResponse (or another compatible response). A function-based view is an ordinary Python function with a request parameter. Django selects the view through URL routing. The view decides what work to perform and what response to return.
 
-```text
-HTTP request → URL pattern → view(request) → application logic → HttpResponse / rendered template → browser
-```
+### Connect it to a real application
 
-The URL configuration and view work together. A route decides which callable should run. The view receives the request, performs the required logic and returns a response.
+Imagine the institute is building its Student Portal. The user opens a browser and requests a page. Django must know which project settings to load, which app owns the feature, which component should handle the request and how the response should be returned. Today's topic is one part of that process.
 
-## 4. File-by-file implementation
-
-Create or open the following files. Keep the folder names and Python import paths exact.
-
-### File: `profiles/views.py`
-
-```python
-from django.http import HttpResponse
-
-def welcome(request):
-    return HttpResponse("Welcome to the backend application")
-
-def welcome_user(request, username):
-    return HttpResponse(f"Welcome, {username}")
-```
-
-### File: `profiles/urls.py`
-
-```python
-from django.urls import path
-from . import views
-
-urlpatterns = [
-    path("welcome/", views.welcome, name="welcome"),
-    path("welcome/<str:username>/", views.welcome_user, name="welcome_user"),
-]
-```
-
-## 5. Understand the code
-
-### profiles/views.py
-
-1. `from django.http import HttpResponse` — Imports the required Django or local module.
-2. `from django.shortcuts import render` — Imports the required Django or local module.
-3. ` ` — Part of the example; inspect how it contributes to the complete request flow.
-4. `def welcome(request):` — Defines a view function that Django can call.
-5. `    return HttpResponse("Welcome to the backend application")` — Returns a response or sends data to the next Django component.
-6. ` ` — Part of the example; inspect how it contributes to the complete request flow.
-7. `def welcome_user(request, username):` — Defines a view function that Django can call.
-8. `    context = {"username": username}` — Part of the example; inspect how it contributes to the complete request flow.
-9. `    return render(request, "profiles/welcome.html", context)` — Returns a response or sends data to the next Django component.
-
-### profiles/urls.py
-
-1. `from django.urls import path` — Imports the required Django or local module.
-2. `from . import views` — Imports the required Django or local module.
-3. ` ` — Part of the example; inspect how it contributes to the complete request flow.
-4. `urlpatterns = [` — Defines the list of URL patterns.
-5. `    path("welcome/", views.welcome, name="welcome"),` — Registers a URL route and connects it to a view.
-6. `    path("welcome/<str:username>/", views.welcome_user, name="welcome_user"),` — Registers a URL route and connects it to a view.
-7. `]` — Part of the example; inspect how it contributes to the complete request flow.
-
-## 6. Run and verify
-
-1. Activate the virtual environment.
-2. Change directory to the folder containing manage.py.
-3. Run `python manage.py check`.
-4. Start the server using `python manage.py runserver`.
-5. Open the route in a browser.
-6. Compare the output with the expected result.
-7. Test one unmatched or invalid route.
-8. Stop the server with Ctrl+C.
-
-### Expected result
+## 3. Mental model — understand before coding
 
 ```text
-/profiles/welcome/ → Welcome to the backend application\n/profiles/welcome/Asha/ → Welcome, Asha
+Browser / Student
+       |
+       | HTTP request
+       v
+Django project package: config
+       |
+       v
+profiles application
+       |
+       v
+Today's Django feature
+       |
+       v
+HTTP response / visible result
 ```
 
-## 7. Important Django concepts
+The diagram is intentionally simplified. Some features also use a database, form, template, middleware or authentication component. We will add those in the relevant days.
 
-| Concept | Explanation |
-|---|---|
-| URLconf | Python configuration mapping URL paths to views |
-| urlpatterns | List of route definitions |
-| path() | Defines a route and optional converters |
-| include() | Delegates a URL prefix to another URL configuration |
-| View | Callable that handles an HttpRequest and returns a response |
-| HttpRequest | Object containing request information |
-| HttpResponse | Object representing the response sent to the client |
-| render() | Loads a template, combines it with context and returns a response |
-| Context | Dictionary of values supplied to a template |
-| Template tag | Django template instruction such as if or for |
+## 4. Locate the files
 
-## 8. Common errors and troubleshooting
+The exact files for today are:
 
-| Symptom | Check |
-|---|---|
-| Page returns 404 | URL prefix, route spelling and include() |
-| ImportError for views | Module path and function name |
-| View takes unexpected arguments | Path converter name and view parameter |
-| View returns None | Ensure every execution path returns a response |
-| TemplateDoesNotExist | Template folder and app template path |
-| Variable displays blank | Context key and template variable spelling |
-| Template syntax error | Matching opening and closing template tags |
+- `profiles/views.py`
+- `profiles/urls.py`
+- `profiles/templates/profiles/welcome.html`
 
-Troubleshooting sequence:
-1. Confirm the server is running.
-2. Check the exact URL.
-3. Read the terminal traceback.
-4. Check the project's root URLconf.
-5. Check the application's URLconf.
-6. Check the view name and function signature.
-7. Check template path and context keys if rendering.
-8. Run the system check again.
-
-## 9. Industry scenario
-
-A company employee portal needs a profile page and employee directory. URLs identify the page or employee. Views prepare the data and choose a response. Templates display the information in browser-friendly HTML.
-
-## 10. Approved mini-project — Dynamic Welcome Application
-
-**Objective:** Dynamic Welcome Application.
-
-### Required features
-
-1. Create a simple function-based view.
-2. Import HttpResponse from django.http.
-3. Return an HttpResponse from the view.
-4. Connect the view to a URL pattern.
-5. Add a second view that accepts a URL parameter.
-6. Inspect request.method and request.path in a safe demonstration.
-7. Explain that a view must return an HttpResponse-compatible response.
-
-### Suggested structure
+The overall project is growing in this structure:
 
 ```text
-projects/day_31/
+student_portal/
+├── .venv/
 ├── manage.py
 ├── config/
+│   ├── __init__.py
 │   ├── settings.py
-│   └── urls.py
+│   ├── urls.py
+│   ├── asgi.py
+│   └── wsgi.py
 └── profiles/
-    ├── urls.py
+    ├── migrations/
+    ├── __init__.py
+    ├── admin.py
+    ├── apps.py
+    ├── models.py
+    ├── tests.py
     ├── views.py
+    ├── urls.py
     └── templates/
         └── profiles/
 ```
 
-### Validation checklist
+**Important:** Some files are created by Django and some are created by us. Do not create duplicate project folders. Keep the existing project from Day 28.
 
-- [ ] Each view accepts request as its first parameter.
-- [ ] Every execution path returns a response.
-- [ ] URL patterns point to the correct view.
-- [ ] A URL parameter is received by the matching view argument.
-- [ ] The browser displays the expected response.
+## 5. Prepare the terminal
+
+1. Open VS Code.
+2. Open the `student_portal` folder.
+3. Select Terminal → New Terminal.
+4. Confirm the current directory contains `manage.py`.
+5. Activate the same `.venv` created in Day 27.
+6. Verify the Python and Django versions.
+
+```powershell
+Get-Location
+python --version
+python -m django --version
+```
+
+If `manage.py` is not in the current directory, change to the correct project folder. If Django is not found, check the active interpreter before reinstalling packages.
+
+## 6. Commands — exact order
+
+```powershell
+python manage.py check
+python manage.py runserver
+# Open:
+# http://127.0.0.1:8000/welcome/
+# http://127.0.0.1:8000/welcome/?name=Asha
+# http://127.0.0.1:8000/request-info/
+```
+
+### Understand every command
+
+### Step 1 — `Import HttpResponse`
+
+It constructs a basic HTTP response whose content is sent to the browser.
+
+### Step 2 — `Import render`
+
+render loads a template, supplies context and returns an HttpResponse containing rendered output.
+
+### Step 3 — `Define welcome(request)`
+
+Django passes the current HttpRequest as the first argument when this route matches.
+
+### Step 4 — `Read request.GET`
+
+Query-string parameters are a QueryDict. get('name', 'Student') returns the supplied name or a default.
+
+### Step 5 — `Build context`
+
+A context dictionary passes Python data to the template. The key student_name becomes the template variable.
+
+### Step 6 — `Return render(...)`
+
+The request, template path and context are provided. The rendered HTML becomes the response.
+
+### Step 7 — `Read request.method`
+
+This property contains the HTTP method such as GET or POST.
+
+### Step 8 — `Connect the URL`
+
+A view is not reachable until a URL pattern points to it.
+
+## 7. Main implementation
+
+### Code to create or update
+
+Use the filenames identified in Section 4. The following code is the lesson's working demonstration:
+
+```python
+# profiles/views.py
+from django.http import HttpResponse
+from django.shortcuts import render
+
+def welcome(request):
+    name = request.GET.get("name", "Student")
+    context = {"student_name": name}
+    return render(request, "profiles/welcome.html", context)
+
+def request_info(request):
+    return HttpResponse(f"HTTP method: {request.method}")
+
+def plain_text(request):
+    return HttpResponse("This text is sent to the browser.")
+
+# profiles/urls.py — add to urlpatterns
+path("welcome/", views.welcome, name="welcome"),
+path("request-info/", views.request_info, name="request_info"),
+path("plain-text/", views.plain_text, name="plain_text"),
+
+<!-- profiles/templates/profiles/welcome.html -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Welcome</title></head>
+<body>
+    <h1>Welcome, {{ student_name }}</h1>
+    <p>Your Django view passed this value to the template.</p>
+</body>
+</html>
+```
+
+If the code block contains HTML or CSS, put that section in the corresponding HTML or CSS file. Do not paste HTML into `views.py`.
+
+### How to type safely
+
+1. Open the named file.
+2. Read the existing contents.
+3. Add or replace only the section relevant to today's lesson.
+4. Preserve earlier working code.
+5. Check indentation and spelling.
+6. Save the file.
+7. Run `python manage.py check`.
+8. Test the browser path or command.
+9. Read the terminal output if the page fails.
+
+## 8. Line-by-line and concept walkthrough
+
+### What is HttpRequest?
+Django constructs an HttpRequest for each incoming request. It exposes method, path, query parameters, POST data, headers, cookies and authenticated user information. Treat user-provided values as untrusted until validated.
+
+### What is HttpResponse?
+HttpResponse represents the server's response to the browser. It includes content, a status code and headers. A normal HttpResponse defaults to status 200.
+
+### Why does a view return a response?
+Django needs a response object to send back through the middleware chain to the client. Printing text writes to the server terminal; it does not create a browser response.
+
+### GET and POST
+GET is commonly used to retrieve a page or resource. POST is commonly used to submit data that changes server state. Do not perform destructive actions in GET requests. Form handling is taught later.
+
+### QueryDict
+request.GET stores query parameters. `request.GET.get("name", "Student")` retrieves one value and uses a default if missing. The browser controls this input, so validate or normalize it before using it in business logic.
+
+### render shortcut
+`render(request, template_name, context)` is a shortcut that loads a template, renders it and returns an HttpResponse. It does not save database data.
+
+### Request-response lifecycle
+Browser → middleware request processing → URL resolver → view → optional model/form/template work → response → middleware response processing → browser. The exact components depend on the request.
+
+### Status codes
+A view may return a normal 200 response, a redirect, a 404 response or another status. Use meaningful HTTP status codes rather than always returning a generic message.
+
+### View design
+A view coordinates one request. Keep it readable. Avoid putting unrelated workflows and all business rules into one enormous function. Reusable business operations can be moved into dedicated functions or service modules when complexity grows.
+
+### Troubleshooting
+- View returns nothing: ensure every execution path returns an HttpResponse.
+- Template missing: check exact template path and app registration.
+- Query value missing: inspect URL and request.GET.
+- Route not found: check app urls and root include.
+- Import error: check function spelling and relative imports.
+
+## 9. Trace the execution
+
+Use the following questions while demonstrating:
+1. What did the browser or developer request?
+2. Which project file receives the request first?
+3. Which app or feature owns the route?
+4. Which function or component is selected?
+5. What input does it receive?
+6. What work does it perform?
+7. What result is returned?
+8. How can we verify the result?
+
+Ask the learner to explain the flow without looking at the code.
+
+## 10. Expected result and verification
+
+- [ ] Each view returns a response.
+- [ ] Missing name uses the default value.
+- [ ] Supplied name appears in the rendered page.
+- [ ] request.method displays GET for normal browser navigation.
+- [ ] The learner explains print versus HttpResponse.
+- [ ] The learner traces the full request-response path.
+
+Run the system check:
+
+```powershell
+python manage.py check
+```
+
+Expected output when configuration is valid:
+
+```text
+System check identified no issues (0 silenced).
+```
+
+This check is not a replacement for browser testing. Visit every required URL and verify the actual behavior.
+
+## 11. Common beginner mistakes and debugging
+
+| Symptom | Likely cause | What to inspect |
+|---|---|---|
+| `manage.py` not found | Terminal is in the wrong directory | Run Get-Location and locate manage.py |
+| `No module named django` | Wrong Python environment | Check python -c "import sys; print(sys.executable)" |
+| App not discovered | App missing from settings | Inspect INSTALLED_APPS |
+| ImportError | Wrong name or import path | Check package and function spelling |
+| 404 response | No matching route | Inspect config/urls.py and profiles/urls.py |
+| TemplateDoesNotExist | Incorrect template location | Check profiles/templates/profiles/ |
+| Browser cannot connect | Server stopped or wrong port | Inspect terminal and printed URL |
+| SyntaxError | Incorrect Python syntax | Read the exact file and line in traceback |
+
+### Debugging routine
+
+1. Reproduce the error.
+2. Read the full traceback, not only the last line.
+3. Locate the first relevant line in your own project.
+4. Confirm the active interpreter and current directory.
+5. Check names, imports, indentation and file paths.
+6. Change one thing at a time.
+7. Run `python manage.py check` again.
+8. Repeat the browser test.
+
+## 12. Industry scenario
+
+A training institute needs a Student Portal. The backend developer must make the application understandable to teammates. The feature should have a clear location, a predictable execution path and a testable result.
+
+**Discuss:**
+- What does the student need?
+- What does the browser send?
+- Which component owns the behavior?
+- What should happen for missing or invalid input?
+- What evidence proves the feature works?
+
+## 13. Approved mini-project — Dynamic Welcome Application
+
+### Problem statement
+
+Build a small practical demonstration of today's topic inside the Student Portal workspace. The objective is not to copy a tutorial. The learner must be able to explain and reproduce the implementation.
+
+### Functional requirements
+
+1. Create welcome, request_info and plain_text views.
+2. Add the URL patterns.
+3. Create welcome.html at the exact path.
+4. Open the welcome page without a name and confirm Student appears.
+5. Add ?name=Asha and confirm Asha appears.
+6. Open request-info and explain why the browser request is GET.
+
+### Suggested implementation sequence
+
+1. Inspect the current project.
+2. Identify the feature requirement.
+3. List the files that will change.
+4. Implement one small component.
+5. Run a system check.
+6. Verify the normal use case.
+7. Test an invalid or unexpected case.
+8. Fix any error.
+9. Record evidence.
+10. Explain the code and result to the trainer.
+
+### Acceptance criteria
+
+- [ ] Each view returns a response.
+- [ ] Missing name uses the default value.
+- [ ] Supplied name appears in the rendered page.
+- [ ] request.method displays GET for normal browser navigation.
+- [ ] The learner explains print versus HttpResponse.
+- [ ] The learner traces the full request-response path.
 
 ### Submission evidence
 
-- Updated Django files.
-- Terminal output from python manage.py check.
-- Browser screenshots for each route.
-- README with file paths and run commands.
-- Explanation of the request flow.
-- One documented troubleshooting case.
+- Source files changed for this project.
+- Terminal output from checks and commands.
+- Browser screenshots or observed URLs, where applicable.
+- A short README containing setup and verification steps.
+- A short explanation of one error and its resolution.
 
-## 11. AI-assisted implementation
+### Optional extension
 
-**Planning prompt:** "Help me plan Dynamic Welcome Application. List the exact files, URLs, view functions, template files and test cases. Do not write the complete application."
+Change one small behavior and predict the result before running it. Do not introduce concepts that belong to later lessons.
 
-**Guided prompt:** "Help me update only the next file. Explain the path and code, then wait for me to run the server."
+## 14. AI-assisted implementation guide
 
-**Debugging prompt:** "Here are my URLconf, view, template path and traceback. Trace the request flow and identify the first incorrect link."
+Use the AI mentor as a teaching assistant, not as a code generator that hides the learning.
 
-**Review prompt:** "Review my routes, view return values and template context. Identify missing cases without rewriting the project."
+| Level | What to ask | What the learner must do |
+|---|---|---|
+| 1. Hint | "Give me one hint for the next step." | Attempt the step independently. |
+| 2. Plan | "Break this project into small ordered tasks." | Explain the plan before coding. |
+| 3. Example | "Show a tiny example of this one concept." | Reproduce and modify it. |
+| 4. Guided implementation | "Guide me through one file at a time; wait after each step." | Run each step and share output. |
+| 5. Explanation | "Explain every important line and why it is required." | Explain the code back in own words. |
+| 6. Debugging | "Here is my exact command, file and traceback. Help isolate the smallest fix." | Apply one fix and retest. |
+| 7. Review | "Review my implementation against the requirements and tests." | Correct issues and submit evidence. |
 
-## 12. Five daily MCQs
+**Planning prompt**
 
-**Q1. Which Django component maps a URL to a view?**  
-A. URLconf  
-B. Database row  
-C. Static image  
-D. Git branch  
-**Answer: A.** URLconf contains URL patterns that select views.
+```text
+I am a beginner learning Django. Help me plan Dynamic Welcome Application.
+Do not provide the complete solution. Give me the ordered tasks,
+the files I need to inspect, and the verification checkpoints.
+```
 
-**Q2. What should a view return?**  
-A. Any Python variable  
-B. An HttpResponse-compatible response  
-C. A database table name  
-D. A template folder path only  
-**Answer: B.** A view must return a response object.
+**Guided implementation prompt**
 
-**Q3. What does render() do?**  
-A. Deletes the database  
-B. Creates a Git commit  
-C. Renders a template with context and returns a response  
-D. Installs Django  
-**Answer: C.** render() combines template and context.
+```text
+Guide me through this Django task one step at a time.
+Explain the purpose of the command or code, tell me the exact file,
+and wait for my terminal output before giving the next step.
+Do not skip explanations or write the whole project at once.
+```
 
-**Q4. What commonly causes TemplateDoesNotExist?**  
-A. A wrong template path or missing template file  
-B. A Git branch  
-C. A browser bookmark  
-D. An unused Python variable  
-**Answer: A.** Verify the template folder structure and name.
+**Debugging prompt**
 
-**Q5. Why test an unmatched URL?**  
-A. To change the database  
-B. To test a missing route and expected 404 behavior  
-C. To install a package  
-D. To create a model  
-**Answer: B.** Unmatched paths should not silently resolve to the wrong page.
+```text
+I am working on Dynamic Welcome Application.
+My current directory is: [paste path]
+My command is: [paste exact command]
+My file contents are: [paste relevant file]
+My complete error is: [paste traceback]
+Explain the likely cause and the smallest safe correction.
+Do not rewrite unrelated files.
+```
 
-## 13. Interview preparation
+## 15. Daily MCQ assessment
 
-**Q1. Explain django views: function-based views and request-response cycle.**  
-**Answer:** A view is a Python callable that receives an HttpRequest object and returns an HttpResponse. Function-based views are ordinary Python functions with a request parameter. They contain request-specific application logic and decide what response to return.
+### Question 1
 
-**Q2. Describe the request flow for this lesson.**  
-**Answer:** HTTP request → URL pattern → view(request) → application logic → HttpResponse / rendered template → browser
+What must a Django view normally return?
 
-**Q3. What is one common error and how would you debug it?**  
-**Answer:** Check the URLconf, view, function signature, response or template path according to the error. Read the traceback and verify one link at a time.
+- A. A database model class
+- B. An HttpResponse or compatible response
+- C. A print statement
+- D. A URL pattern list
 
-**Follow-up:** How would you prove the fix works?  
-**Answer:** Run Django's system check, start the server and test both expected and invalid URLs.
+**Correct answer: B** — The view must return a response object for Django to send to the client.
 
-## 14. Completion checklist
+### Question 2
 
-- [ ] Explain the concept in simple language.
-- [ ] Identify every file used in the demonstration.
-- [ ] Run the system check.
-- [ ] Start the development server.
-- [ ] Verify the expected browser output.
-- [ ] Complete Dynamic Welcome Application.
-- [ ] Test normal and invalid cases.
-- [ ] Complete the five MCQs.
-- [ ] Answer the interview questions.
-- [ ] Submit code, README and evidence.
+Where does a query parameter such as ?name=Asha appear?
 
-**Next lesson:** Day 32.
+- A. request.GET
+- B. request.POST
+- C. request.user
+- D. settings.py
+
+**Correct answer: A** — Query-string values are read through request.GET.
+
+### Question 3
+
+What does render() do?
+
+- A. Creates a database table
+- B. Loads a template, supplies context and returns a response
+- C. Starts a server
+- D. Registers a model
+
+**Correct answer: B** — render combines a template with context and returns an HttpResponse.
+
+### Question 4
+
+Why does print('Hello') not display the text in the browser?
+
+- A. Python cannot print strings
+- B. print sends output to the database
+- C. print writes to the server terminal, not the HTTP response
+- D. Django disables print
+
+**Correct answer: C** — Browser output must be included in a returned HTTP response.
+
+### Question 5
+
+What does request.method contain?
+
+- A. The URL route name
+- B. The current HTTP method
+- C. The database engine
+- D. The logged-in user's password
+
+**Correct answer: B** — It indicates methods such as GET or POST.
+
+## 16. Interview preparation
+
+### Question 1 — Explain today's topic
+**Answer:** A view is a Python callable that receives an HttpRequest and returns an HttpResponse (or another compatible response). A function-based view is an ordinary Python function with a request parameter. Django selects the view through URL routing. The view decides what work to perform and what response to return.
+
+**Follow-up:** Explain the same concept using the Student Portal project.
+
+### Question 2 — Which files are involved?
+**Answer:** `profiles/views.py`, `profiles/urls.py`, `profiles/templates/profiles/welcome.html`. Explain what each file owns and how the files connect.
+
+**Follow-up:** What would you inspect if the feature does not work?
+
+### Question 3 — How do you verify your implementation?
+**Answer:** Run the relevant management command, inspect the output, open the expected browser path and test an edge case. A successful system check alone does not prove every user journey.
+
+**Follow-up:** What evidence would you submit to a reviewer?
+
+### Question 4 — A teammate copied code but cannot explain it. Is the task complete?
+**Answer:** No. The learner must explain the responsibility of each component, reproduce the behavior, test a normal and invalid case and document the setup.
+
+## 17. Completion checklist
+
+- [ ] I can explain today's topic in simple language.
+- [ ] I can identify the exact files.
+- [ ] I can explain the important code statements.
+- [ ] I ran the required commands.
+- [ ] `python manage.py check` passes.
+- [ ] I verified the expected behavior.
+- [ ] I tested an edge case.
+- [ ] I completed **Dynamic Welcome Application**.
+- [ ] I submitted source files and evidence.
+- [ ] I answered the interview questions and reviewed the MCQs.
+
+## 18. Trainer validation
+
+Do not mark the day complete just because code exists. Ask the student to:
+1. Demonstrate the feature.
+2. Explain the flow.
+3. Change one small part independently.
+4. Predict the result before running.
+5. Diagnose one controlled mistake.
+
+**Next lesson:** Day 32 — Django Templates, Template Variables and Template Tags

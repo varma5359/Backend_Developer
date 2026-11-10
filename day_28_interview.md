@@ -1,4 +1,4 @@
-# Day 28: Interview Questions — Creating Django Projects and Applications, Project Structure and manage.py
+# Day 28: Interview Guide — Creating Django Projects and Applications, Project Structure and manage.py
 
 **Pathway:** Python Backend Developer Career Pathway (Django)  
 **Phase:** 3 — Django Fundamentals  
@@ -7,88 +7,86 @@
 
 ## 1. Core technical questions
 
-### Q1. Explain creating django projects and applications, project structure and manage.py.
-**Answer:** A Django project is the overall website configuration. A Django application is a component that provides a specific feature, such as profiles, products or orders. One project can contain multiple applications.
+### Q1. What is the central purpose of this lesson?
+**Answer:** Think of a Django project as the whole website and an app as one feature area inside it. A college portal might have separate apps for profiles, courses, attendance and fees. Each app owns a related set of models, views, templates and tests. The project package owns site-wide configuration and root URL routing. A project may contain many apps; an app is not a separate server by default.
 
-**Follow-up:** Give one example from a Django project.
+**Follow-up:** Explain this using the Student Portal example.
 
-### Q2. Why is this concept important for a backend developer?
-**Answer:** It helps a developer build, configure, understand or troubleshoot a Django application. Explain the practical example from the class notes rather than giving only a definition.
+### Q2. Which files are responsible for the implementation?
+**Answer:** The files are manage.py, config/__init__.py, config/settings.py, config/urls.py, config/asgi.py, config/wsgi.py, profiles/apps.py, profiles/models.py, profiles/views.py, profiles/admin.py, profiles/tests.py, profiles/migrations/. Describe the responsibility of each file, rather than only listing names.
 
-### Q3. Which command or file is important in this lesson?
-**Answer:** Identify the relevant command or file from the lesson. Explain where it belongs, what it does and how you verified it.
+**Follow-up:** Explain this using the Student Portal example.
 
-### Q4. What is one common beginner mistake?
-**Answer:** A common mistake is skipping environment, folder or configuration checks. Read the complete error and verify one step at a time.
+### Q3. How would you verify the feature?
+**Answer:** Run the required commands, inspect the output, test the browser behavior and verify an edge case. Use the exact checks in Day 28 class notes.
 
-### Q5. How would you verify the result?
-**Answer:** Run the command, check Django's system output and verify the browser or application behavior. Capture reproducible evidence.
+**Follow-up:** Explain this using the Student Portal example.
 
-## 2. Scenario-based question
+### Q4. What mistakes commonly affect beginners?
+**Answer:** Common causes include an incorrect working directory, wrong Python environment, spelling errors, incorrect imports, a missing app registration or a route/file path mismatch. Read the traceback and correct one cause at a time.
 
-**Scenario:** A junior developer is completing Personal Profile Django Project. The command appears to work, but the expected application result is not visible.
+**Follow-up:** Explain this using the Student Portal example.
 
+## 2. Scenario-based questions
+
+### Q5. The code exists, but the expected behavior is not visible. How do you debug it?
 **Suggested answer:**
-1. Confirm the active virtual environment.
-2. Confirm the current project directory.
-3. Check the command and file names.
-4. Read the full error or server output.
-5. Verify the expected file or setting.
-6. Rerun the system check.
-7. Verify the result in the browser or terminal.
+1. Reproduce the problem.
+2. Read the complete error or terminal output.
+3. Confirm the current directory and active virtual environment.
+4. Inspect the file and line mentioned in the traceback.
+5. Check imports, names, configuration and route connections.
+6. Run `python manage.py check`.
+7. Test the browser behavior again.
 
-**Follow-up:** What evidence would you provide to another developer?
+### Q6. A student says, "The command completed, so the feature is done." Is that enough?
+**Suggested answer:** No. A command may create a file or start a server without proving the required user behavior. Demonstrate the result, test an edge case and explain the implementation.
 
-## 3. Practical discussion
+### Q7. How would you explain your implementation to another developer?
+**Suggested answer:** State the requirement, name the files, explain the data or request flow, demonstrate the commands, show expected output and describe one failure and its fix.
 
-Be prepared to:
-- Explain the purpose of each command.
-- Identify the relevant Django file.
-- Explain why the configuration is needed.
-- Demonstrate a successful run.
-- Describe one error and its fix.
-- Explain one production consideration.
+## 3. Practical coding discussion
+
+Be ready to:
+- Identify the exact file path.
+- Explain the important imports and statements.
+- Run the relevant management command.
+- Demonstrate the browser or terminal result.
+- Modify one small part and predict the outcome.
+- Test one invalid or unexpected case.
+- Diagnose one common error.
 
 ## 4. Mini-project viva — Personal Profile Django Project
 
-1. What was the objective?
-2. What prerequisites did you need?
-3. Which commands did you execute?
-4. Which files did Django create or use?
-5. How did you verify the result?
-6. What error did you encounter, if any?
-7. How did you solve it?
-8. What is not included in this learning exercise?
-9. What would you improve next?
-10. How would you explain the project to a teammate?
+1. What problem does the project solve?
+2. What are the functional requirements?
+3. Which files did you create or update?
+4. What commands did you execute?
+5. What does the main code do?
+6. How did you test the normal case?
+7. Which edge case did you test?
+8. What error did you encounter?
+9. How did you resolve it?
+10. What would you improve next?
 
-## 5. Common incorrect answers
+## 5. Rapid revision
 
-| Incorrect statement | Better answer |
-|---|---|
-| Django is a database | Django is a Python web framework |
-| A successful command proves the full feature works | Verify the browser, configuration or application behavior |
-| The development server is production-ready | Use a production deployment stack |
-| All project settings are safe to publish | Keep secrets and environment-specific configuration protected |
-| A Django project and app are identical | A project is the overall configuration; apps group features |
+- Explain the concept in one minute.
+- Identify the exact files and their responsibilities.
+- Trace the relevant execution flow.
+- Demonstrate the mini-project.
+- Run the required checks.
+- Explain an edge case.
+- Describe a safe debugging process.
 
-## 6. Rapid revision
+## 6. Readiness checklist
 
-- **Step 1:** Create a folder for the Personal Profile project.
-- **Step 2:** Activate the virtual environment and install Django.
-- **Step 3:** Run django-admin startproject config .
-- **Step 4:** Create an app named profiles.
-- **Step 5:** Add profiles to INSTALLED_APPS in config/settings.py.
-- **Step 6:** Run python manage.py runserver and inspect the browser.
-- **Step 7:** Write down the purpose of manage.py, settings.py, urls.py, asgi.py and wsgi.py.
+- [ ] I can define the topic.
+- [ ] I can explain the relevant files.
+- [ ] I can reproduce the implementation.
+- [ ] I can explain the important code.
+- [ ] I can verify the expected behavior.
+- [ ] I can explain an edge case.
+- [ ] I can present Personal Profile Django Project without reading the notes.
 
-## 7. Interview readiness checklist
-
-- [ ] Explain the topic in simple language.
-- [ ] Explain the main command and its output.
-- [ ] Identify the relevant file or folder.
-- [ ] Describe a common failure and how to debug it.
-- [ ] Present Personal Profile Django Project and its evidence.
-- [ ] Explain one production consideration.
-
-**Trainer note:** Ask the learner to explain the command and file locations without looking at the notes. If they cannot, ask them to rerun the demonstration and explain each step.
+**Trainer note:** Ask the learner to predict the result of a small code or configuration change. Reward reasoning and evidence, not memorized definitions.

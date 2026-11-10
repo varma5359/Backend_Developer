@@ -2,282 +2,503 @@
 
 **Pathway:** Python Backend Developer Career Pathway (Django)  
 **Phase:** 3 — Django Fundamentals  
-**Estimated time:** 2–3 hours | **Level:** Beginner  
-**Prerequisites:** Days 1–29 — Python, OOP, Django installation and project setup  
-**Tools:** Existing Django project with profiles app, VS Code and terminal  
-**Approved mini-project:** Multi-Page Routing Application
+**Duration:** 2–3 hours  
+**Level:** Beginner  
+**Prerequisites:** Day 27 Django introduction and environment setup; Python, OOP and HTTP foundations from earlier phases  
+**Tools:** Windows 10/11, Python, VS Code, PowerShell, Django 5.2.19 and browser  
+**Project continuity:** `student_portal` project, `config` project package, `profiles` application  
+**Approved independent mini-project:** Multi-Page Routing Application
 
-> **Trainer guidance:** Django is file-oriented. Always tell the learner which file to open, what code to add, which command to run and which URL to test. Never assume the learner knows where a file belongs.
+> **Teaching instruction:** Read the explanation before typing. Run commands one at a time. Use the exact filenames. Compare your result with the expected behavior. Do not move on while an earlier step is broken.
 
-## 1. Learning objectives
+---
 
-- Explain url routing, path converters and url patterns.
-- Identify the Django file responsible for the behavior.
-- Implement the example step by step.
-- Understand how the browser request reaches the Python code.
-- Verify normal and unmatched or invalid cases.
-- Complete Multi-Page Routing Application.
+## 1. What you will learn
 
-## 2. Concept introduction
+1. Explain how Django resolves a requested URL.
+2. Create app-level URL patterns and include them in the project router.
+3. Use path converters to capture values.
+4. Use route names to reverse URLs safely.
 
-URL routing maps an incoming URL path to the view that should handle it. The project's root URL configuration can include the URL configuration of an application. Path converters capture values such as integers and strings from a URL.
+## 2. Why this topic exists
 
-## 3. Request flow
+A URL is an address requested by the browser. Django's URL dispatcher checks configured patterns in order. When a pattern matches, Django calls its view and passes captured path values as arguments. The project URL file is the main entry point; an app can own its own routes so the project does not become one huge file.
+
+### Connect it to a real application
+
+Imagine the institute is building its Student Portal. The user opens a browser and requests a page. Django must know which project settings to load, which app owns the feature, which component should handle the request and how the response should be returned. Today's topic is one part of that process.
+
+## 3. Mental model — understand before coding
 
 ```text
-Browser requests /profiles/42/ → config/urls.py → profiles/urls.py → selected view → HTTP response
+Browser / Student
+       |
+       | HTTP request
+       v
+Django project package: config
+       |
+       v
+profiles application
+       |
+       v
+Today's Django feature
+       |
+       v
+HTTP response / visible result
 ```
 
-The URL configuration and view work together. A route decides which callable should run. The view receives the request, performs the required logic and returns a response.
+The diagram is intentionally simplified. Some features also use a database, form, template, middleware or authentication component. We will add those in the relevant days.
 
-## 4. File-by-file implementation
+## 4. Locate the files
 
-Create or open the following files. Keep the folder names and Python import paths exact.
+The exact files for today are:
 
-### File: `config/urls.py`
+- `config/urls.py`
+- `profiles/urls.py (create this file)`
+- `profiles/views.py`
+
+The overall project is growing in this structure:
+
+```text
+student_portal/
+├── .venv/
+├── manage.py
+├── config/
+│   ├── __init__.py
+│   ├── settings.py
+│   ├── urls.py
+│   ├── asgi.py
+│   └── wsgi.py
+└── profiles/
+    ├── migrations/
+    ├── __init__.py
+    ├── admin.py
+    ├── apps.py
+    ├── models.py
+    ├── tests.py
+    ├── views.py
+    ├── urls.py
+    └── templates/
+        └── profiles/
+```
+
+**Important:** Some files are created by Django and some are created by us. Do not create duplicate project folders. Keep the existing project from Day 28.
+
+## 5. Prepare the terminal
+
+1. Open VS Code.
+2. Open the `student_portal` folder.
+3. Select Terminal → New Terminal.
+4. Confirm the current directory contains `manage.py`.
+5. Activate the same `.venv` created in Day 27.
+6. Verify the Python and Django versions.
+
+```powershell
+Get-Location
+python --version
+python -m django --version
+```
+
+If `manage.py` is not in the current directory, change to the correct project folder. If Django is not found, check the active interpreter before reinstalling packages.
+
+## 6. Commands — exact order
+
+```powershell
+python manage.py check
+python manage.py runserver
+# Test:
+# http://127.0.0.1:8000/
+# http://127.0.0.1:8000/about/
+# http://127.0.0.1:8000/profile/25/
+# http://127.0.0.1:8000/member/asha/
+```
+
+### Understand every command
+
+### Step 1 — `Create profiles/urls.py`
+
+Django creates views.py but does not create app-level urls.py automatically. Create the file beside views.py.
+
+### Step 2 — `Import path and views`
+
+path creates a route. The relative import . means import from the current profiles package.
+
+### Step 3 — `Create urlpatterns`
+
+Django expects the conventional variable urlpatterns to be a list of URL patterns.
+
+### Step 4 — `Add the integer converter`
+
+<int:profile_id> captures a positive integer from the URL and passes it to the view using the keyword profile_id.
+
+### Step 5 — `Add the string converter`
+
+<str:username> captures a non-empty path segment that does not contain a slash.
+
+### Step 6 — `Include app routes in config/urls.py`
+
+include delegates the remaining URL path to profiles.urls. The app owns its feature routes.
+
+### Step 7 — `Run the server and test paths`
+
+The browser path is matched by Django; the selected view returns the response.
+
+## 7. Main implementation
+
+### Code to create or update
+
+Use the filenames identified in Section 4. The following code is the lesson's working demonstration:
 
 ```python
+# profiles/views.py
+from django.http import HttpResponse
+
+def home(request):
+    return HttpResponse("Home page")
+
+def about(request):
+    return HttpResponse("About page")
+
+def profile_detail(request, profile_id):
+    return HttpResponse(f"Profile ID: {profile_id}")
+
+def member_detail(request, username):
+    return HttpResponse(f"Member: {username}")
+
+# profiles/urls.py — create this file
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path("", views.home, name="home"),
+    path("about/", views.about, name="about"),
+    path("profile/<int:profile_id>/", views.profile_detail, name="profile_detail"),
+    path("member/<str:username>/", views.member_detail, name="member_detail"),
+]
+
+# config/urls.py — root URL configuration
 from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("profiles/", include("profiles.urls")),
+    path("", include("profiles.urls")),
 ]
 ```
 
-### File: `profiles/urls.py`
+If the code block contains HTML or CSS, put that section in the corresponding HTML or CSS file. Do not paste HTML into `views.py`.
 
-```python
-from django.urls import path
-from . import views
+### How to type safely
 
-urlpatterns = [
-    path("", views.profile_home, name="profile_home"),
-    path("<int:employee_id>/", views.employee_detail, name="employee_detail"),
-]
+1. Open the named file.
+2. Read the existing contents.
+3. Add or replace only the section relevant to today's lesson.
+4. Preserve earlier working code.
+5. Check indentation and spelling.
+6. Save the file.
+7. Run `python manage.py check`.
+8. Test the browser path or command.
+9. Read the terminal output if the page fails.
+
+## 8. Line-by-line and concept walkthrough
+
+### Trace one request
+When the browser requests `/profile/25/`:
+1. Django receives the HTTP request.
+2. The root URL configuration checks its patterns.
+3. The empty prefix includes profiles.urls.
+4. Django checks app patterns.
+5. The int converter captures 25 and converts it to an integer.
+6. Django calls profile_detail(request, profile_id=25).
+7. The view returns an HttpResponse.
+8. The browser displays the response content.
+
+### Path converters
+- `str`: non-empty segment excluding slash; default converter when no converter is supplied.
+- `int`: positive integer.
+- `slug`: letters, numbers, hyphens and underscores.
+- `uuid`: UUID formatted value.
+- `path`: captures a path including slash characters.
+
+### Path versus query string
+In `/search/?q=django`, `/search/` is the path. `q=django` is query-string data. Path converters capture values in the path; query parameters are read from `request.GET`.
+
+### Route ordering
+Django checks patterns in order and selects the first match. Put specific patterns before broad catch-all patterns where they could overlap. A broad string or path converter placed too early may capture a route intended for a more specific view.
+
+### Route names and reverse lookup
+A route name such as `home` lets templates use `{% url 'home' %}` and Python use `reverse("home")`. If the literal path changes but the route name remains, links generated through reverse lookup can still work.
+
+### Trailing slash
+Django projects commonly use trailing slashes in routes. Be consistent. CommonMiddleware may redirect in some configurations, but do not rely on automatic redirects as a substitute for defining the intended route.
+
+### 404 is not a crash
+If no URL pattern matches, Django returns a 404 response. A missing route is different from an import error, syntax error or database failure.
+
+### Namespaces (preview)
+Larger projects can use app_name and include namespaces to avoid route-name collisions. We will introduce namespaces when the project has enough apps to need them.
+
+## 9. Trace the execution
+
+Use the following questions while demonstrating:
+1. What did the browser or developer request?
+2. Which project file receives the request first?
+3. Which app or feature owns the route?
+4. Which function or component is selected?
+5. What input does it receive?
+6. What work does it perform?
+7. What result is returned?
+8. How can we verify the result?
+
+Ask the learner to explain the flow without looking at the code.
+
+## 10. Expected result and verification
+
+- [ ] Root path returns Home page.
+- [ ] /about/ returns About page.
+- [ ] /profile/25/ passes integer 25.
+- [ ] /member/asha/ passes string asha.
+- [ ] An unknown path returns 404.
+- [ ] The learner explains the root-to-app URL routing chain.
+
+Run the system check:
+
+```powershell
+python manage.py check
 ```
 
-### File: `profiles/views.py`
-
-```python
-from django.http import HttpResponse
-
-def profile_home(request):
-    return HttpResponse("Profiles home")
-
-def employee_detail(request, employee_id):
-    return HttpResponse(f"Employee ID: {employee_id}")
-```
-
-## 5. Understand the code
-
-### config/urls.py
-
-1. `from django.contrib import admin` — Imports the required Django or local module.
-2. `from django.urls import path, include` — Imports the required Django or local module.
-3. ` ` — Part of the example; inspect how it contributes to the complete request flow.
-4. `urlpatterns = [` — Defines the list of URL patterns.
-5. `    path("admin/", admin.site.urls),` — Registers a URL route and connects it to a view.
-6. `    path("profiles/", include("profiles.urls")),` — Registers a URL route and connects it to a view.
-7. `]` — Part of the example; inspect how it contributes to the complete request flow.
-
-### profiles/urls.py
-
-1. `from django.urls import path` — Imports the required Django or local module.
-2. `from . import views` — Imports the required Django or local module.
-3. ` ` — Part of the example; inspect how it contributes to the complete request flow.
-4. `urlpatterns = [` — Defines the list of URL patterns.
-5. `    path("", views.profile_home, name="profile_home"),` — Registers a URL route and connects it to a view.
-6. `    path("<int:employee_id>/", views.employee_detail, name="employee_detail"),` — Registers a URL route and connects it to a view.
-7. `]` — Part of the example; inspect how it contributes to the complete request flow.
-
-### profiles/views.py
-
-1. `from django.http import HttpResponse` — Imports the required Django or local module.
-2. ` ` — Part of the example; inspect how it contributes to the complete request flow.
-3. `def profile_home(request):` — Defines a view function that Django can call.
-4. `    return HttpResponse("Profiles home")` — Returns a response or sends data to the next Django component.
-5. ` ` — Part of the example; inspect how it contributes to the complete request flow.
-6. `def employee_detail(request, employee_id):` — Defines a view function that Django can call.
-7. `    return HttpResponse(f"Employee ID: {employee_id}")` — Returns a response or sends data to the next Django component.
-
-## 6. Run and verify
-
-1. Activate the virtual environment.
-2. Change directory to the folder containing manage.py.
-3. Run `python manage.py check`.
-4. Start the server using `python manage.py runserver`.
-5. Open the route in a browser.
-6. Compare the output with the expected result.
-7. Test one unmatched or invalid route.
-8. Stop the server with Ctrl+C.
-
-### Expected result
+Expected output when configuration is valid:
 
 ```text
-/profiles/ → Profiles home\n/profiles/42/ → Employee ID: 42
+System check identified no issues (0 silenced).
 ```
 
-## 7. Important Django concepts
+This check is not a replacement for browser testing. Visit every required URL and verify the actual behavior.
 
-| Concept | Explanation |
-|---|---|
-| URLconf | Python configuration mapping URL paths to views |
-| urlpatterns | List of route definitions |
-| path() | Defines a route and optional converters |
-| include() | Delegates a URL prefix to another URL configuration |
-| View | Callable that handles an HttpRequest and returns a response |
-| HttpRequest | Object containing request information |
-| HttpResponse | Object representing the response sent to the client |
-| render() | Loads a template, combines it with context and returns a response |
-| Context | Dictionary of values supplied to a template |
-| Template tag | Django template instruction such as if or for |
+## 11. Common beginner mistakes and debugging
 
-## 8. Common errors and troubleshooting
+| Symptom | Likely cause | What to inspect |
+|---|---|---|
+| `manage.py` not found | Terminal is in the wrong directory | Run Get-Location and locate manage.py |
+| `No module named django` | Wrong Python environment | Check python -c "import sys; print(sys.executable)" |
+| App not discovered | App missing from settings | Inspect INSTALLED_APPS |
+| ImportError | Wrong name or import path | Check package and function spelling |
+| 404 response | No matching route | Inspect config/urls.py and profiles/urls.py |
+| TemplateDoesNotExist | Incorrect template location | Check profiles/templates/profiles/ |
+| Browser cannot connect | Server stopped or wrong port | Inspect terminal and printed URL |
+| SyntaxError | Incorrect Python syntax | Read the exact file and line in traceback |
 
-| Symptom | Check |
-|---|---|
-| Page returns 404 | URL prefix, route spelling and include() |
-| ImportError for views | Module path and function name |
-| View takes unexpected arguments | Path converter name and view parameter |
-| View returns None | Ensure every execution path returns a response |
-| TemplateDoesNotExist | Template folder and app template path |
-| Variable displays blank | Context key and template variable spelling |
-| Template syntax error | Matching opening and closing template tags |
+### Debugging routine
 
-Troubleshooting sequence:
-1. Confirm the server is running.
-2. Check the exact URL.
-3. Read the terminal traceback.
-4. Check the project's root URLconf.
-5. Check the application's URLconf.
-6. Check the view name and function signature.
-7. Check template path and context keys if rendering.
-8. Run the system check again.
+1. Reproduce the error.
+2. Read the full traceback, not only the last line.
+3. Locate the first relevant line in your own project.
+4. Confirm the active interpreter and current directory.
+5. Check names, imports, indentation and file paths.
+6. Change one thing at a time.
+7. Run `python manage.py check` again.
+8. Repeat the browser test.
 
-## 9. Industry scenario
+## 12. Industry scenario
 
-A company employee portal needs a profile page and employee directory. URLs identify the page or employee. Views prepare the data and choose a response. Templates display the information in browser-friendly HTML.
+A training institute needs a Student Portal. The backend developer must make the application understandable to teammates. The feature should have a clear location, a predictable execution path and a testable result.
 
-## 10. Approved mini-project — Multi-Page Routing Application
+**Discuss:**
+- What does the student need?
+- What does the browser send?
+- Which component owns the behavior?
+- What should happen for missing or invalid input?
+- What evidence proves the feature works?
 
-**Objective:** Multi-Page Routing Application.
+## 13. Approved mini-project — Multi-Page Routing Application
 
-### Required features
+### Problem statement
 
-1. Open config/urls.py and identify urlpatterns.
-2. Create profiles/urls.py if it does not exist.
-3. Include profiles.urls under the profiles/ prefix in the project URL file.
-4. Create profile_home and employee_detail views.
-5. Add a path converter for employee_id.
-6. Start the server and open both URLs.
-7. Try a non-integer value and observe that the int converter does not match.
+Build a small practical demonstration of today's topic inside the Student Portal workspace. The objective is not to copy a tutorial. The learner must be able to explain and reproduce the implementation.
 
-### Suggested structure
+### Functional requirements
 
-```text
-projects/day_30/
-├── manage.py
-├── config/
-│   ├── settings.py
-│   └── urls.py
-└── profiles/
-    ├── urls.py
-    ├── views.py
-    └── templates/
-        └── profiles/
-```
+1. Create the four view functions shown.
+2. Create profiles/urls.py and connect each route to its view.
+3. Include profiles.urls in config/urls.py.
+4. Visit each URL and record the returned text.
+5. Change /profile/25/ to /profile/abc/ and observe that the int converter does not match.
+6. Add one unknown URL and observe the 404 response.
 
-### Validation checklist
+### Suggested implementation sequence
 
-- [ ] Root URL configuration includes the application URL file.
-- [ ] The home route resolves correctly.
-- [ ] The integer path converter passes employee_id to the view.
-- [ ] URL names are unique and meaningful.
-- [ ] An unmatched path produces the expected 404 response.
+1. Inspect the current project.
+2. Identify the feature requirement.
+3. List the files that will change.
+4. Implement one small component.
+5. Run a system check.
+6. Verify the normal use case.
+7. Test an invalid or unexpected case.
+8. Fix any error.
+9. Record evidence.
+10. Explain the code and result to the trainer.
+
+### Acceptance criteria
+
+- [ ] Root path returns Home page.
+- [ ] /about/ returns About page.
+- [ ] /profile/25/ passes integer 25.
+- [ ] /member/asha/ passes string asha.
+- [ ] An unknown path returns 404.
+- [ ] The learner explains the root-to-app URL routing chain.
 
 ### Submission evidence
 
-- Updated Django files.
-- Terminal output from python manage.py check.
-- Browser screenshots for each route.
-- README with file paths and run commands.
-- Explanation of the request flow.
-- One documented troubleshooting case.
+- Source files changed for this project.
+- Terminal output from checks and commands.
+- Browser screenshots or observed URLs, where applicable.
+- A short README containing setup and verification steps.
+- A short explanation of one error and its resolution.
 
-## 11. AI-assisted implementation
+### Optional extension
 
-**Planning prompt:** "Help me plan Multi-Page Routing Application. List the exact files, URLs, view functions, template files and test cases. Do not write the complete application."
+Change one small behavior and predict the result before running it. Do not introduce concepts that belong to later lessons.
 
-**Guided prompt:** "Help me update only the next file. Explain the path and code, then wait for me to run the server."
+## 14. AI-assisted implementation guide
 
-**Debugging prompt:** "Here are my URLconf, view, template path and traceback. Trace the request flow and identify the first incorrect link."
+Use the AI mentor as a teaching assistant, not as a code generator that hides the learning.
 
-**Review prompt:** "Review my routes, view return values and template context. Identify missing cases without rewriting the project."
+| Level | What to ask | What the learner must do |
+|---|---|---|
+| 1. Hint | "Give me one hint for the next step." | Attempt the step independently. |
+| 2. Plan | "Break this project into small ordered tasks." | Explain the plan before coding. |
+| 3. Example | "Show a tiny example of this one concept." | Reproduce and modify it. |
+| 4. Guided implementation | "Guide me through one file at a time; wait after each step." | Run each step and share output. |
+| 5. Explanation | "Explain every important line and why it is required." | Explain the code back in own words. |
+| 6. Debugging | "Here is my exact command, file and traceback. Help isolate the smallest fix." | Apply one fix and retest. |
+| 7. Review | "Review my implementation against the requirements and tests." | Correct issues and submit evidence. |
 
-## 12. Five daily MCQs
+**Planning prompt**
 
-**Q1. Which Django component maps a URL to a view?**  
-A. URLconf  
-B. Database row  
-C. Static image  
-D. Git branch  
-**Answer: A.** URLconf contains URL patterns that select views.
+```text
+I am a beginner learning Django. Help me plan Multi-Page Routing Application.
+Do not provide the complete solution. Give me the ordered tasks,
+the files I need to inspect, and the verification checkpoints.
+```
 
-**Q2. What should a view return?**  
-A. Any Python variable  
-B. An HttpResponse-compatible response  
-C. A database table name  
-D. A template folder path only  
-**Answer: B.** A view must return a response object.
+**Guided implementation prompt**
 
-**Q3. What does render() do?**  
-A. Deletes the database  
-B. Creates a Git commit  
-C. Renders a template with context and returns a response  
-D. Installs Django  
-**Answer: C.** render() combines template and context.
+```text
+Guide me through this Django task one step at a time.
+Explain the purpose of the command or code, tell me the exact file,
+and wait for my terminal output before giving the next step.
+Do not skip explanations or write the whole project at once.
+```
 
-**Q4. What commonly causes TemplateDoesNotExist?**  
-A. A wrong template path or missing template file  
-B. A Git branch  
-C. A browser bookmark  
-D. An unused Python variable  
-**Answer: A.** Verify the template folder structure and name.
+**Debugging prompt**
 
-**Q5. Why test an unmatched URL?**  
-A. To change the database  
-B. To test a missing route and expected 404 behavior  
-C. To install a package  
-D. To create a model  
-**Answer: B.** Unmatched paths should not silently resolve to the wrong page.
+```text
+I am working on Multi-Page Routing Application.
+My current directory is: [paste path]
+My command is: [paste exact command]
+My file contents are: [paste relevant file]
+My complete error is: [paste traceback]
+Explain the likely cause and the smallest safe correction.
+Do not rewrite unrelated files.
+```
 
-## 13. Interview preparation
+## 15. Daily MCQ assessment
 
-**Q1. Explain url routing, path converters and url patterns.**  
-**Answer:** URL routing maps an incoming URL path to the view that should handle it. The project's root URL configuration can include the URL configuration of an application. Path converters capture values such as integers and strings from a URL.
+### Question 1
 
-**Q2. Describe the request flow for this lesson.**  
-**Answer:** Browser requests /profiles/42/ → config/urls.py → profiles/urls.py → selected view → HTTP response
+Which variable does Django inspect for URL patterns?
 
-**Q3. What is one common error and how would you debug it?**  
-**Answer:** Check the URLconf, view, function signature, response or template path according to the error. Read the traceback and verify one link at a time.
+- A. routes
+- B. urlpatterns
+- C. url_list
+- D. views
 
-**Follow-up:** How would you prove the fix works?  
-**Answer:** Run Django's system check, start the server and test both expected and invalid URLs.
+**Correct answer: B** — Django uses the conventional urlpatterns variable in a URLconf.
 
-## 14. Completion checklist
+### Question 2
 
-- [ ] Explain the concept in simple language.
-- [ ] Identify every file used in the demonstration.
-- [ ] Run the system check.
-- [ ] Start the development server.
-- [ ] Verify the expected browser output.
-- [ ] Complete Multi-Page Routing Application.
-- [ ] Test normal and invalid cases.
-- [ ] Complete the five MCQs.
-- [ ] Answer the interview questions.
-- [ ] Submit code, README and evidence.
+What does <int:student_id> do?
 
-**Next lesson:** Day 31.
+- A. Captures and converts a path segment to an integer
+- B. Reads a query string
+- C. Creates a database primary key
+- D. Validates an email
+
+**Correct answer: A** — The converter matches an integer path segment and passes it as a keyword argument.
+
+### Question 3
+
+What does include('profiles.urls') do?
+
+- A. Copies all views into settings
+- B. Delegates route matching to the app URLconf
+- C. Creates a template
+- D. Starts runserver
+
+**Correct answer: B** — The project URLconf includes the app URLconf under its prefix.
+
+### Question 4
+
+In /search/?q=django, where is q stored?
+
+- A. request.path
+- B. request.POST
+- C. request.GET
+- D. request.user
+
+**Correct answer: C** — Query-string parameters are available through request.GET.
+
+### Question 5
+
+What does an unmatched URL normally produce?
+
+- A. A 404 response
+- B. A successful database insert
+- C. A 500 always
+- D. A new app
+
+**Correct answer: A** — No configured URL pattern matched the requested path.
+
+## 16. Interview preparation
+
+### Question 1 — Explain today's topic
+**Answer:** A URL is an address requested by the browser. Django's URL dispatcher checks configured patterns in order. When a pattern matches, Django calls its view and passes captured path values as arguments. The project URL file is the main entry point; an app can own its own routes so the project does not become one huge file.
+
+**Follow-up:** Explain the same concept using the Student Portal project.
+
+### Question 2 — Which files are involved?
+**Answer:** `config/urls.py`, `profiles/urls.py (create this file)`, `profiles/views.py`. Explain what each file owns and how the files connect.
+
+**Follow-up:** What would you inspect if the feature does not work?
+
+### Question 3 — How do you verify your implementation?
+**Answer:** Run the relevant management command, inspect the output, open the expected browser path and test an edge case. A successful system check alone does not prove every user journey.
+
+**Follow-up:** What evidence would you submit to a reviewer?
+
+### Question 4 — A teammate copied code but cannot explain it. Is the task complete?
+**Answer:** No. The learner must explain the responsibility of each component, reproduce the behavior, test a normal and invalid case and document the setup.
+
+## 17. Completion checklist
+
+- [ ] I can explain today's topic in simple language.
+- [ ] I can identify the exact files.
+- [ ] I can explain the important code statements.
+- [ ] I ran the required commands.
+- [ ] `python manage.py check` passes.
+- [ ] I verified the expected behavior.
+- [ ] I tested an edge case.
+- [ ] I completed **Multi-Page Routing Application**.
+- [ ] I submitted source files and evidence.
+- [ ] I answered the interview questions and reviewed the MCQs.
+
+## 18. Trainer validation
+
+Do not mark the day complete just because code exists. Ask the student to:
+1. Demonstrate the feature.
+2. Explain the flow.
+3. Change one small part independently.
+4. Predict the result before running.
+5. Diagnose one controlled mistake.
+
+**Next lesson:** Day 31 — Django Views: Function-Based Views and Request-Response Cycle

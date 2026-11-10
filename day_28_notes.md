@@ -2,265 +2,521 @@
 
 **Pathway:** Python Backend Developer Career Pathway (Django)  
 **Phase:** 3 — Django Fundamentals  
-**Estimated time:** 2–3 hours | **Level:** Beginner  
-**Prerequisites:** Days 1–26 — Python, OOP, web fundamentals, SQL and Git  
-**Tools:** Python 3, activated virtual environment, Django, VS Code and terminal  
-**Approved mini-project:** Personal Profile Django Project
+**Duration:** 2–3 hours  
+**Level:** Beginner  
+**Prerequisites:** Day 27 Django introduction and environment setup; Python, OOP and HTTP foundations from earlier phases  
+**Tools:** Windows 10/11, Python, VS Code, PowerShell, Django 5.2.19 and browser  
+**Project continuity:** `student_portal` project, `config` project package, `profiles` application  
+**Approved independent mini-project:** Personal Profile Django Project
 
-> **Trainer guidance:** Treat Django as a new framework, not as magic. Run every command from the correct folder, inspect the generated files and understand what each component does. Do not move to the next step until the current step works.
+> **Teaching instruction:** Read the explanation before typing. Run commands one at a time. Use the exact filenames. Compare your result with the expected behavior. Do not move on while an earlier step is broken.
 
-## 1. Learning objectives
+---
 
-By the end of this lesson, you should be able to:
-- Explain creating django projects and applications, project structure and manage.py.
-- Identify the role of the main Django components introduced today.
-- Run the commands in the correct order.
-- Interpret the expected output.
-- Troubleshoot a common setup or configuration error.
-- Complete Personal Profile Django Project and explain the result.
+## 1. What you will learn
 
-## 2. Concept introduction
+1. Create a Django project in the correct workspace.
+2. Create a Django application and register its AppConfig.
+3. Explain the role of the generated project and app files.
+4. Run management commands and verify the initial application.
 
-A Django project is the overall website configuration. A Django application is a component that provides a specific feature, such as profiles, products or orders. One project can contain multiple applications.
+## 2. Why this topic exists
 
-### Why backend developers use Django
+Think of a Django project as the whole website and an app as one feature area inside it. A college portal might have separate apps for profiles, courses, attendance and fees. Each app owns a related set of models, views, templates and tests. The project package owns site-wide configuration and root URL routing. A project may contain many apps; an app is not a separate server by default.
 
-- It provides a structured way to build web applications.
-- It includes URL routing and request/response handling.
-- It provides an ORM to work with relational databases through Python objects.
-- It includes a template system for server-rendered HTML.
-- It provides forms, authentication, sessions and security protections.
-- It encourages reusable applications and clear project structure.
+### Connect it to a real application
 
-Django does not remove the need to understand Python, HTTP, SQL, security or testing. It gives you a framework in which to apply those skills.
+Imagine the institute is building its Student Portal. The user opens a browser and requests a page. Django must know which project settings to load, which app owns the feature, which component should handle the request and how the response should be returned. Today's topic is one part of that process.
 
-## 3. Understand the request-response architecture
+## 3. Mental model — understand before coding
 
 ```text
-Django project (settings and root URLs) → installed applications → application URLs/views/models → response
+Browser / Student
+       |
+       | HTTP request
+       v
+Django project package: config
+       |
+       v
+profiles application
+       |
+       v
+Today's Django feature
+       |
+       v
+HTTP response / visible result
 ```
 
-A browser sends an HTTP request. Django uses URL configuration to locate the view that should handle the request. The view performs the required work and returns an HTTP response. It may use a model/database or render a template.
+The diagram is intentionally simplified. Some features also use a database, form, template, middleware or authentication component. We will add those in the relevant days.
 
-## 4. Prepare your workspace
+## 4. Locate the files
+
+The exact files for today are:
+
+- `manage.py`
+- `config/__init__.py`
+- `config/settings.py`
+- `config/urls.py`
+- `config/asgi.py`
+- `config/wsgi.py`
+- `profiles/apps.py`
+- `profiles/models.py`
+- `profiles/views.py`
+- `profiles/admin.py`
+- `profiles/tests.py`
+- `profiles/migrations/`
+
+The overall project is growing in this structure:
+
+```text
+student_portal/
+├── .venv/
+├── manage.py
+├── config/
+│   ├── __init__.py
+│   ├── settings.py
+│   ├── urls.py
+│   ├── asgi.py
+│   └── wsgi.py
+└── profiles/
+    ├── migrations/
+    ├── __init__.py
+    ├── admin.py
+    ├── apps.py
+    ├── models.py
+    ├── tests.py
+    ├── views.py
+    ├── urls.py
+    └── templates/
+        └── profiles/
+```
+
+**Important:** Some files are created by Django and some are created by us. Do not create duplicate project folders. Keep the existing project from Day 28.
+
+## 5. Prepare the terminal
 
 1. Open VS Code.
-2. Open the project folder, not an unrelated parent folder.
-3. Open Terminal → New Terminal.
-4. Confirm your current folder with `pwd` in Git Bash or `Get-Location` in PowerShell.
-5. Activate the intended virtual environment.
-6. Run `python --version`.
-7. Run the Django command shown below.
+2. Open the `student_portal` folder.
+3. Select Terminal → New Terminal.
+4. Confirm the current directory contains `manage.py`.
+5. Activate the same `.venv` created in Day 27.
+6. Verify the Python and Django versions.
 
-**Important:** If your terminal uses Windows PowerShell, activation normally uses `.venv\Scripts\Activate.ps1`. If PowerShell blocks script execution, follow your machine's approved policy rather than running unknown scripts.
-
-## 5. Main demonstration
-
-Save the relevant commands or code in your project notes. Execute the following commands one at a time:
-
-```bash
-# Create a Django project in the current folder
-django-admin startproject config .
-
-# Create an application
-python manage.py startapp profiles
-
-# Start the development server
-python manage.py runserver
+```powershell
+Get-Location
+python --version
+python -m django --version
 ```
 
-### Expected result
+If `manage.py` is not in the current directory, change to the correct project folder. If Django is not found, check the active interpreter before reinstalling packages.
 
-The project starts on http://127.0.0.1:8000/ and displays the Django welcome page when DEBUG is enabled and no custom route replaces it.
+## 6. Commands — exact order
 
-### Line-by-line explanation
+```powershell
+# Run these from the empty student_portal workspace
+python --version
+python -m pip --version
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install "Django==5.2.19"
+python -m django --version
+django-admin startproject config .
+python manage.py startapp profiles
+python manage.py check
+python manage.py help
+```
 
-1. django-admin startproject config . creates the project package in the current directory. The dot avoids an extra nested folder.
-2. config is the project configuration package, not an application that contains every feature.
-3. python manage.py startapp profiles creates an application package for one feature area.
-4. manage.py is a command-line utility that loads the project settings and exposes Django management commands.
-5. runserver starts a local development server. It is not intended as a production server.
+### Understand every command
 
-## 6. Important terminology
+### Step 1 — `python -m venv .venv`
 
-| Term | Meaning |
-|---|---|
-| Django project | Overall website configuration and collection of applications |
-| Django application | Reusable component that provides a feature |
-| Virtual environment | Isolated Python package environment |
-| manage.py | Project-specific command-line utility |
-| settings.py | Project configuration module |
-| urls.py | URL routing configuration |
-| View | Python code that handles a request and returns a response |
-| Development server | Local server used during development |
+Creates an isolated Python environment in a folder named .venv. Packages installed there do not need to be installed globally.
 
-## 7. Verify your environment or application
+### Step 2 — `.\.venv\Scripts\Activate.ps1`
 
-Use the following verification sequence:
-1. Confirm the command runs from the intended project folder.
-2. Confirm the virtual environment is active.
-3. Confirm Django is installed in that environment.
-4. Run the relevant Django system check.
-5. Start the development server when applicable.
-6. Open the local URL in a browser.
-7. Record the exact output and any warnings.
-8. Stop the development server with Ctrl+C when finished.
+Activates the environment in PowerShell. The prompt normally shows (.venv). If PowerShell blocks scripts, use the approved execution-policy guidance from Day 27 rather than running commands from an unknown source.
 
-Do not report a feature as working just because a command was accepted. Verify the browser response or actual application behavior.
+### Step 3 — `python -m pip install Django==5.2.19`
 
-## 8. Common errors and troubleshooting
+Installs the pinned Django version into the active interpreter. Pinning gives students a repeatable classroom environment.
 
-| Error or symptom | What to check |
-|---|---|
-| django-admin is not recognized | Activate the virtual environment and try python -m django |
-| No module named django | Install Django into the active environment |
-| No such file manage.py | Change to the Django project folder |
-| Port already in use | Stop the other process or use another local port |
-| App not found | Check app folder name and INSTALLED_APPS |
-| System check reports an issue | Read the complete message and correct the named setting |
-| Browser cannot connect | Confirm runserver is active and URL/port are correct |
+### Step 4 — `django-admin startproject config .`
 
-### Debugging method
+Creates the configuration package named config in the current folder. The dot means current folder; without it Django creates an extra outer directory.
 
-1. Read the final error message.
-2. Identify the file and line number.
-3. Check spelling and indentation.
-4. Confirm the active Python interpreter.
-5. Confirm the current working directory.
-6. Correct one issue at a time.
-7. Rerun the check and verify again.
+### Step 5 — `python manage.py startapp profiles`
 
-## 9. Industry scenario
+Creates a feature package named profiles with standard files. This command must run from the folder containing manage.py.
 
-A company needs a backend website for employee information. Django provides a project structure and reusable applications. Developers can separate employee profiles, departments and authentication into different applications while sharing one project configuration.
+### Step 6 — `python manage.py check`
 
-## 10. When to use Django and what not to assume
+Runs Django's system checks and reports configuration issues it can detect. It does not test every user journey.
 
-- Use Django when you need a structured Python web application with database-backed features.
-- Use Django applications to group related features.
-- Use the development server only for local development.
-- Do not expose DEBUG mode on production.
-- Do not commit secret keys, database passwords or API tokens.
-- Do not assume a generated project is already a complete business application.
+### Step 7 — `python manage.py help`
 
-## 11. Approved mini-project — Personal Profile Django Project
+Lists management commands available in this project. Use python manage.py help migrate to inspect a specific command.
 
-**Objective:** Personal Profile Django Project.
+## 7. Main implementation
+
+### Code to create or update
+
+Use the filenames identified in Section 4. The following code is the lesson's working demonstration:
+
+```python
+# Create config project package in the current folder:
+django-admin startproject config .
+
+# Create one feature app:
+python manage.py startapp profiles
+
+# profiles/apps.py
+from django.apps import AppConfig
+
+class ProfilesConfig(AppConfig):
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "profiles"
+
+# config/settings.py — add one item to the existing list
+INSTALLED_APPS = [
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "profiles.apps.ProfilesConfig",
+]
+```
+
+If the code block contains HTML or CSS, put that section in the corresponding HTML or CSS file. Do not paste HTML into `views.py`.
+
+### How to type safely
+
+1. Open the named file.
+2. Read the existing contents.
+3. Add or replace only the section relevant to today's lesson.
+4. Preserve earlier working code.
+5. Check indentation and spelling.
+6. Save the file.
+7. Run `python manage.py check`.
+8. Test the browser path or command.
+9. Read the terminal output if the page fails.
+
+## 8. Line-by-line and concept walkthrough
+
+### Understand the generated structure
+```text
+student_portal/
+├── .venv/                 # local environment; do not commit
+├── manage.py              # project command-line entry point
+├── config/                # site-wide configuration package
+│   ├── __init__.py
+│   ├── settings.py        # settings
+│   ├── urls.py            # root URL router
+│   ├── asgi.py            # ASGI entry point
+│   └── wsgi.py            # WSGI entry point
+└── profiles/              # one feature application
+    ├── migrations/        # database schema history
+    ├── __init__.py
+    ├── admin.py           # admin registration
+    ├── apps.py            # application configuration
+    ├── models.py          # data models
+    ├── tests.py           # automated tests
+    └── views.py           # request handlers
+```
+
+**manage.py:** Django generates this file. It sets the default settings module to `config.settings` and delegates the requested command to Django. Do not rewrite it.  
+**settings.py:** Python configuration for the whole project: installed apps, middleware, database, templates, static files and security-related settings.  
+**urls.py:** Root URL configuration. Later it will include the profiles app's routes.  
+**asgi.py / wsgi.py:** Server entry points for different deployment interfaces. Students need to recognize them now; production server configuration is a later topic.  
+**apps.py:** The AppConfig describes the app to Django.  
+**models.py:** Holds Python classes that describe stored data.  
+**views.py:** Holds callables that receive requests and return responses.  
+**admin.py:** Registers models for Django's internal admin interface.  
+**tests.py:** Holds automated checks of application behavior.  
+**migrations/:** Holds version-controlled database schema change files.
+
+### Project versus app — common interview distinction
+A project is the website's configuration and collection of apps. An app is a feature module. For example, `config` is the project package and `profiles` is an app. The outer repository folder name does not have to match either.
+
+### Why app registration matters
+Django reads INSTALLED_APPS to discover app configuration and load app functionality. Adding the path `profiles.apps.ProfilesConfig` registers the app. The Python string must match the actual package path.
+
+### What the dot means in startproject
+`django-admin startproject config .` means: create the config package in the current working directory. It is useful when the current folder is already the repository root. Check the folder tree immediately after running it.
+
+### Virtual environment and version pin
+The virtual environment isolates project dependencies. A pinned version makes the classroom instructions reproducible. The class should use the same Python/Django version for the phase; don't randomly upgrade midway.
+
+### Common errors
+- `django-admin is not recognized`: activate .venv or use `python -m django startproject config .`.
+- `No module named django`: the active interpreter does not have Django installed.
+- `manage.py not found`: terminal is not in the project root.
+- App does not load: check spelling and INSTALLED_APPS.
+- Port already in use: use `python manage.py runserver 8001` or stop the other local server.
+
+### What is not done yet?
+We have not created a profile page, model or database table. We have created the project structure and registered the app. The next lessons progressively add routes, views, templates and models.
+
+## 9. Trace the execution
+
+Use the following questions while demonstrating:
+1. What did the browser or developer request?
+2. Which project file receives the request first?
+3. Which app or feature owns the route?
+4. Which function or component is selected?
+5. What input does it receive?
+6. What work does it perform?
+7. What result is returned?
+8. How can we verify the result?
+
+Ask the learner to explain the flow without looking at the code.
+
+## 10. Expected result and verification
+
+- [ ] The command prompt shows the virtual environment is active.
+- [ ] python -m django --version prints the pinned version.
+- [ ] manage.py, config/ and profiles/ are siblings.
+- [ ] profiles.apps.ProfilesConfig is present in INSTALLED_APPS.
+- [ ] python manage.py check reports no issues.
+
+Run the system check:
+
+```powershell
+python manage.py check
+```
+
+Expected output when configuration is valid:
+
+```text
+System check identified no issues (0 silenced).
+```
+
+This check is not a replacement for browser testing. Visit every required URL and verify the actual behavior.
+
+## 11. Common beginner mistakes and debugging
+
+| Symptom | Likely cause | What to inspect |
+|---|---|---|
+| `manage.py` not found | Terminal is in the wrong directory | Run Get-Location and locate manage.py |
+| `No module named django` | Wrong Python environment | Check python -c "import sys; print(sys.executable)" |
+| App not discovered | App missing from settings | Inspect INSTALLED_APPS |
+| ImportError | Wrong name or import path | Check package and function spelling |
+| 404 response | No matching route | Inspect config/urls.py and profiles/urls.py |
+| TemplateDoesNotExist | Incorrect template location | Check profiles/templates/profiles/ |
+| Browser cannot connect | Server stopped or wrong port | Inspect terminal and printed URL |
+| SyntaxError | Incorrect Python syntax | Read the exact file and line in traceback |
+
+### Debugging routine
+
+1. Reproduce the error.
+2. Read the full traceback, not only the last line.
+3. Locate the first relevant line in your own project.
+4. Confirm the active interpreter and current directory.
+5. Check names, imports, indentation and file paths.
+6. Change one thing at a time.
+7. Run `python manage.py check` again.
+8. Repeat the browser test.
+
+## 12. Industry scenario
+
+A training institute needs a Student Portal. The backend developer must make the application understandable to teammates. The feature should have a clear location, a predictable execution path and a testable result.
+
+**Discuss:**
+- What does the student need?
+- What does the browser send?
+- Which component owns the behavior?
+- What should happen for missing or invalid input?
+- What evidence proves the feature works?
+
+## 13. Approved mini-project — Personal Profile Django Project
+
+### Problem statement
+
+Build a small practical demonstration of today's topic inside the Student Portal workspace. The objective is not to copy a tutorial. The learner must be able to explain and reproduce the implementation.
 
 ### Functional requirements
 
-1. Create a folder for the Personal Profile project.
-2. Activate the virtual environment and install Django.
-3. Run django-admin startproject config .
-4. Create an app named profiles.
-5. Add profiles to INSTALLED_APPS in config/settings.py.
-6. Run python manage.py runserver and inspect the browser.
-7. Write down the purpose of manage.py, settings.py, urls.py, asgi.py and wsgi.py.
+1. Create a new empty folder called student_portal and open it in VS Code.
+2. Create and activate .venv. Confirm the interpreter path using python -c "import sys; print(sys.executable)".
+3. Install the pinned Django version and record python -m django --version.
+4. Create the config project and profiles app.
+5. Register profiles in INSTALLED_APPS.
+6. Run check and inspect each generated file.
 
-### Suggested folder structure
+### Suggested implementation sequence
 
-```text
-projects/day_28/
-├── README.md
-├── screenshots/
-└── commands.txt
-```
+1. Inspect the current project.
+2. Identify the feature requirement.
+3. List the files that will change.
+4. Implement one small component.
+5. Run a system check.
+6. Verify the normal use case.
+7. Test an invalid or unexpected case.
+8. Fix any error.
+9. Record evidence.
+10. Explain the code and result to the trainer.
 
-### Validation checklist
+### Acceptance criteria
 
-- [ ] Project and app folders exist.
-- [ ] profiles appears in INSTALLED_APPS.
-- [ ] manage.py runserver starts without an error.
-- [ ] The development page loads in the browser.
-- [ ] The learner can distinguish project from application.
+- [ ] The command prompt shows the virtual environment is active.
+- [ ] python -m django --version prints the pinned version.
+- [ ] manage.py, config/ and profiles/ are siblings.
+- [ ] profiles.apps.ProfilesConfig is present in INSTALLED_APPS.
+- [ ] python manage.py check reports no issues.
 
 ### Submission evidence
 
-- Project folder or configuration files.
-- Terminal output for each required command.
-- Browser screenshot where a server is started.
-- README with setup and verification steps.
-- Short explanation of what each generated file or setting does.
-- A troubleshooting note describing one issue and its resolution.
+- Source files changed for this project.
+- Terminal output from checks and commands.
+- Browser screenshots or observed URLs, where applicable.
+- A short README containing setup and verification steps.
+- A short explanation of one error and its resolution.
 
-## 12. AI-assisted implementation guide
+### Optional extension
 
-Use the AI mentor in small steps:
-1. Ask for a plan, not a complete project.
-2. Ask for the first command only.
-3. Run the command and share the output.
-4. Ask what the generated files mean.
-5. Continue only after understanding the result.
-6. Share exact errors when debugging.
-7. Ask for a review against the validation checklist.
+Change one small behavior and predict the result before running it. Do not introduce concepts that belong to later lessons.
 
-**Planning prompt:** "Help me plan Personal Profile Django Project. List the prerequisites, ordered tasks, files, commands and verification checks. Do not write the complete solution."
+## 14. AI-assisted implementation guide
 
-**Implementation prompt:** "Guide me one step at a time. Explain the purpose of the command or file and wait for my terminal output before continuing."
+Use the AI mentor as a teaching assistant, not as a code generator that hides the learning.
 
-**Debugging prompt:** "Here is my exact command, folder structure and error. Identify the likely cause and the smallest safe correction."
+| Level | What to ask | What the learner must do |
+|---|---|---|
+| 1. Hint | "Give me one hint for the next step." | Attempt the step independently. |
+| 2. Plan | "Break this project into small ordered tasks." | Explain the plan before coding. |
+| 3. Example | "Show a tiny example of this one concept." | Reproduce and modify it. |
+| 4. Guided implementation | "Guide me through one file at a time; wait after each step." | Run each step and share output. |
+| 5. Explanation | "Explain every important line and why it is required." | Explain the code back in own words. |
+| 6. Debugging | "Here is my exact command, file and traceback. Help isolate the smallest fix." | Apply one fix and retest. |
+| 7. Review | "Review my implementation against the requirements and tests." | Correct issues and submit evidence. |
 
-## 13. Daily MCQs
+**Planning prompt**
 
-**Q1. What is the main purpose of Django?**  
-A. It is a Python web framework.  
-B. It is a database engine only.  
-C. It replaces Python.  
-D. It is a browser.  
-**Answer: A.** Django is a Python web framework.
+```text
+I am a beginner learning Django. Help me plan Personal Profile Django Project.
+Do not provide the complete solution. Give me the ordered tasks,
+the files I need to inspect, and the verification checkpoints.
+```
 
-**Q2. Why should a developer use a virtual environment?**  
-A. To replace Git.  
-B. To isolate project dependencies.  
-C. To host a website publicly.  
-D. To remove Python.  
-**Answer: B.** It isolates installed packages for the project.
+**Guided implementation prompt**
 
-**Q3. What should you do if a Django command cannot import Django?**  
-A. Delete Python.  
-B. Ignore the message.  
-C. Check the active environment and install Django there.  
-D. Change the browser.  
-**Answer: C.** The package must be installed in the environment used by the command.
+```text
+Guide me through this Django task one step at a time.
+Explain the purpose of the command or code, tell me the exact file,
+and wait for my terminal output before giving the next step.
+Do not skip explanations or write the whole project at once.
+```
 
-**Q4. Is Django runserver the recommended production server?**  
-A. Yes, for all workloads.  
-B. Yes, if DEBUG is True.  
-C. Only for database migrations.  
-D. No, it is a development server.  
-**Answer: D.** Use an appropriate production deployment stack.
+**Debugging prompt**
 
-**Q5. What is the best evidence that the setup task is complete?**  
-A. Commands run successfully and the application or version is verified.  
-B. A folder name only.  
-C. A screenshot of an empty editor.  
-D. A copied command list without execution.  
-**Answer: A.** Completion requires observed and documented verification.
+```text
+I am working on Personal Profile Django Project.
+My current directory is: [paste path]
+My command is: [paste exact command]
+My file contents are: [paste relevant file]
+My complete error is: [paste traceback]
+Explain the likely cause and the smallest safe correction.
+Do not rewrite unrelated files.
+```
 
-## 14. Interview preparation
+## 15. Daily MCQ assessment
 
-**Q1. Explain creating django projects and applications, project structure and manage.py.**  
-**Answer:** A Django project is the overall website configuration. A Django application is a component that provides a specific feature, such as profiles, products or orders. One project can contain multiple applications.
+### Question 1
 
-**Q2. What is one important command or configuration introduced today?**  
-**Answer:** Explain the command/configuration from the demonstration, its purpose and the expected result.
+What is a Django project?
 
-**Q3. What would you check if the setup did not work?**  
-**Answer:** Check the active virtual environment, Python interpreter, current directory, installed packages, command spelling and complete error message.
+- A. The overall site configuration and collection of apps
+- B. A database table
+- C. A single HTML page
+- D. A Python variable
 
-**Follow-up:** Why is it important to understand the generated files rather than simply run commands?  
-**Answer:** Backend developers must know where configuration and application behavior live so they can debug, extend and deploy the project safely.
+**Correct answer: A** — The project contains site-wide configuration and coordinates the installed apps.
 
-## 15. Completion checklist
+### Question 2
 
-- [ ] Explain the main concepts without reading.
-- [ ] Run all required commands.
-- [ ] Verify the expected result.
-- [ ] Explain the important files and settings.
-- [ ] Complete Personal Profile Django Project.
-- [ ] Test at least three relevant cases or checks.
-- [ ] Complete all five MCQs.
-- [ ] Answer the interview questions.
-- [ ] Submit README and evidence.
+What does the final dot in startproject config . mean?
 
-**Next lesson:** Day 29.
+- A. Delete the folder
+- B. Create the project in the current directory
+- C. Install Django globally
+- D. Create a database row
+
+**Correct answer: B** — The dot is the current working directory; it avoids an extra nested folder.
+
+### Question 3
+
+Which file is the project-specific command entry point?
+
+- A. models.py
+- B. admin.py
+- C. manage.py
+- D. apps.py
+
+**Correct answer: C** — manage.py loads project settings and exposes Django management commands.
+
+### Question 4
+
+Where do you register a new app?
+
+- A. INSTALLED_APPS in settings.py
+- B. In README only
+- C. In templates
+- D. In migrations only
+
+**Correct answer: A** — Django loads configured applications through INSTALLED_APPS.
+
+### Question 5
+
+Does creating an app automatically create a database table?
+
+- A. Yes, always
+- B. Only on Windows
+- C. Only when runserver starts
+- D. No; define models and apply migrations
+
+**Correct answer: D** — An app folder is not a database schema. Models and migrations are needed.
+
+## 16. Interview preparation
+
+### Question 1 — Explain today's topic
+**Answer:** Think of a Django project as the whole website and an app as one feature area inside it. A college portal might have separate apps for profiles, courses, attendance and fees. Each app owns a related set of models, views, templates and tests. The project package owns site-wide configuration and root URL routing. A project may contain many apps; an app is not a separate server by default.
+
+**Follow-up:** Explain the same concept using the Student Portal project.
+
+### Question 2 — Which files are involved?
+**Answer:** `manage.py`, `config/__init__.py`, `config/settings.py`, `config/urls.py`, `config/asgi.py`, `config/wsgi.py`, `profiles/apps.py`, `profiles/models.py`, `profiles/views.py`, `profiles/admin.py`, `profiles/tests.py`, `profiles/migrations/`. Explain what each file owns and how the files connect.
+
+**Follow-up:** What would you inspect if the feature does not work?
+
+### Question 3 — How do you verify your implementation?
+**Answer:** Run the relevant management command, inspect the output, open the expected browser path and test an edge case. A successful system check alone does not prove every user journey.
+
+**Follow-up:** What evidence would you submit to a reviewer?
+
+### Question 4 — A teammate copied code but cannot explain it. Is the task complete?
+**Answer:** No. The learner must explain the responsibility of each component, reproduce the behavior, test a normal and invalid case and document the setup.
+
+## 17. Completion checklist
+
+- [ ] I can explain today's topic in simple language.
+- [ ] I can identify the exact files.
+- [ ] I can explain the important code statements.
+- [ ] I ran the required commands.
+- [ ] `python manage.py check` passes.
+- [ ] I verified the expected behavior.
+- [ ] I tested an edge case.
+- [ ] I completed **Personal Profile Django Project**.
+- [ ] I submitted source files and evidence.
+- [ ] I answered the interview questions and reviewed the MCQs.
+
+## 18. Trainer validation
+
+Do not mark the day complete just because code exists. Ask the student to:
+1. Demonstrate the feature.
+2. Explain the flow.
+3. Change one small part independently.
+4. Predict the result before running.
+5. Diagnose one controlled mistake.
+
+**Next lesson:** Day 29 — Django Development Server, settings.py and Installed Applications

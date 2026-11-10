@@ -2,269 +2,488 @@
 
 **Pathway:** Python Backend Developer Career Pathway (Django)  
 **Phase:** 3 — Django Fundamentals  
-**Estimated time:** 2–3 hours | **Level:** Beginner  
-**Prerequisites:** Days 1–34 as applicable; review the previous Django lessons before continuing  
-**Tools:** Python, Django, VS Code, terminal and browser  
+**Duration:** 2–3 hours | **Level:** Beginner  
+**Prerequisites:** Previous Django lessons; Python, OOP, HTTP and SQL foundations  
+**Environment:** Windows, VS Code, PowerShell, Python virtual environment and Django 5.2.19  
+**Continuous project:** `student_portal` / `config` / `profiles`  
 **Approved mini-project:** Reusable Website Layout
 
-> **Trainer guidance:** Show the learner the exact file path before showing the code. Explain why the file exists, what each important line does, how to run the project and how to verify the result.
+> **Teaching rule:** Do not copy a command without understanding it. Use the exact file path, run one step at a time, inspect the output and explain what the framework is doing.
 
 ## 1. Learning objectives
 
-- Explain template inheritance, reusable components and static files.
-- Identify the Django files and folders used.
-- Implement the example step by step.
-- Explain the relationship between Django code and the browser or database.
-- Verify the result and troubleshoot common errors.
-- Complete Reusable Website Layout.
+1. Explain why websites use shared base templates.
+2. Create a parent template with named blocks and child templates.
+3. Use URL reversing in navigation links.
+4. Add static CSS and distinguish static assets from uploaded media.
 
-## 2. Concept introduction
+## 2. Concept introduction — start from zero
 
-Template inheritance lets child templates reuse a common base layout. A base template defines blocks that child templates fill. Static files are assets such as CSS, JavaScript and images; Django serves them during development when staticfiles is configured.
+Most pages on a website share a header, navigation, footer and overall layout. Copying the same HTML into every page creates duplication. Template inheritance lets one base template define the shared layout while child templates provide page-specific content. Static files such as CSS, JavaScript and logos are application assets served separately from templates.
 
-## 3. Why the concept matters
+### Why a backend developer needs this
 
-A Django application becomes easier to maintain when shared presentation is reused, data is represented consistently and database changes are tracked. These practices help teams review code and understand how a feature evolved.
+The Student Portal is being developed as a real, growing application. The code must remain organized and the result must be repeatable. Today's lesson adds one building block to that system. A junior developer should be able to explain the purpose of the component, not only remember its syntax.
 
-## 4. File-by-file implementation
+## 3. Mental model
 
-### File or command: `profiles/templates/profiles/base.html`
+```text
+Student / Browser
+       |
+       v
+Django project (config)
+       |
+       v
+profiles application
+       |
+       v
+Today's Django component
+       |
+       +----> optional database / template / response work
+       |
+       v
+Visible result or persisted schema
+```
 
-```html
+## 4. File map
+
+- `profiles/templates/profiles/base.html`
+- `profiles/templates/profiles/home.html`
+- `profiles/templates/profiles/about.html`
+- `profiles/static/profiles/css/site.css`
+- `profiles/views.py`
+- `profiles/urls.py`
+
+Project context:
+
+```text
+student_portal/
+├── .venv/
+├── manage.py
+├── config/
+│   ├── settings.py
+│   └── urls.py
+└── profiles/
+    ├── migrations/
+    ├── admin.py
+    ├── apps.py
+    ├── models.py
+    ├── tests.py
+    ├── views.py
+    ├── urls.py
+    ├── templates/
+    │   └── profiles/
+    └── static/
+        └── profiles/
+```
+
+Files are introduced gradually. Create a file only when this lesson tells you to.
+
+## 5. Prepare the terminal
+
+1. Open the existing `student_portal` folder in VS Code.
+2. Open Terminal → New Terminal.
+3. Confirm the current directory contains `manage.py`.
+4. Activate the same virtual environment created earlier.
+5. Confirm the interpreter and Django version.
+
+```powershell
+Get-Location
+python --version
+python -m django --version
+```
+
+If the current folder does not contain manage.py, move to the project root. Do not create a second project to avoid a path mistake.
+
+## 6. Commands — exact order
+
+```powershell
+python manage.py check
+python manage.py runserver
+# Open / and /about/
+# Browser devtools -> Network -> filter CSS
+```
+
+### Understand every command
+
+### Step 1 — `Create base.html`
+
+This is the parent template. It contains shared HTML such as document structure, header, navigation, main content region and footer.
+
+### Step 2 — `Load static tags`
+
+{% load static %} enables the static template tag library in this template.
+
+### Step 3 — `Define blocks`
+
+block title and block content are named regions that child templates may override. Default content appears if a child does not override a block.
+
+### Step 4 — `Use the static tag`
+
+{% static 'profiles/css/site.css' %} builds the static asset URL using STATIC_URL and configured static-file finders.
+
+### Step 5 — `Use named URLs`
+
+{% url 'home' %} reverses a named URL pattern. If the path changes but the name remains, the generated link can still point to the right route.
+
+### Step 6 — `Create child templates`
+
+A child begins with {% extends 'profiles/base.html' %}. It inherits the parent layout and supplies content for the blocks.
+
+### Step 7 — `Create static folder`
+
+Store the CSS at profiles/static/profiles/css/site.css. App-namespaced static paths avoid collisions between apps.
+
+### Step 8 — `Verify in browser tools`
+
+Open the page and inspect the CSS request in the Network tab. A missing or 404 stylesheet usually means a path or static-file configuration problem.
+
+## 7. Implementation — correct files
+
+### Code demonstration
+
+The code below may contain Python, HTML or CSS sections. Use the filename comments to put each section into the correct file. Never paste HTML into a .py file.
+
+```python
+<!-- profiles/templates/profiles/base.html -->
 {% load static %}
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
 <head>
-    <title>{% block title %}Employee Portal{% endblock %}</title>
+    <meta charset="utf-8">
+    <title>{% block title %}Student Portal{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'profiles/css/site.css' %}">
 </head>
 <body>
-    <header><h1>Employee Portal</h1></header>
+    <header><a href="{% url 'home' %}">Student Portal</a></header>
+    <nav>
+        <a href="{% url 'home' %}">Home</a>
+        <a href="{% url 'about' %}">About</a>
+    </nav>
     <main>{% block content %}{% endblock %}</main>
+    <footer>Learning Django</footer>
 </body>
 </html>
-```
 
-### File or command: `profiles/templates/profiles/home.html`
-
-```html
+<!-- profiles/templates/profiles/home.html -->
 {% extends "profiles/base.html" %}
-
-{% block title %}Home{% endblock %}
-
+{% block title %}Home | Student Portal{% endblock %}
 {% block content %}
-    <h2>Welcome</h2>
-    <p>Manage employee information.</p>
+<h1>Student Portal</h1>
+<p>Welcome to the student portal.</p>
 {% endblock %}
+
+<!-- profiles/templates/profiles/about.html -->
+{% extends "profiles/base.html" %}
+{% block title %}About | Student Portal{% endblock %}
+{% block content %}
+<h1>About</h1>
+<p>This is a Django learning application.</p>
+{% endblock %}
+
+/* profiles/static/profiles/css/site.css */
+body { font-family: Arial, sans-serif; margin: 2rem; }
+header, footer { padding: 1rem; background: #eeeeee; }
+main { margin-top: 1.5rem; }
 ```
 
-### File or command: `profiles/static/profiles/css/site.css`
+### Before saving
 
-```css
-body {
-    font-family: Arial, sans-serif;
-    margin: 2rem;
-}
-header {
-    border-bottom: 1px solid #cccccc;
-}
-```
+1. Read the existing file.
+2. Preserve working code from earlier days.
+3. Add the new code at the correct location.
+4. Check spelling and indentation.
+5. Save the file.
+6. Run the relevant Django command.
+7. Inspect terminal output before opening the browser.
 
-### File or command: `profiles/views.py`
+## 7A. Connect the child templates to views and routes
+
+The templates do not open by themselves. The browser requests a URL, a view renders the child template, and the root URLconf must include the app routes.
+
+**File: profiles/views.py**
 
 ```python
 from django.shortcuts import render
 
 def home(request):
     return render(request, "profiles/home.html")
+
+def about(request):
+    return render(request, "profiles/about.html")
 ```
 
-## 5. Explain the important statements
+**File: profiles/urls.py**
 
-### profiles/templates/profiles/base.html
+```python
+from django.urls import path
+from . import views
 
-1. `{% load static %}` — Uses Django template syntax to load, extend or define a template block.
-2. `<!DOCTYPE html>` — Part of the file structure or configuration; understand how it supports the feature.
-3. `<html>` — Part of the file structure or configuration; understand how it supports the feature.
-4. `<head>` — Part of the file structure or configuration; understand how it supports the feature.
-5. `    <title>{% block title %}Employee Portal{% endblock %}</title>` — Uses Django template syntax to load, extend or define a template block.
-6. `    <link rel="stylesheet" href="{% static 'profiles/css/site.css' %}">` — Uses Django template syntax to load, extend or define a template block.
-7. `</head>` — Part of the file structure or configuration; understand how it supports the feature.
-8. `<body>` — Part of the file structure or configuration; understand how it supports the feature.
-9. `    <header><h1>Employee Portal</h1></header>` — Part of the file structure or configuration; understand how it supports the feature.
-10. `    <main>{% block content %}{% endblock %}</main>` — Uses Django template syntax to load, extend or define a template block.
-11. `</body>` — Part of the file structure or configuration; understand how it supports the feature.
-12. `</html>` — Part of the file structure or configuration; understand how it supports the feature.
+urlpatterns = [
+    path("", views.home, name="home"),
+    path("about/", views.about, name="about"),
+]
+```
 
-### profiles/templates/profiles/home.html
+**File: config/urls.py**
 
-1. `{% extends "profiles/base.html" %}` — Uses Django template syntax to load, extend or define a template block.
-2. ` ` — Part of the file structure or configuration; understand how it supports the feature.
-3. `{% block title %}Home{% endblock %}` — Uses Django template syntax to load, extend or define a template block.
-4. ` ` — Part of the file structure or configuration; understand how it supports the feature.
-5. `{% block content %}` — Uses Django template syntax to load, extend or define a template block.
-6. `    <h2>Welcome</h2>` — Part of the file structure or configuration; understand how it supports the feature.
-7. `    <p>Manage employee information.</p>` — Part of the file structure or configuration; understand how it supports the feature.
-8. `{% endblock %}` — Uses Django template syntax to load, extend or define a template block.
+Confirm the project URLconf includes the app URLconf:
 
-### profiles/static/profiles/css/site.css
+```python
+from django.contrib import admin
+from django.urls import path, include
 
-1. `body {` — Part of the file structure or configuration; understand how it supports the feature.
-2. `    font-family: Arial, sans-serif;` — Part of the file structure or configuration; understand how it supports the feature.
-3. `    margin: 2rem;` — Part of the file structure or configuration; understand how it supports the feature.
-4. `}` — Part of the file structure or configuration; understand how it supports the feature.
-5. `header {` — Part of the file structure or configuration; understand how it supports the feature.
-6. `    border-bottom: 1px solid #cccccc;` — Part of the file structure or configuration; understand how it supports the feature.
-7. `}` — Part of the file structure or configuration; understand how it supports the feature.
+urlpatterns = [
+    path("admin/", admin.site.urls),
+    path("", include("profiles.urls")),
+]
+```
 
-### profiles/views.py
+**Why these lines matter**
 
-1. `from django.shortcuts import render` — Imports the Django component used by this file.
-2. ` ` — Part of the file structure or configuration; understand how it supports the feature.
-3. `def home(request):` — Defines a method or view function.
-4. `    return render(request, "profiles/home.html")` — Part of the file structure or configuration; understand how it supports the feature.
+- `render` loads the child template and returns the HTTP response.
+- `home` renders the home child template.
+- `about` renders the about child template.
+- The app URLconf maps each browser path to the corresponding view.
+- The root URLconf includes the app URLconf, so the routes are reachable.
+- The route names home and about match the names used by the navigation links in base.html.
 
-## 6. How to run and verify
+## 8. Detailed explanation
 
-1. Activate the project's virtual environment.
-2. Open the terminal in the folder containing manage.py.
-3. Run `python manage.py check`.
-4. Execute the commands or start the development server as appropriate.
-5. Open the page in a browser or inspect migration status.
-6. Compare actual behavior with the expected result.
-7. Record any warning and explain whether it is expected.
+### Template inheritance
+A parent template defines the shared layout. A child template uses extends and overrides named blocks. The child template should put extends first, apart from template comments.
 
-## 7. Common errors and troubleshooting
+### Blocks
+A block is a named insertion point. The parent defines it; a child can replace its content. Use meaningful names such as title, content and extra_js.
 
-| Symptom | What to inspect |
-|---|---|
-| Template block is not rendered | extends path and matching block names |
-| CSS is missing | static directory, STATIC_URL, {% load static %} and URL |
-| Model is not detected | app in INSTALLED_APPS and model import |
-| Field configuration error | Field type and required field arguments |
-| No migration is generated | Check whether model changes exist and the correct app is selected |
-| Migration fails | Read the full database error and inspect migration dependencies |
-| Database does not reflect model change | Run makemigrations and then migrate |
+### include versus extends
+extends inherits a page layout. include renders a reusable partial inside another template, such as a small navigation component. Use each for its intended purpose.
 
-## 8. Industry scenario
+### Why namespaced template paths?
+If two apps both contain home.html, the namespaced paths profiles/home.html and courses/home.html avoid ambiguity.
 
-A staff management website needs a consistent page header and styling, an employee data model and a repeatable way to update its database structure. Django's template inheritance, static files, model fields and migrations support these needs.
+### Static files
+Static files are assets shipped with the application: CSS, JavaScript, icons and logos. Uploaded user files are media, which need upload validation, storage and access controls.
 
-## 9. Approved mini-project — Reusable Website Layout
+### STATIC_URL and static tag
+STATIC_URL is the URL prefix. The static template tag asks Django's static-file machinery to build the correct URL. Do not hardcode a localhost URL in the template.
 
-**Objective:** Reusable Website Layout.
+### Development versus production
+During development, Django's staticfiles support can serve static files. In production, collectstatic gathers assets into STATIC_ROOT and a web server or storage service serves them. Never assume runserver's static handling is a production strategy.
 
-### Functional requirements
+### Static files troubleshooting
+- Confirm django.contrib.staticfiles is in INSTALLED_APPS.
+- Check spelling and case of folder/file names.
+- Inspect the generated CSS URL in the page source.
+- Check browser Network status and server output.
+- Remember CSS changes may require a browser refresh; cache may need clearing.
 
-1. Create base.html with common HTML structure.
-2. Define title and content blocks in base.html.
-3. Create home.html and extend the base template.
-4. Override the title and content blocks.
-5. Create the app static folder and CSS file.
-6. Load static and use the static template tag for the CSS link.
-7. Open the page and verify that the shared layout and stylesheet load.
+## 9. Execution trace
 
-### Suggested structure
+Explain these questions aloud:
+1. What is the input or requested operation?
+2. Which file or command handles it?
+3. What does Django do automatically?
+4. What did the developer implement?
+5. What result should be produced?
+6. How do we prove that result is correct?
+
+## 10. Verification checklist
+
+- [ ] Both pages render using base.html.
+- [ ] Both pages share header, navigation and footer.
+- [ ] Each child page displays its own title and content.
+- [ ] Navigation links resolve using URL names.
+- [ ] CSS loads with a successful network response.
+- [ ] The learner explains static assets versus uploaded media.
+
+Run the general project check:
+
+```powershell
+python manage.py check
+```
+
+Expected when project configuration is valid:
 
 ```text
-projects/day_33/
-├── manage.py
-├── config/
-└── profiles/
-    ├── models.py
-    ├── migrations/
-    ├── templates/
-    └── static/
+System check identified no issues (0 silenced).
 ```
 
-### Validation checklist
+The system check does not prove every browser interaction or database operation. Perform the specific checks above.
 
-- [ ] The child template extends the correct base template.
-- [ ] The required blocks appear in the base template.
-- [ ] The child overrides the blocks.
-- [ ] The static folder uses app/static/app_name/ convention.
-- [ ] The browser loads the CSS file without a 404.
+## 11. Troubleshooting
+
+| Symptom | Likely cause | Diagnostic |
+|---|---|---|
+| manage.py not found | Wrong directory | Get-Location and locate manage.py |
+| No module named django | Wrong environment | Check sys.executable and Django version |
+| App not loaded | Missing app registration | Inspect INSTALLED_APPS |
+| Template not found | Incorrect folder/file path | Check app/templates/app_name/ |
+| Route returns 404 | URL pattern missing or order issue | Inspect root and app URLconf |
+| Database table missing | Migration not applied | Run showmigrations and migrate |
+| CSS missing | Incorrect static path | Inspect browser Network tab |
+| SyntaxError | Incorrect Python syntax | Read traceback file and line |
+
+### Safe debugging process
+1. Reproduce the problem.
+2. Read the complete error.
+3. Locate the first relevant line in your own code.
+4. Confirm the correct Python environment and project folder.
+5. Check the filename, imports, spelling and configuration.
+6. Change one thing at a time.
+7. Rerun the appropriate check.
+8. Verify the actual behavior again.
+
+## 12. Industry scenario
+
+A training institute needs to maintain a Student Portal. A backend developer must make the application easy to extend and debug. Today's concept is useful because it gives a predictable way to organize or operate one part of the system.
+
+Discuss:
+- What problem does the user face?
+- Which component is responsible?
+- What information enters the feature?
+- What result should the user or developer observe?
+- What failure case should be tested?
+
+## 13. Approved mini-project — Reusable Website Layout
+
+### Objective
+Build a working demonstration of today's approved concept in the existing Student Portal.
+
+### Ordered tasks
+
+1. Create base.html with shared header, navigation, content block and footer.
+2. Create home.html and about.html as child templates.
+3. Create the CSS file at the exact namespaced path.
+4. Create views and routes for home and about if not already present.
+5. Open both pages and confirm shared layout.
+6. Inspect the CSS network request and change one CSS rule to verify it is loaded.
+
+### Acceptance checks
+
+- [ ] Both pages render using base.html.
+- [ ] Both pages share header, navigation and footer.
+- [ ] Each child page displays its own title and content.
+- [ ] Navigation links resolve using URL names.
+- [ ] CSS loads with a successful network response.
+- [ ] The learner explains static assets versus uploaded media.
 
 ### Submission evidence
+- Relevant source files.
+- Terminal output from checks and commands.
+- Browser screenshot or database evidence, where relevant.
+- README with setup and verification steps.
+- Short explanation of one error and its correction.
 
-- Updated source files.
-- Commands executed and terminal output.
-- Browser screenshot or migration status.
-- README with exact file paths and setup instructions.
-- Explanation of one design decision and one error handled.
+### Optional extension
+Make one small change, predict its result, run it and explain the difference.
 
-## 10. AI-assisted implementation guide
+## 14. AI-assisted implementation
 
-**Planning prompt:** "Help me plan Reusable Website Layout. List the files, ordered tasks, commands and verification checks. Do not write the complete solution."
+Use the AI mentor to learn incrementally:
 
-**Guided prompt:** "Guide me through one file at a time. Explain why the file is needed, show only the next change and wait for my output."
+**Planning prompt**
+```text
+I am a beginner. Help me plan Reusable Website Layout.
+Give me ordered tasks and checkpoints. Do not give me the complete solution.
+```
 
-**Debugging prompt:** "Inspect my exact Django error, file path and command. Explain the likely cause and how to verify the fix."
+**Guided implementation prompt**
+```text
+Guide me one file and one step at a time. Explain the command,
+the code and the expected output. Wait for my result before continuing.
+```
 
-**Review prompt:** "Review my implementation against the approved requirements. Identify missing validation, naming issues and maintainability concerns."
+**Debugging prompt**
+```text
+Here is my exact command, current directory, relevant file and full error.
+Explain the likely cause and the smallest safe fix. Do not rewrite unrelated files.
+```
 
-## 11. Five daily MCQs
+## 15. Daily MCQ assessment
 
-**Q1. What is the main purpose of today's concept?**  
-A. Organize Django presentation, data or database structure changes in a maintainable way.  
-B. Replace Python.  
-C. Disable validation.  
-D. Remove all configuration.  
-**Answer: A.** The concept supports a maintainable Django application.
+### Q1. Which tag creates a child template?
 
-**Q2. What should you inspect when the result is missing?**  
-A. Only the browser theme.  
-B. The relevant file path, setting and Django output.  
-C. Delete the project.  
-D. Ignore the warning.  
-**Answer: B.** File paths and configuration commonly determine whether Django discovers the component.
+A. {% extends %}
+B. {% csrf_token %}
+C. {% for %}
+D. {% debug %}
 
-**Q3. Which practice is safest?**  
-A. Edit generated files without understanding them.  
-B. Ignore migrations.  
-C. Follow the correct workflow and verify each change.  
-D. Commit local secrets.  
-**Answer: C.** Use a repeatable workflow and inspect the result.
+**Answer: A.** extends inherits the parent template layout.
 
-**Q4. What is the best evidence of completion?**  
-A. A file exists.  
-B. The code is long.  
-C. The learner watched a video.  
-D. The feature works and its behavior is verified.  
-**Answer: D.** Evidence should show the required behavior.
+### Q2. What is the main use of a template block?
 
-**Q5. What should the README contain?**  
-A. Setup, file paths, commands and validation results.  
-B. Only a title.  
-C. A private password.  
-D. No instructions.  
-**Answer: A.** Clear instructions make the project reproducible.
+A. Create a database index
+B. Define a region that a child template can override
+C. Register a Django app
+D. Validate a form
 
-## 12. Interview preparation
+**Answer: B.** Blocks allow child templates to provide page-specific content.
 
-**Q1. Explain template inheritance, reusable components and static files.**  
-**Answer:** Template inheritance lets child templates reuse a common base layout. A base template defines blocks that child templates fill. Static files are assets such as CSS, JavaScript and images; Django serves them during development when staticfiles is configured.
+### Q3. What is a static file?
 
-**Q2. Which files or commands are important?**  
-**Answer:** Explain each file or command from the demonstration and its responsibility.
+A. A model row
+B. A user password
+C. An application asset such as CSS or JavaScript
+D. A URL parameter
 
-**Q3. How would you troubleshoot a failure?**  
-**Answer:** Read the full traceback, confirm file paths and configuration, run Django system checks and verify the result after one focused correction.
+**Answer: C.** Static assets are served separately from rendered templates.
 
-**Follow-up:** What evidence would you show another developer?  
-**Answer:** The source change, command output, browser behavior or migration status and a concise README.
+### Q4. Why use {% url 'home' %}?
 
-## 13. Completion checklist
+A. It reverses a named URL pattern
+B. It executes SQL
+C. It creates a user
+D. It loads a CSS file
 
-- [ ] Explain the concept.
-- [ ] Identify the relevant file paths.
-- [ ] Implement the example.
-- [ ] Run the required checks or commands.
-- [ ] Verify the expected result.
-- [ ] Complete Reusable Website Layout.
-- [ ] Test normal and error cases.
-- [ ] Complete all five MCQs.
-- [ ] Answer the interview questions.
-- [ ] Submit source, README and evidence.
+**Answer: A.** URL reversing avoids hardcoding route paths.
 
-**Next lesson:** Day 34.
+### Q5. Which statement is correct for production static files?
+
+A. runserver is always the production static host
+B. Collect static assets and serve them with suitable production infrastructure
+C. Put CSS in settings.py
+D. Disable staticfiles
+
+**Answer: B.** Production deployments collect and serve static assets using a web server or storage backend.
+
+## 16. Interview preparation
+
+### Q1. Explain today's topic in simple words.
+**Answer:** Most pages on a website share a header, navigation, footer and overall layout. Copying the same HTML into every page creates duplication. Template inheritance lets one base template define the shared layout while child templates provide page-specific content. Static files such as CSS, JavaScript and logos are application assets served separately from templates.
+
+**Follow-up:** Give an example from the Student Portal.
+
+### Q2. Which files or commands are important?
+**Answer:** `profiles/templates/profiles/base.html`, `profiles/templates/profiles/home.html`, `profiles/templates/profiles/about.html`, `profiles/static/profiles/css/site.css`, `profiles/views.py`, `profiles/urls.py`. Explain the responsibility of each.
+
+**Follow-up:** What would you inspect if the expected behavior did not appear?
+
+### Q3. How do you verify the implementation?
+**Answer:** Run the commands, inspect output and verify the browser or database behavior. Explain the edge case you tested.
+
+**Follow-up:** Does a successful system check guarantee that every feature works?
+
+**Answer:** No. It checks selected project configuration and framework conditions. Feature behavior needs direct testing.
+
+### Q4. What is a common beginner mistake?
+**Answer:** Running commands from the wrong folder, editing the wrong file or assuming code works without verification. Read the error and isolate the cause.
+
+## 17. Completion checklist
+
+- [ ] I can explain today's concept without reading.
+- [ ] I know the exact file paths.
+- [ ] I can explain the important code.
+- [ ] I ran the required commands.
+- [ ] The Django system check passes.
+- [ ] I verified the expected behavior.
+- [ ] I tested an edge case.
+- [ ] I completed Reusable Website Layout.
+- [ ] I submitted reproducible evidence.
+- [ ] I can answer the interview questions.
+
+## 18. Trainer validation
+
+Do not mark the day complete merely because a file contains code. Ask the learner to demonstrate the result, explain the flow, modify one small part independently and diagnose one controlled mistake.
+
+**Next lesson:** Day 34 — Django Models and Database Field Types

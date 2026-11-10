@@ -1,69 +1,79 @@
-# Day 37: Interview Questions — Django ORM Fundamentals and Querying Records
+# Day 37: Interview Guide — Django ORM Fundamentals and Querying Records
 
 **Pathway:** Python Backend Developer Career Pathway (Django)  
 **Phase:** 3 — Django Fundamentals  
-**Related notes:** [Day 37 class notes](day_37_notes.md)  
+**Related class notes:** [Day 37 notes](day_37_notes.md)  
 **Approved mini-project:** Product Query Explorer
 
-## Core questions
+## 1. Core questions
 
-### Q1. Explain django orm fundamentals and querying records.
-**Answer:** The Django ORM lets Python code interact with database records through model classes and QuerySets. A QuerySet represents a database query and is generally evaluated when its results are needed. ORM methods such as all(), filter(), exclude(), get(), order_by() and values() help retrieve records.
+### Q1. Explain today's topic.
+**Answer:** The Django ORM lets a developer work with database records through Python models and QuerySets rather than writing SQL for every operation. A QuerySet represents a database query. Many QuerySets are lazy: Django builds the query first and sends it to the database when results are needed. The ORM does not remove the need to understand SQL, indexes or query performance.
 
-### Q2. Which Django files or commands are involved?
-**Answer:** Django shell, Shell examples. Explain the role of each and how the feature is verified.
+**Follow-up:** Give one example from the Student Portal.
 
-### Q3. What is a common beginner mistake?
-**Answer:** The model imports successfully. Verify the exact file, configuration and output rather than assuming the feature is active.
+### Q2. Which files or commands are involved?
+**Answer:** `profiles/models.py`, `Django shell via manage.py`. Explain what each does and how the components connect.
 
-### Q4. How do you verify the implementation?
-**Answer:** Run Django system checks, execute the relevant management command or ORM query and inspect the actual admin/database result.
+**Follow-up:** What would you inspect if the feature is missing or fails?
 
-### Q5. What production concern should you consider?
-**Answer:** Access permissions, data integrity, secure configuration, performance and safe schema changes should be considered.
+### Q3. What does Django do automatically?
+**Answer:** Django supplies the framework mechanisms, ORM/admin integration and command behavior. Developers still define business rules, choose field relationships, configure the app and verify results.
 
-## Scenario questions
+### Q4. How do you verify the feature?
+**Answer:** Run `python manage.py check`, execute the relevant commands and inspect the real admin/database/shell result. Test an edge case.
 
-### Q6. A feature does not appear as expected. What do you inspect?
-**Suggested answer:** Confirm the model or configuration is correct, the app is installed, imports and registration are correct, migrations are applied and the server is running. Read the complete error.
+## 2. Scenario-based questions
 
-### Q7. How would you explain the implementation to another developer?
-**Suggested answer:** Describe the requirement, identify the model/admin/query file, explain the important fields or methods, show the command and provide evidence of the result.
+### Q5. The command succeeds but the expected record or behavior is missing. What do you inspect?
+**Suggested answer:** Confirm the correct project and database, inspect the model/registration/query, check migration state, review constraints and reproduce the operation in shell or browser.
 
-## Practical coding discussion
+### Q6. Why is it risky to change or delete migration files without a plan?
+**Suggested answer:** Migration files are shared schema history. Other developers and deployed databases may already have applied them. Deleting or rewriting history can make database state inconsistent.
+
+### Q7. A user requests access to an admin function they do not need. What should the developer do?
+**Suggested answer:** Apply least privilege. Grant only the permissions needed for the user's role; do not make every staff user a superuser.
+
+## 3. Practical coding discussion
 
 Be ready to:
-- Identify the correct file path.
-- Explain important imports and fields.
-- Demonstrate the relevant command or query.
-- Explain normal and invalid cases.
-- Describe the data integrity implications.
+- Identify the correct file.
+- Explain the important field/query/admin setting.
+- Run the management command.
+- Demonstrate the actual result.
+- Explain a constraint or exception.
+- Test a missing/duplicate/invalid case.
+- Explain a safe correction.
 
-## Mini-project viva — Product Query Explorer
+## 4. Mini-project viva — Product Query Explorer
 
 1. What problem does it solve?
-2. Which models or admin classes are involved?
-3. Which commands did you run?
-4. What result did you verify?
-5. How did you handle a missing or invalid record?
-6. What test cases did you perform?
-7. What would you improve for production?
+2. What is the data requirement?
+3. Which models or admin classes are involved?
+4. Which commands or queries did you execute?
+5. What output did you verify?
+6. What happens for invalid or duplicate data?
+7. Which test cases did you perform?
+8. What error did you encounter?
+9. How did you fix it?
+10. What would you improve?
 
-## Rapid revision
+## 5. Rapid revision
 
-- **1.** Run python manage.py shell from the project folder.
-- **2.** Import the Employee model.
-- **3.** Inspect all() and understand that it returns a QuerySet.
-- **4.** Use filter() with an exact field value.
-- **5.** Use exclude() to remove matching records.
-- **6.** Use get() for a record expected to match exactly one row and understand DoesNotExist/MultipleObjectsReturned.
-- **7.** Use order_by() to sort results.
-- **8.** Use values() to return selected fields as dictionaries.
-- **9.** Compare the ORM query with the SQL concept it represents.
+- Explain the topic in simple language.
+- Identify the model, command or query.
+- Explain the database effect.
+- Demonstrate the project.
+- Test one edge case.
+- Explain a common exception or integrity concern.
 
-## Readiness checklist
-- [ ] Explain the feature.
-- [ ] Identify the file and command.
-- [ ] Demonstrate the result.
-- [ ] Explain one failure case.
-- [ ] Present Product Query Explorer and its evidence.
+## 6. Interview readiness
+
+- [ ] I can define the concept.
+- [ ] I can explain the file and code.
+- [ ] I can run the commands.
+- [ ] I can show real database behavior.
+- [ ] I can explain an edge case.
+- [ ] I can present Product Query Explorer.
+
+**Trainer note:** Ask the learner to predict the database result before executing a query or changing a relationship. The aim is to assess reasoning, not syntax memorization.

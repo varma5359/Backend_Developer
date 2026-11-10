@@ -2,65 +2,146 @@
 
 **Pathway:** Python Backend Developer Career Pathway (Django)  
 **Phase:** 3 — Django Fundamentals  
-**Estimated time:** 2–3 hours | **Level:** Beginner  
-**Prerequisites:** Days 1–26 — Python, OOP, web fundamentals, SQL and Git  
-**Tools:** Existing Django project, Python, VS Code and terminal  
-**Approved mini-project:** Django Configuration Explorer
+**Duration:** 2–3 hours  
+**Level:** Beginner  
+**Prerequisites:** Day 27 Django introduction and environment setup; Python, OOP and HTTP foundations from earlier phases  
+**Tools:** Windows 10/11, Python, VS Code, PowerShell, Django 5.2.19 and browser  
+**Project continuity:** `student_portal` project, `config` project package, `profiles` application  
+**Approved independent mini-project:** Django Configuration Explorer
 
-> **Trainer guidance:** Treat Django as a new framework, not as magic. Run every command from the correct folder, inspect the generated files and understand what each component does. Do not move to the next step until the current step works.
+> **Teaching instruction:** Read the explanation before typing. Run commands one at a time. Use the exact filenames. Compare your result with the expected behavior. Do not move on while an earlier step is broken.
 
-## 1. Learning objectives
+---
 
-By the end of this lesson, you should be able to:
-- Explain django development server, settings.py and installed applications.
-- Identify the role of the main Django components introduced today.
-- Run the commands in the correct order.
-- Interpret the expected output.
-- Troubleshoot a common setup or configuration error.
-- Complete Django Configuration Explorer and explain the result.
+## 1. What you will learn
 
-## 2. Concept introduction
+1. Explain the role of settings.py and key settings.
+2. Register an application correctly.
+3. Start and stop Django's local development server.
+4. Distinguish development settings from production requirements.
 
-Django settings configure installed apps, middleware, database connections, templates, static files, security and other project behavior. Configuration should be environment-aware and secrets should not be committed to Git.
+## 2. Why this topic exists
 
-### Why backend developers use Django
+Django needs configuration before it can load apps, middleware, databases and templates. The settings module tells Django which applications are active and how the project should behave. The development server is a local testing tool. It is deliberately not a production server.
 
-- It provides a structured way to build web applications.
-- It includes URL routing and request/response handling.
-- It provides an ORM to work with relational databases through Python objects.
-- It includes a template system for server-rendered HTML.
-- It provides forms, authentication, sessions and security protections.
-- It encourages reusable applications and clear project structure.
+### Connect it to a real application
 
-Django does not remove the need to understand Python, HTTP, SQL, security or testing. It gives you a framework in which to apply those skills.
+Imagine the institute is building its Student Portal. The user opens a browser and requests a page. Django must know which project settings to load, which app owns the feature, which component should handle the request and how the response should be returned. Today's topic is one part of that process.
 
-## 3. Understand the request-response architecture
+## 3. Mental model — understand before coding
 
 ```text
-manage.py → DJANGO_SETTINGS_MODULE → settings.py → installed apps and middleware → Django system checks
+Browser / Student
+       |
+       | HTTP request
+       v
+Django project package: config
+       |
+       v
+profiles application
+       |
+       v
+Today's Django feature
+       |
+       v
+HTTP response / visible result
 ```
 
-A browser sends an HTTP request. Django uses URL configuration to locate the view that should handle the request. The view performs the required work and returns an HTTP response. It may use a model/database or render a template.
+The diagram is intentionally simplified. Some features also use a database, form, template, middleware or authentication component. We will add those in the relevant days.
 
-## 4. Prepare your workspace
+## 4. Locate the files
+
+The exact files for today are:
+
+- `config/settings.py`
+- `config/urls.py`
+- `profiles/apps.py`
+
+The overall project is growing in this structure:
+
+```text
+student_portal/
+├── .venv/
+├── manage.py
+├── config/
+│   ├── __init__.py
+│   ├── settings.py
+│   ├── urls.py
+│   ├── asgi.py
+│   └── wsgi.py
+└── profiles/
+    ├── migrations/
+    ├── __init__.py
+    ├── admin.py
+    ├── apps.py
+    ├── models.py
+    ├── tests.py
+    ├── views.py
+    ├── urls.py
+    └── templates/
+        └── profiles/
+```
+
+**Important:** Some files are created by Django and some are created by us. Do not create duplicate project folders. Keep the existing project from Day 28.
+
+## 5. Prepare the terminal
 
 1. Open VS Code.
-2. Open the project folder, not an unrelated parent folder.
-3. Open Terminal → New Terminal.
-4. Confirm your current folder with `pwd` in Git Bash or `Get-Location` in PowerShell.
-5. Activate the intended virtual environment.
-6. Run `python --version`.
-7. Run the Django command shown below.
+2. Open the `student_portal` folder.
+3. Select Terminal → New Terminal.
+4. Confirm the current directory contains `manage.py`.
+5. Activate the same `.venv` created in Day 27.
+6. Verify the Python and Django versions.
 
-**Important:** If your terminal uses Windows PowerShell, activation normally uses `.venv\Scripts\Activate.ps1`. If PowerShell blocks script execution, follow your machine's approved policy rather than running unknown scripts.
+```powershell
+Get-Location
+python --version
+python -m django --version
+```
 
-## 5. Main demonstration
+If `manage.py` is not in the current directory, change to the correct project folder. If Django is not found, check the active interpreter before reinstalling packages.
 
-Save the relevant commands or code in your project notes. Execute the following commands one at a time:
+## 6. Commands — exact order
 
-```bash
-# config/settings.py (selected settings)
+```powershell
+python manage.py check
+python manage.py runserver
+# Browser: http://127.0.0.1:8000/
+# Alternate port:
+python manage.py runserver 8001
+# Stop the server in its terminal:
+# Ctrl+C
+```
+
+### Understand every command
+
+### Step 1 — `python manage.py check`
+
+Checks the configuration that Django can inspect at startup. Read warnings as well as errors.
+
+### Step 2 — `python manage.py runserver`
+
+Starts the local server, normally at 127.0.0.1:8000. The process keeps running in that terminal.
+
+### Step 3 — `python manage.py runserver 8001`
+
+Starts the same local project on port 8001 if that port is free.
+
+### Step 4 — `Ctrl+C`
+
+Stops the server. Editing files may trigger automatic reload, but you still need to inspect the terminal for errors.
+
+## 7. Main implementation
+
+### Code to create or update
+
+Use the filenames identified in Section 4. The following code is the lesson's working demonstration:
+
+```python
+# config/settings.py — understand these existing settings
+
 DEBUG = True
+
 ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
@@ -70,207 +151,343 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "profiles",
+    "profiles.apps.ProfilesConfig",
 ]
 
-# Terminal
-python manage.py check
-python manage.py runserver
+MIDDLEWARE = [
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+]
+
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
+    }
+}
+
+STATIC_URL = "static/"
 ```
 
-### Expected result
+If the code block contains HTML or CSS, put that section in the corresponding HTML or CSS file. Do not paste HTML into `views.py`.
 
-System check identified no issues (0 silenced). The development server starts when project configuration is valid.
+### How to type safely
 
-### Line-by-line explanation
+1. Open the named file.
+2. Read the existing contents.
+3. Add or replace only the section relevant to today's lesson.
+4. Preserve earlier working code.
+5. Check indentation and spelling.
+6. Save the file.
+7. Run `python manage.py check`.
+8. Test the browser path or command.
+9. Read the terminal output if the page fails.
 
-1. settings.py stores project configuration.
-2. DEBUG=True is suitable only for local development. Do not use it on a public production server.
-3. ALLOWED_HOSTS controls which host/domain names Django accepts for a request.
-4. INSTALLED_APPS lists Django's built-in applications and the project's own applications.
-5. python manage.py check runs Django's system checks without starting the web server.
-6. runserver starts the local development server using the selected settings.
+## 8. Line-by-line and concept walkthrough
 
-## 6. Important terminology
+### settings.py is executable Python
+It is not JSON or a special settings language. It is a Python module containing variables and values that Django imports when it starts.
 
-| Term | Meaning |
-|---|---|
-| Django project | Overall website configuration and collection of applications |
-| Django application | Reusable component that provides a feature |
-| Virtual environment | Isolated Python package environment |
-| manage.py | Project-specific command-line utility |
-| settings.py | Project configuration module |
-| urls.py | URL routing configuration |
-| View | Python code that handles a request and returns a response |
-| Development server | Local server used during development |
+### DEBUG
+With DEBUG=True, Django can show detailed error pages useful during local development. These pages can reveal paths, settings and diagnostic information. Never expose DEBUG=True on a public production site.
 
-## 7. Verify your environment or application
+### ALLOWED_HOSTS
+This setting lists host names that Django accepts in the HTTP Host header when DEBUG=False. Local development has special behavior. For deployment, set the actual host names, not a random wildcard copied from a tutorial.
 
-Use the following verification sequence:
-1. Confirm the command runs from the intended project folder.
-2. Confirm the virtual environment is active.
-3. Confirm Django is installed in that environment.
-4. Run the relevant Django system check.
-5. Start the development server when applicable.
-6. Open the local URL in a browser.
-7. Record the exact output and any warnings.
-8. Stop the development server with Ctrl+C when finished.
+### INSTALLED_APPS
+This is a Python list of app configurations. The default entries enable Django's admin, authentication, content types, sessions, messages and static files. Add the profiles AppConfig as one list item. A missing comma can cause a Python syntax error.
 
-Do not report a feature as working just because a command was accepted. Verify the browser response or actual application behavior.
+### MIDDLEWARE
+Middleware is a chain around request/response processing. SecurityMiddleware, SessionMiddleware, CsrfViewMiddleware and AuthenticationMiddleware each have responsibilities. Removing middleware to silence an error can break security or framework behavior.
 
-## 8. Common errors and troubleshooting
+### DATABASES
+The generated project uses SQLite for local development. The ENGINE names the Django database backend and NAME identifies the database file. PostgreSQL is part of the overall pathway; this lesson does not require installing or configuring a PostgreSQL server.
 
-| Error or symptom | What to check |
-|---|---|
-| django-admin is not recognized | Activate the virtual environment and try python -m django |
-| No module named django | Install Django into the active environment |
-| No such file manage.py | Change to the Django project folder |
-| Port already in use | Stop the other process or use another local port |
-| App not found | Check app folder name and INSTALLED_APPS |
-| System check reports an issue | Read the complete message and correct the named setting |
-| Browser cannot connect | Confirm runserver is active and URL/port are correct |
+### STATIC_URL
+This is the URL prefix for static assets such as CSS and JavaScript. Static file discovery and production collection are discussed when we build templates and deployment.
 
-### Debugging method
+### Development server lifecycle
+Start it from the directory containing manage.py. Keep the terminal open. Open the printed local address in the browser. Stop it with Ctrl+C. If you close the terminal, the local server stops.
 
-1. Read the final error message.
-2. Identify the file and line number.
-3. Check spelling and indentation.
-4. Confirm the active Python interpreter.
-5. Confirm the current working directory.
-6. Correct one issue at a time.
-7. Rerun the check and verify again.
+### Configuration versus application code
+Do not put a business rule such as employee eligibility into settings.py. Settings configure Django; models represent data; views coordinate requests; business logic belongs in the relevant application layer.
 
-## 9. Industry scenario
+### Production warning
+runserver is not designed for production traffic, security hardening or performance. Production uses an appropriate WSGI/ASGI server and deployment configuration. The local DEBUG setting and production host settings must be treated separately.
 
-A company needs a backend website for employee information. Django provides a project structure and reusable applications. Developers can separate employee profiles, departments and authentication into different applications while sharing one project configuration.
+### Troubleshooting
+- Port conflict: run on 8001.
+- Server starts but page errors: inspect terminal traceback and URL config.
+- App missing: inspect INSTALLED_APPS and app path.
+- Settings import error: read the Python traceback and fix the exact syntax or import problem.
+- Browser cannot connect: verify server is still running and port matches printed URL.
 
-## 10. When to use Django and what not to assume
+## 9. Trace the execution
 
-- Use Django when you need a structured Python web application with database-backed features.
-- Use Django applications to group related features.
-- Use the development server only for local development.
-- Do not expose DEBUG mode on production.
-- Do not commit secret keys, database passwords or API tokens.
-- Do not assume a generated project is already a complete business application.
+Use the following questions while demonstrating:
+1. What did the browser or developer request?
+2. Which project file receives the request first?
+3. Which app or feature owns the route?
+4. Which function or component is selected?
+5. What input does it receive?
+6. What work does it perform?
+7. What result is returned?
+8. How can we verify the result?
 
-## 11. Approved mini-project — Django Configuration Explorer
+Ask the learner to explain the flow without looking at the code.
 
-**Objective:** Django Configuration Explorer.
+## 10. Expected result and verification
+
+- [ ] The project check passes.
+- [ ] The development server starts and displays the local URL.
+- [ ] The browser loads the Django welcome page.
+- [ ] The server can run on port 8001 when available.
+- [ ] The learner explains why DEBUG must be False in production.
+- [ ] The learner explains why runserver is not a production server.
+
+Run the system check:
+
+```powershell
+python manage.py check
+```
+
+Expected output when configuration is valid:
+
+```text
+System check identified no issues (0 silenced).
+```
+
+This check is not a replacement for browser testing. Visit every required URL and verify the actual behavior.
+
+## 11. Common beginner mistakes and debugging
+
+| Symptom | Likely cause | What to inspect |
+|---|---|---|
+| `manage.py` not found | Terminal is in the wrong directory | Run Get-Location and locate manage.py |
+| `No module named django` | Wrong Python environment | Check python -c "import sys; print(sys.executable)" |
+| App not discovered | App missing from settings | Inspect INSTALLED_APPS |
+| ImportError | Wrong name or import path | Check package and function spelling |
+| 404 response | No matching route | Inspect config/urls.py and profiles/urls.py |
+| TemplateDoesNotExist | Incorrect template location | Check profiles/templates/profiles/ |
+| Browser cannot connect | Server stopped or wrong port | Inspect terminal and printed URL |
+| SyntaxError | Incorrect Python syntax | Read the exact file and line in traceback |
+
+### Debugging routine
+
+1. Reproduce the error.
+2. Read the full traceback, not only the last line.
+3. Locate the first relevant line in your own project.
+4. Confirm the active interpreter and current directory.
+5. Check names, imports, indentation and file paths.
+6. Change one thing at a time.
+7. Run `python manage.py check` again.
+8. Repeat the browser test.
+
+## 12. Industry scenario
+
+A training institute needs a Student Portal. The backend developer must make the application understandable to teammates. The feature should have a clear location, a predictable execution path and a testable result.
+
+**Discuss:**
+- What does the student need?
+- What does the browser send?
+- Which component owns the behavior?
+- What should happen for missing or invalid input?
+- What evidence proves the feature works?
+
+## 13. Approved mini-project — Django Configuration Explorer
+
+### Problem statement
+
+Build a small practical demonstration of today's topic inside the Student Portal workspace. The objective is not to copy a tutorial. The learner must be able to explain and reproduce the implementation.
 
 ### Functional requirements
 
-1. Open config/settings.py.
-2. Find INSTALLED_APPS and identify the built-in Django applications.
-3. Add the profiles app created on Day 28.
-4. Read DEBUG and ALLOWED_HOSTS and explain their development purpose.
-5. Run python manage.py check.
-6. Start the server and observe the result.
-7. Record which settings should be changed for production.
+1. Open settings.py and identify BASE_DIR, SECRET_KEY, DEBUG, ALLOWED_HOSTS, INSTALLED_APPS, MIDDLEWARE, DATABASES and STATIC_URL.
+2. Explain each setting in one sentence before changing anything.
+3. Confirm profiles is registered.
+4. Run check, start runserver and inspect the browser.
+5. Start on port 8001 and explain why the URL changes.
+6. Stop the server cleanly.
 
-### Suggested folder structure
+### Suggested implementation sequence
 
-```text
-projects/day_29/
-├── README.md
-├── screenshots/
-└── commands.txt
-```
+1. Inspect the current project.
+2. Identify the feature requirement.
+3. List the files that will change.
+4. Implement one small component.
+5. Run a system check.
+6. Verify the normal use case.
+7. Test an invalid or unexpected case.
+8. Fix any error.
+9. Record evidence.
+10. Explain the code and result to the trainer.
 
-### Validation checklist
+### Acceptance criteria
 
-- [ ] The app is listed exactly once in INSTALLED_APPS.
-- [ ] python manage.py check completes successfully.
-- [ ] DEBUG is understood as development-only.
-- [ ] No credentials or secret keys are added to Git.
-- [ ] The learner can explain the purpose of settings.py.
+- [ ] The project check passes.
+- [ ] The development server starts and displays the local URL.
+- [ ] The browser loads the Django welcome page.
+- [ ] The server can run on port 8001 when available.
+- [ ] The learner explains why DEBUG must be False in production.
+- [ ] The learner explains why runserver is not a production server.
 
 ### Submission evidence
 
-- Project folder or configuration files.
-- Terminal output for each required command.
-- Browser screenshot where a server is started.
-- README with setup and verification steps.
-- Short explanation of what each generated file or setting does.
-- A troubleshooting note describing one issue and its resolution.
+- Source files changed for this project.
+- Terminal output from checks and commands.
+- Browser screenshots or observed URLs, where applicable.
+- A short README containing setup and verification steps.
+- A short explanation of one error and its resolution.
 
-## 12. AI-assisted implementation guide
+### Optional extension
 
-Use the AI mentor in small steps:
-1. Ask for a plan, not a complete project.
-2. Ask for the first command only.
-3. Run the command and share the output.
-4. Ask what the generated files mean.
-5. Continue only after understanding the result.
-6. Share exact errors when debugging.
-7. Ask for a review against the validation checklist.
+Change one small behavior and predict the result before running it. Do not introduce concepts that belong to later lessons.
 
-**Planning prompt:** "Help me plan Django Configuration Explorer. List the prerequisites, ordered tasks, files, commands and verification checks. Do not write the complete solution."
+## 14. AI-assisted implementation guide
 
-**Implementation prompt:** "Guide me one step at a time. Explain the purpose of the command or file and wait for my terminal output before continuing."
+Use the AI mentor as a teaching assistant, not as a code generator that hides the learning.
 
-**Debugging prompt:** "Here is my exact command, folder structure and error. Identify the likely cause and the smallest safe correction."
+| Level | What to ask | What the learner must do |
+|---|---|---|
+| 1. Hint | "Give me one hint for the next step." | Attempt the step independently. |
+| 2. Plan | "Break this project into small ordered tasks." | Explain the plan before coding. |
+| 3. Example | "Show a tiny example of this one concept." | Reproduce and modify it. |
+| 4. Guided implementation | "Guide me through one file at a time; wait after each step." | Run each step and share output. |
+| 5. Explanation | "Explain every important line and why it is required." | Explain the code back in own words. |
+| 6. Debugging | "Here is my exact command, file and traceback. Help isolate the smallest fix." | Apply one fix and retest. |
+| 7. Review | "Review my implementation against the requirements and tests." | Correct issues and submit evidence. |
 
-## 13. Daily MCQs
+**Planning prompt**
 
-**Q1. What is the main purpose of Django?**  
-A. It is a Python web framework.  
-B. It is a database engine only.  
-C. It replaces Python.  
-D. It is a browser.  
-**Answer: A.** Django is a Python web framework.
+```text
+I am a beginner learning Django. Help me plan Django Configuration Explorer.
+Do not provide the complete solution. Give me the ordered tasks,
+the files I need to inspect, and the verification checkpoints.
+```
 
-**Q2. Why should a developer use a virtual environment?**  
-A. To replace Git.  
-B. To isolate project dependencies.  
-C. To host a website publicly.  
-D. To remove Python.  
-**Answer: B.** It isolates installed packages for the project.
+**Guided implementation prompt**
 
-**Q3. What should you do if a Django command cannot import Django?**  
-A. Delete Python.  
-B. Ignore the message.  
-C. Check the active environment and install Django there.  
-D. Change the browser.  
-**Answer: C.** The package must be installed in the environment used by the command.
+```text
+Guide me through this Django task one step at a time.
+Explain the purpose of the command or code, tell me the exact file,
+and wait for my terminal output before giving the next step.
+Do not skip explanations or write the whole project at once.
+```
 
-**Q4. Is Django runserver the recommended production server?**  
-A. Yes, for all workloads.  
-B. Yes, if DEBUG is True.  
-C. Only for database migrations.  
-D. No, it is a development server.  
-**Answer: D.** Use an appropriate production deployment stack.
+**Debugging prompt**
 
-**Q5. What is the best evidence that the setup task is complete?**  
-A. Commands run successfully and the application or version is verified.  
-B. A folder name only.  
-C. A screenshot of an empty editor.  
-D. A copied command list without execution.  
-**Answer: A.** Completion requires observed and documented verification.
+```text
+I am working on Django Configuration Explorer.
+My current directory is: [paste path]
+My command is: [paste exact command]
+My file contents are: [paste relevant file]
+My complete error is: [paste traceback]
+Explain the likely cause and the smallest safe correction.
+Do not rewrite unrelated files.
+```
 
-## 14. Interview preparation
+## 15. Daily MCQ assessment
 
-**Q1. Explain django development server, settings.py and installed applications.**  
-**Answer:** Django settings configure installed apps, middleware, database connections, templates, static files, security and other project behavior. Configuration should be environment-aware and secrets should not be committed to Git.
+### Question 1
 
-**Q2. What is one important command or configuration introduced today?**  
-**Answer:** Explain the command/configuration from the demonstration, its purpose and the expected result.
+What is settings.py?
 
-**Q3. What would you check if the setup did not work?**  
-**Answer:** Check the active virtual environment, Python interpreter, current directory, installed packages, command spelling and complete error message.
+- A. A database table
+- B. A Python module containing project configuration
+- C. An HTML template
+- D. A URL converter
 
-**Follow-up:** Why is it important to understand the generated files rather than simply run commands?  
-**Answer:** Backend developers must know where configuration and application behavior live so they can debug, extend and deploy the project safely.
+**Correct answer: B** — Django imports this Python module to load project settings.
 
-## 15. Completion checklist
+### Question 2
 
-- [ ] Explain the main concepts without reading.
-- [ ] Run all required commands.
-- [ ] Verify the expected result.
-- [ ] Explain the important files and settings.
-- [ ] Complete Django Configuration Explorer.
-- [ ] Test at least three relevant cases or checks.
-- [ ] Complete all five MCQs.
-- [ ] Answer the interview questions.
-- [ ] Submit README and evidence.
+Why must DEBUG be False in production?
 
-**Next lesson:** Day 30.
+- A. It makes pages slower only
+- B. It disables CSS
+- C. Detailed debug pages can expose sensitive diagnostic information
+- D. It removes all apps
+
+**Correct answer: C** — Debug pages can reveal implementation details and sensitive configuration.
+
+### Question 3
+
+What does INSTALLED_APPS do?
+
+- A. Lists applications Django should load
+- B. Stores user passwords
+- C. Defines browser routes
+- D. Starts the server
+
+**Correct answer: A** — Django loads configured app packages and contrib apps from this setting.
+
+### Question 4
+
+What should you do if port 8000 is occupied?
+
+- A. Delete manage.py
+- B. Use another port such as 8001
+- C. Remove middleware
+- D. Change the database engine
+
+**Correct answer: B** — runserver accepts a port argument.
+
+### Question 5
+
+Which statement about runserver is correct?
+
+- A. It is the production server
+- B. It automatically deploys to cloud
+- C. It replaces Gunicorn
+- D. It is intended for local development
+
+**Correct answer: D** — Use a suitable production server and deployment configuration outside development.
+
+## 16. Interview preparation
+
+### Question 1 — Explain today's topic
+**Answer:** Django needs configuration before it can load apps, middleware, databases and templates. The settings module tells Django which applications are active and how the project should behave. The development server is a local testing tool. It is deliberately not a production server.
+
+**Follow-up:** Explain the same concept using the Student Portal project.
+
+### Question 2 — Which files are involved?
+**Answer:** `config/settings.py`, `config/urls.py`, `profiles/apps.py`. Explain what each file owns and how the files connect.
+
+**Follow-up:** What would you inspect if the feature does not work?
+
+### Question 3 — How do you verify your implementation?
+**Answer:** Run the relevant management command, inspect the output, open the expected browser path and test an edge case. A successful system check alone does not prove every user journey.
+
+**Follow-up:** What evidence would you submit to a reviewer?
+
+### Question 4 — A teammate copied code but cannot explain it. Is the task complete?
+**Answer:** No. The learner must explain the responsibility of each component, reproduce the behavior, test a normal and invalid case and document the setup.
+
+## 17. Completion checklist
+
+- [ ] I can explain today's topic in simple language.
+- [ ] I can identify the exact files.
+- [ ] I can explain the important code statements.
+- [ ] I ran the required commands.
+- [ ] `python manage.py check` passes.
+- [ ] I verified the expected behavior.
+- [ ] I tested an edge case.
+- [ ] I completed **Django Configuration Explorer**.
+- [ ] I submitted source files and evidence.
+- [ ] I answered the interview questions and reviewed the MCQs.
+
+## 18. Trainer validation
+
+Do not mark the day complete just because code exists. Ask the student to:
+1. Demonstrate the feature.
+2. Explain the flow.
+3. Change one small part independently.
+4. Predict the result before running.
+5. Diagnose one controlled mistake.
+
+**Next lesson:** Day 30 — URL Routing, Path Converters and URL Patterns

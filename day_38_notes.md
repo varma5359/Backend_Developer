@@ -1,30 +1,35 @@
-# Day 38: Model Relationships: One-to-One, One-to-Many and Many-to-Many
+# Day 38: Model Relationships — Student, Department, Course and Profile
 
 **Pathway:** Python Backend Developer Career Pathway (Django)  
 **Phase:** 3 — Django Fundamentals  
-**Estimated time:** 2–3 hours | **Level:** Beginner to Intermediate  
-**Prerequisites:** Days 27–37 as applicable; review Django projects, models and migrations  
-**Tools:** Python, Django, VS Code, terminal and browser  
+**Prerequisites:** Day 34 models and field types; Day 35 migrations; Day 37 ORM basics  
 **Approved mini-project:** College Relationship Manager
 
-> **Trainer guidance:** Show the exact file or shell first. Ask the learner to run each command, read the output and explain what it proves. Do not skip migrations or database checks.
-
 ## 1. Learning objectives
+- Explain one-to-one, many-to-one and many-to-many relationships.
+- Use ForeignKey, OneToOneField and ManyToManyField.
+- Navigate relationships in both directions.
+- Understand on_delete and related_name.
 
-- Explain model relationships: one-to-one, one-to-many and many-to-many.
-- Identify the Django component responsible for the feature.
-- Implement the example step by step.
-- Explain the resulting database or admin behavior.
-- Handle common errors.
-- Complete College Relationship Manager.
+## 2. Business scenario
+A college maintains departments, students, courses and student contact profiles.
+- One department has many students.
+- One student has one optional profile.
+- A student can enroll in many courses.
+- A course can have many students.
 
-## 2. Concept introduction
+## 3. Relationship diagram
+```text
+Department 1 -------- many Student
+Student    1 -------- 1    StudentProfile
+Student    many ----- many Course
+```
 
-Relational applications need to connect records. Django represents relationships using ForeignKey for many-to-one, OneToOneField for one-to-one and ManyToManyField for many-to-many relationships. These fields express database relationships and provide convenient ORM accessors.
+## 4. Define the models
 
-## 3. File-by-file implementation
+**File: profiles/models.py**
 
-### profiles/models.py
+Add these classes in this order after the existing Employee model. Keep the existing Employee model unchanged.
 
 ```python
 from django.db import models
@@ -35,219 +40,252 @@ class Department(models.Model):
     def __str__(self):
         return self.name
 
-class Employee(models.Model):
+class Course(models.Model):
+    title = models.CharField(max_length=100, unique=True)
+
+    def __str__(self):
+        return self.title
+
+class Student(models.Model):
+    student_code = models.CharField(max_length=12, unique=True)
     full_name = models.CharField(max_length=120)
+    email = models.EmailField(unique=True)
     department = models.ForeignKey(
         Department,
         on_delete=models.PROTECT,
-        related_name="employees"
+        related_name="students",
+        null=True,
+        blank=True,
+    )
+    courses = models.ManyToManyField(
+        Course,
+        related_name="students",
+        blank=True,
     )
 
-class EmployeeProfile(models.Model):
-    employee = models.OneToOneField(
-        Employee,
+    def __str__(self):
+        return f"{self.student_code} - {self.full_name}"
+
+class StudentProfile(models.Model):
+    student = models.OneToOneField(
+        Student,
         on_delete=models.CASCADE,
-        related_name="profile"
+        related_name="profile",
     )
-    phone = models.CharField(max_length=20)
+    phone = models.CharField(max_length=20, blank=True)
 
-class Course(models.Model):
-    title = models.CharField(max_length=100)
-
-class Student(models.Model):
-    name = models.CharField(max_length=100)
-    courses = models.ManyToManyField(Course, related_name="students")
+    def __str__(self):
+        return f"Profile: {self.student.full_name}"
 ```
 
-## 4. Explain the code and commands
+### Understand every relationship
 
-### profiles/models.py
+**ForeignKey — many-to-one**
 
-1. `from django.db import models` — Imports a Django component or model.
-2. ` ` — Part of the configuration; understand its role in the complete feature.
-3. `class Department(models.Model):` — Defines a model or admin configuration class.
-4. `    name = models.CharField(max_length=80, unique=True)` — Part of the configuration; understand its role in the complete feature.
-5. ` ` — Part of the configuration; understand its role in the complete feature.
-6. `    def __str__(self):` — Part of the configuration; understand its role in the complete feature.
-7. `        return self.name` — Part of the configuration; understand its role in the complete feature.
-8. ` ` — Part of the configuration; understand its role in the complete feature.
-9. `class Employee(models.Model):` — Defines a model or admin configuration class.
-10. `    full_name = models.CharField(max_length=120)` — Part of the configuration; understand its role in the complete feature.
-11. `    department = models.ForeignKey(` — Creates a many-to-one database relationship.
-12. `        Department,` — Part of the configuration; understand its role in the complete feature.
-13. `        on_delete=models.PROTECT,` — Part of the configuration; understand its role in the complete feature.
-14. `        related_name="employees"` — Part of the configuration; understand its role in the complete feature.
-15. `    )` — Part of the configuration; understand its role in the complete feature.
-16. ` ` — Part of the configuration; understand its role in the complete feature.
-17. `class EmployeeProfile(models.Model):` — Defines a model or admin configuration class.
-18. `    employee = models.OneToOneField(` — Creates a one-to-one database relationship.
-19. `        Employee,` — Part of the configuration; understand its role in the complete feature.
-20. `        on_delete=models.CASCADE,` — Part of the configuration; understand its role in the complete feature.
-21. `        related_name="profile"` — Part of the configuration; understand its role in the complete feature.
-22. `    )` — Part of the configuration; understand its role in the complete feature.
-23. `    phone = models.CharField(max_length=20)` — Part of the configuration; understand its role in the complete feature.
-24. ` ` — Part of the configuration; understand its role in the complete feature.
-25. `class Course(models.Model):` — Defines a model or admin configuration class.
-26. `    title = models.CharField(max_length=100)` — Part of the configuration; understand its role in the complete feature.
-27. ` ` — Part of the configuration; understand its role in the complete feature.
-28. `class Student(models.Model):` — Defines a model or admin configuration class.
-29. `    name = models.CharField(max_length=100)` — Part of the configuration; understand its role in the complete feature.
-30. `    courses = models.ManyToManyField(Course, related_name="students")` — Creates a many-to-many database relationship.
+The ForeignKey is on Student because many students can point to one department. The database stores the department ID in each student's row. The Department table does not store a list of student IDs.
 
-## 5. Practical verification
+- Forward access: `student.department`
+- Reverse access: `department.students.all()`
 
-1. Activate the virtual environment.
-2. Change to the folder containing manage.py.
-3. Run `python manage.py check`.
-4. Execute the shell or admin commands.
-5. Inspect the resulting object, record or admin page.
-6. Test an invalid or missing-record case.
-7. Record the result in the README.
+**OneToOneField — one-to-one**
 
-## 6. Important terms
+StudentProfile has a OneToOneField to Student. The database enforces uniqueness on the student reference, so a student cannot have two profile rows through this relationship.
 
-| Term | Meaning |
-|---|---|
-| Model | Python class describing database-backed data |
-| Manager | Entry point for model-level database operations, commonly objects |
-| QuerySet | A collection-like representation of a database query |
-| Admin registration | Making a model available in Django Admin |
-| ForeignKey | Many-to-one relationship |
-| OneToOneField | One-to-one relationship |
-| ManyToManyField | Many-to-many relationship |
-| on_delete | Defines behavior when a referenced object is deleted |
+- From profile to student: `profile.student`
+- From student to profile: `student.profile` (only when a profile exists)
 
-## 7. Common errors
+**ManyToManyField — many-to-many**
 
-| Symptom | What to inspect |
-|---|---|
-| Model missing in admin | Import and register the model in admin.py |
-| Login fails | Superuser credentials and authentication configuration |
-| ImportError | App name and model class name |
-| DoesNotExist | Query matched no records |
-| MultipleObjectsReturned | get() matched more than one record |
-| Relationship migration error | Model references, app labels and migration order |
-| Cannot delete related object | on_delete behavior and existing related records |
+Student and Course can each have multiple related records. Django creates an intermediary join table that stores student/course pairs.
 
-## 8. Industry scenario
+- From student: `student.courses.all()`
+- From course: `course.students.all()`
 
-Relational applications need to connect records. Django represents relationships using ForeignKey for many-to-one, OneToOneField for one-to-one and ManyToManyField for many-to-many relationships. These fields express database relationships and provide convenient ORM accessors.
+### on_delete behavior
+
+- CASCADE: deleting the referenced student also deletes the dependent profile.
+- PROTECT: prevents a department from being deleted while students still refer to it.
+- SET_NULL: sets the foreign key to NULL; the field must allow null=True.
+- SET_DEFAULT: sets the configured default value.
+
+We use PROTECT for department because deleting a department should not silently remove students.
+
+### Why department is nullable in this learning migration
+
+The Employee model and database already exist from earlier days. The Student table is new, so the field is not strictly required for the lesson, but null=True and blank=True make it safe to register a student before assigning a department. The business can require assignment later using form validation.
+
+## 5. Apply the schema
+
+Run these commands from the folder containing manage.py:
+
+```powershell
+python manage.py check
+python manage.py makemigrations profiles
+python manage.py sqlmigrate profiles 0002
+python manage.py migrate
+python manage.py showmigrations profiles
+```
+
+The migration number may differ if the app already has other migrations. Use the filename printed by makemigrations rather than assuming it will always be 0002.
+
+- check validates project configuration.
+- makemigrations creates schema instructions.
+- sqlmigrate previews SQL; it does not apply it.
+- migrate applies the migration.
+- showmigrations displays applied state.
+
+Commit migration files to Git. Do not commit the local SQLite database file for shared development.
+
+## 6. Create and inspect related records
+
+```powershell
+python manage.py shell
+```
+
+Then enter:
+
+```python
+from profiles.models import Department, Course, Student, StudentProfile
+
+engineering = Department.objects.create(name="Engineering")
+python_course = Course.objects.create(title="Python")
+django_course = Course.objects.create(title="Django")
+
+student_one = Student.objects.create(
+    student_code="STU1001",
+    full_name="Asha Rao",
+    email="asha@example.com",
+    department=engineering,
+)
+student_two = Student.objects.create(
+    student_code="STU1002",
+    full_name="Rahul Kumar",
+    email="rahul@example.com",
+    department=engineering,
+)
+
+student_one.courses.add(python_course, django_course)
+
+profile = StudentProfile.objects.create(
+    student=student_one,
+    phone="9000000001",
+)
+
+engineering.students.all()
+student_one.department
+student_one.profile
+student_one.courses.all()
+django_course.students.all()
+```
+
+### Explain the shell code
+
+- Import the four models so the shell can create and query records.
+- Department.objects.create creates and saves a Department row.
+- Course.objects.create creates two Course rows.
+- Student.objects.create saves each student and links the department foreign key.
+- courses.add creates relationship rows in the many-to-many join table.
+- StudentProfile.objects.create creates the one-to-one profile.
+- engineering.students.all uses the related_name reverse accessor.
+- student_one.profile accesses the one-to-one relation.
+- student_one.courses.all reads the courses for a student.
+- django_course.students.all reads the students enrolled in a course.
+
+## 7. Understand the database shape
+
+Conceptually, the database has:
+- Department table with a primary key.
+- Student table with a department_id foreign key.
+- Course table.
+- StudentProfile table with a unique student_id foreign key.
+- An automatic many-to-many join table for Student and Course.
+
+The actual SQL table names are generated by Django and can be inspected using the database tools or migration SQL.
+
+## 8. Common mistakes
+
+| Symptom | Cause | Correction |
+|---|---|---|
+| Student has no department | department is optional in this exercise | Assign one through admin or shell |
+| RelatedObjectDoesNotExist | One-to-one profile has not been created | Create StudentProfile before accessing student.profile |
+| ProtectedError | Students still refer to department | Reassign/remove related records according to policy |
+| IntegrityError | Duplicate unique code/email or invalid foreign key | Check existing records and constraints |
+| FieldError | Incorrect related_name or field spelling | Compare exact model definitions |
+| Migration asks for a default | A required field is being added to existing rows | Review a safe staged migration; do not guess an ID |
 
 ## 9. Approved mini-project — College Relationship Manager
 
-**Objective:** College Relationship Manager.
+1. Create two departments.
+2. Create three courses.
+3. Create at least four students.
+4. Assign students to departments.
+5. Enroll students in multiple courses.
+6. Create a profile for at least two students.
+7. Query students by department.
+8. Query students enrolled in a selected course.
+9. Attempt to delete a department that still has students and explain PROTECT.
+10. Submit model code, migration files, shell output and a relationship diagram.
 
-### Required tasks
+## 10. Five MCQs
 
-1. Create a Department model.
-2. Add a ForeignKey from Employee to Department.
-3. Explain that one department can be related to many employees.
-4. Create EmployeeProfile with OneToOneField to Employee.
-5. Explain that each employee has at most one profile in this relationship.
-6. Create Course and Student models with ManyToManyField.
-7. Run makemigrations and migrate.
-8. Use the ORM to create and inspect related objects.
+**Q1. Which field represents many students belonging to one department?**  
+A. OneToOneField  
+B. ForeignKey  
+C. ManyToManyField  
+D. CharField  
+**Answer: B.** ForeignKey is placed on the many side of a many-to-one relationship.
 
-### Suggested structure
+**Q2. Which field enforces one profile per student?**  
+A. OneToOneField  
+B. TextField  
+C. ManyToManyField  
+D. BooleanField  
+**Answer: A.** OneToOneField enforces uniqueness on the related reference.
 
-```text
-projects/day_38/
-├── README.md
-├── manage.py
-└── application/
-    ├── models.py
-    ├── admin.py
-    └── migrations/
-```
+**Q3. What does Django use for many-to-many relationships?**  
+A. A template  
+B. A join/intermediary table  
+C. A cookie  
+D. A URL converter  
+**Answer: B.** The join table stores pairs of related object IDs.
 
-### Validation checklist
+**Q4. What does PROTECT do?**  
+A. Deletes related rows  
+B. Prevents deletion while protected references exist  
+C. Sets every field to empty  
+D. Changes the primary key  
+**Answer: B.** PROTECT raises an error instead of allowing deletion.
 
-- [ ] ForeignKey expresses many employees to one department.
-- [ ] OneToOneField links one profile to one employee.
-- [ ] ManyToManyField links students and courses in both directions.
-- [ ] on_delete behavior is understood.
-- [ ] Migrations are created and applied.
+**Q5. What does related_name define?**  
+A. Database name  
+B. Reverse ORM accessor  
+C. URL route  
+D. Form label  
+**Answer: B.** It defines how the related objects are accessed from the reverse side.
 
-### Submission evidence
+## 11. Interview preparation
 
-- Updated model/admin code.
-- Migration files where required.
-- Terminal output.
-- Admin screenshots or ORM query results.
-- README with setup and explanation.
-- At least three validation cases.
+**Q1. Explain ForeignKey, OneToOneField and ManyToManyField.**  
+A ForeignKey models many-to-one, OneToOneField models one-to-one and ManyToManyField models many-to-many. Give the college example for each.
 
-## 10. AI-assisted implementation
+**Follow-up:** Where does the foreign key column live for a many-to-one relationship?  
+**Answer:** On the many-side table, Student in this example.
 
-**Planning prompt:** "Help me plan College Relationship Manager. List the model/admin/query changes, commands, expected outputs and tests. Do not provide a complete solution."
+**Q2. Why use PROTECT for Department?**  
+It prevents deletion of a department while student records still reference it.
 
-**Guided prompt:** "Explain the next file and show one small change. Wait for my output before continuing."
+**Follow-up:** When might CASCADE be appropriate?  
+**Answer:** When dependent data should be deleted together, such as a profile row that has no meaning without its student.
 
-**Debugging prompt:** "Here is my model, admin registration or ORM query and exact traceback. Explain the root cause and the smallest correction."
+## 12. Completion checklist
 
-**Review prompt:** "Review my implementation for correctness, relationship behavior, query results and maintainability."
+- [ ] I can explain all three relationship types.
+- [ ] I can identify the foreign-key column.
+- [ ] I can use forward and reverse accessors.
+- [ ] I applied migrations successfully.
+- [ ] I verified many-to-many join behavior.
+- [ ] I understand PROTECT and CASCADE.
+- [ ] I completed College Relationship Manager.
+- [ ] I can explain the model design without reading.
 
-## 11. Five daily MCQs
-
-**Q1. What is the main purpose of today's Django feature?**  
-A. Provide structured access to application records or management functions.  
-B. Replace the Python language.  
-C. Remove the database.  
-D. Disable security.  
-**Answer: A.** The feature supports structured data management.
-
-**Q2. What should you do when a model is not visible?**  
-A. Delete the app.  
-B. Check imports, registration, installed apps and migrations as appropriate.  
-C. Ignore it.  
-D. Reinstall the browser.  
-**Answer: B.** Check the Django model and configuration path.
-
-**Q3. Which practice helps prevent incorrect database changes?**  
-A. Never inspect queries.  
-B. Delete migration files.  
-C. Test with sample records and verify the result.  
-D. Commit passwords.  
-**Answer: C.** Always verify database behavior.
-
-**Q4. What should you do if get() returns no record?**  
-A. Assume the query succeeded.  
-B. Delete the model.  
-C. Ignore the exception.  
-D. Handle DoesNotExist or use a query method suited to the requirement.  
-**Answer: D.** get() expects one matching record.
-
-**Q5. What is the strongest evidence of completion?**  
-A. Verified admin or ORM behavior with test cases.  
-B. A folder exists.  
-C. A screenshot of code only.  
-D. A project title.  
-**Answer: A.** Verify the actual behavior.
-
-## 12. Interview preparation
-
-**Q1. Explain model relationships: one-to-one, one-to-many and many-to-many.**  
-**Answer:** Relational applications need to connect records. Django represents relationships using ForeignKey for many-to-one, OneToOneField for one-to-one and ManyToManyField for many-to-many relationships. These fields express database relationships and provide convenient ORM accessors.
-
-**Q2. Which files and commands are important?**  
-**Answer:** Explain the model, admin or ORM shell example and the relevant management commands.
-
-**Q3. How would you test the feature?**  
-**Answer:** Create sample records, verify the expected relationship/query/admin result, test a missing or invalid case and document the output.
-
-**Follow-up:** What is one production concern?  
-**Answer:** Permissions, data integrity, query performance and safe migrations should be considered.
-
-## 13. Completion checklist
-
-- [ ] Explain the concept.
-- [ ] Implement the example.
-- [ ] Run Django system checks.
-- [ ] Verify database or admin behavior.
-- [ ] Complete College Relationship Manager.
-- [ ] Test normal and invalid cases.
-- [ ] Complete five MCQs.
-- [ ] Answer interview questions.
-- [ ] Submit code, README and evidence.
-
-**Next lesson:** Day 39.
+**Next lesson:** Day 39 — Django Forms and ModelForms.

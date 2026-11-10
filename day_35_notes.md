@@ -2,220 +2,420 @@
 
 **Pathway:** Python Backend Developer Career Pathway (Django)  
 **Phase:** 3 — Django Fundamentals  
-**Estimated time:** 2–3 hours | **Level:** Beginner  
-**Prerequisites:** Days 1–34 as applicable; review the previous Django lessons before continuing  
-**Tools:** Python, Django, VS Code, terminal and browser  
+**Duration:** 2–3 hours | **Level:** Beginner  
+**Prerequisites:** Previous Django lessons; Python, OOP, HTTP and SQL foundations  
+**Environment:** Windows, VS Code, PowerShell, Python virtual environment and Django 5.2.19  
+**Continuous project:** `student_portal` / `config` / `profiles`  
 **Approved mini-project:** Database Migration Practice
 
-> **Trainer guidance:** Show the learner the exact file path before showing the code. Explain why the file exists, what each important line does, how to run the project and how to verify the result.
+> **Teaching rule:** Do not copy a command without understanding it. Use the exact file path, run one step at a time, inspect the output and explain what the framework is doing.
 
 ## 1. Learning objectives
 
-- Explain django migrations: makemigrations and migrate.
-- Identify the Django files and folders used.
-- Implement the example step by step.
-- Explain the relationship between Django code and the browser or database.
-- Verify the result and troubleshoot common errors.
-- Complete Database Migration Practice.
+1. Explain why database schema changes are version-controlled.
+2. Distinguish makemigrations from migrate.
+3. Inspect migrations with showmigrations and sqlmigrate.
+4. Apply and verify a model schema change safely.
 
-## 2. Concept introduction
+## 2. Concept introduction — start from zero
 
-Migrations are version-controlled instructions that describe changes to the database schema. makemigrations detects model changes and creates migration files. migrate applies unapplied migrations to the configured database. Model code and the actual database schema are related but separate; editing models.py alone does not automatically change database tables.
+A model describes the database structure Django expects. A migration is a version-controlled instruction describing a schema change. makemigrations creates migration files from model changes. migrate applies unapplied migrations to the selected database. Creating a migration and applying it are two separate actions.
 
-## 3. Why the concept matters
+### Why a backend developer needs this
 
-A Django application becomes easier to maintain when shared presentation is reused, data is represented consistently and database changes are tracked. These practices help teams review code and understand how a feature evolved.
+The Student Portal is being developed as a real, growing application. The code must remain organized and the result must be repeatable. Today's lesson adds one building block to that system. A junior developer should be able to explain the purpose of the component, not only remember its syntax.
 
-## 4. File-by-file implementation
-
-### File or command: `Terminal commands`
-
-```bash
-# Create migration instructions from model changes
-python manage.py makemigrations profiles
-
-# Review migration status
-python manage.py showmigrations profiles
-
-# Apply migrations to the configured database
-python manage.py migrate
-
-# Inspect SQL generated for a migration
-python manage.py sqlmigrate profiles 0001
-```
-
-### File or command: `profiles/migrations/0001_initial.py`
-
-```python
-# Django generates this file.
-# Do not normally hand-write an initial migration while learning.
-# Inspect the operations and fields Django generated.
-```
-
-## 5. Explain the important statements
-
-### Terminal commands
-
-1. `# Create migration instructions from model changes` — Part of the file structure or configuration; understand how it supports the feature.
-2. `python manage.py makemigrations profiles` — Runs a Django management command.
-3. ` ` — Part of the file structure or configuration; understand how it supports the feature.
-4. `# Review migration status` — Part of the file structure or configuration; understand how it supports the feature.
-5. `python manage.py showmigrations profiles` — Runs a Django management command.
-6. ` ` — Part of the file structure or configuration; understand how it supports the feature.
-7. `# Apply migrations to the configured database` — Part of the file structure or configuration; understand how it supports the feature.
-8. `python manage.py migrate` — Runs a Django management command.
-9. ` ` — Part of the file structure or configuration; understand how it supports the feature.
-10. `# Inspect SQL generated for a migration` — Part of the file structure or configuration; understand how it supports the feature.
-11. `python manage.py sqlmigrate profiles 0001` — Runs a Django management command.
-
-### profiles/migrations/0001_initial.py
-
-1. `# Django generates this file.` — Part of the file structure or configuration; understand how it supports the feature.
-2. `# Do not normally hand-write an initial migration while learning.` — Part of the file structure or configuration; understand how it supports the feature.
-3. `# Inspect the operations and fields Django generated.` — Part of the file structure or configuration; understand how it supports the feature.
-
-## 6. How to run and verify
-
-1. Activate the project's virtual environment.
-2. Open the terminal in the folder containing manage.py.
-3. Run `python manage.py check`.
-4. Execute the commands or start the development server as appropriate.
-5. Open the page in a browser or inspect migration status.
-6. Compare actual behavior with the expected result.
-7. Record any warning and explain whether it is expected.
-
-## 7. Common errors and troubleshooting
-
-| Symptom | What to inspect |
-|---|---|
-| Template block is not rendered | extends path and matching block names |
-| CSS is missing | static directory, STATIC_URL, {% load static %} and URL |
-| Model is not detected | app in INSTALLED_APPS and model import |
-| Field configuration error | Field type and required field arguments |
-| No migration is generated | Check whether model changes exist and the correct app is selected |
-| Migration fails | Read the full database error and inspect migration dependencies |
-| Database does not reflect model change | Run makemigrations and then migrate |
-
-## 8. Industry scenario
-
-A staff management website needs a consistent page header and styling, an employee data model and a repeatable way to update its database structure. Django's template inheritance, static files, model fields and migrations support these needs.
-
-## 9. Approved mini-project — Database Migration Practice
-
-**Objective:** Database Migration Practice.
-
-### Functional requirements
-
-1. Create or update the Employee model from Day 34.
-2. Run python manage.py makemigrations profiles.
-3. Open the generated file inside profiles/migrations/.
-4. Read the CreateModel operation and field definitions.
-5. Run python manage.py showmigrations profiles.
-6. Apply changes using python manage.py migrate.
-7. Run showmigrations again and inspect the applied marker.
-8. Change one field and repeat the workflow.
-
-### Suggested structure
+## 3. Mental model
 
 ```text
-projects/day_35/
-├── manage.py
-├── config/
-└── profiles/
-    ├── models.py
-    ├── migrations/
-    ├── templates/
-    └── static/
+Student / Browser
+       |
+       v
+Django project (config)
+       |
+       v
+profiles application
+       |
+       v
+Today's Django component
+       |
+       +----> optional database / template / response work
+       |
+       v
+Visible result or persisted schema
 ```
 
-### Validation checklist
+## 4. File map
 
-- [ ] A migration file is generated after model changes.
-- [ ] The migration file is committed with source code.
-- [ ] migrate applies the migration without error.
-- [ ] showmigrations shows the migration as applied.
-- [ ] The learner understands that makemigrations creates files while migrate applies them.
+- `profiles/models.py`
+- `profiles/migrations/0001_initial.py (generated)`
+- `db.sqlite3 (local database file)`
+
+Project context:
+
+```text
+student_portal/
+├── .venv/
+├── manage.py
+├── config/
+│   ├── settings.py
+│   └── urls.py
+└── profiles/
+    ├── migrations/
+    ├── admin.py
+    ├── apps.py
+    ├── models.py
+    ├── tests.py
+    ├── views.py
+    ├── urls.py
+    ├── templates/
+    │   └── profiles/
+    └── static/
+        └── profiles/
+```
+
+Files are introduced gradually. Create a file only when this lesson tells you to.
+
+## 5. Prepare the terminal
+
+1. Open the existing `student_portal` folder in VS Code.
+2. Open Terminal → New Terminal.
+3. Confirm the current directory contains `manage.py`.
+4. Activate the same virtual environment created earlier.
+5. Confirm the interpreter and Django version.
+
+```powershell
+Get-Location
+python --version
+python -m django --version
+```
+
+If the current folder does not contain manage.py, move to the project root. Do not create a second project to avoid a path mistake.
+
+## 6. Commands — exact order
+
+```powershell
+python manage.py makemigrations profiles
+python manage.py showmigrations profiles
+python manage.py sqlmigrate profiles 0001
+python manage.py migrate
+python manage.py showmigrations profiles
+python manage.py check
+```
+
+### Understand every command
+
+### Step 1 — `makemigrations profiles`
+
+Looks at model changes for the profiles app and creates migration files describing the required schema operations. It does not apply them to the database.
+
+### Step 2 — `showmigrations profiles`
+
+Lists migration files for the app. [ ] means not applied; [X] means applied to the selected database.
+
+### Step 3 — `sqlmigrate profiles 0001`
+
+Shows the SQL Django would use for migration 0001 on the configured database backend. It is a preview, not an apply command.
+
+### Step 4 — `migrate`
+
+Applies all unapplied migrations needed by the project to the configured database.
+
+### Step 5 — `showmigrations again`
+
+Confirms whether the migration has been applied.
+
+### Step 6 — `check`
+
+Runs Django system checks after the schema operation.
+
+## 7. Implementation — correct files
+
+### Code demonstration
+
+The code below may contain Python, HTML or CSS sections. Use the filename comments to put each section into the correct file. Never paste HTML into a .py file.
+
+```python
+# Example shape of a generated migration. Django generates this file.
+# profiles/migrations/0001_initial.py
+from django.db import migrations, models
+
+class Migration(migrations.Migration):
+    initial = True
+    dependencies = []
+    operations = [
+        migrations.CreateModel(
+            name="Employee",
+            fields=[
+                ("id", models.BigAutoField(
+                    auto_created=True,
+                    primary_key=True,
+                    serialize=False,
+                    verbose_name="ID",
+                )),
+                ("employee_code", models.CharField(max_length=12, unique=True)),
+                ("full_name", models.CharField(max_length=120)),
+                ("email", models.EmailField(max_length=254, unique=True)),
+                ("salary", models.DecimalField(max_digits=10, decimal_places=2)),
+                ("joining_date", models.DateField()),
+                ("is_active", models.BooleanField(default=True)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+            ],
+        ),
+    ]
+```
+
+### Before saving
+
+1. Read the existing file.
+2. Preserve working code from earlier days.
+3. Add the new code at the correct location.
+4. Check spelling and indentation.
+5. Save the file.
+6. Run the relevant Django command.
+7. Inspect terminal output before opening the browser.
+
+## 8. Detailed explanation
+
+### Why migrations exist
+A database schema changes as the application evolves. A team needs a repeatable history of those changes. Migration files are committed to version control so other developers and deployment environments can apply the same sequence.
+
+### makemigrations versus migrate
+- makemigrations: model state → migration file.
+- migrate: migration file → actual database schema.
+Running only makemigrations does not create the table in the database.
+
+### showmigrations
+This command shows the migration state in the currently selected database. A migration can exist on disk but remain unapplied.
+
+### sqlmigrate
+This displays the SQL generated for a specific migration and current database backend. It is useful for understanding what will happen before applying a schema change.
+
+### Migration files are source code
+Commit migration files. They are part of the application's schema history. Do not delete or rewrite migrations that teammates or production environments may already have applied without a coordinated migration plan.
+
+### What about db.sqlite3?
+The local SQLite database file contains local data and schema. It is usually not committed for a shared application; each developer applies migrations to their own database. Production databases are managed separately.
+
+### Existing data and required fields
+Adding a new non-null field to a table with existing rows can require a default or staged data migration. Think about existing records before changing schema. Do not blindly accept a generated one-off default without understanding the data implications.
+
+### Dependencies and order
+Migrations can depend on earlier migrations or migrations in another app. Django orders them using dependency metadata.
+
+### Common errors
+- No changes detected: ensure model file is saved and app is installed.
+- Table already exists: database schema and migration history may be out of sync; inspect before deleting anything.
+- Cannot add non-null field: existing rows need a safe value.
+- Wrong database: verify settings and active environment before migrating.
+- Migration conflict: coordinate changes and inspect migration graph; don't delete files blindly.
+
+## 9. Execution trace
+
+Explain these questions aloud:
+1. What is the input or requested operation?
+2. Which file or command handles it?
+3. What does Django do automatically?
+4. What did the developer implement?
+5. What result should be produced?
+6. How do we prove that result is correct?
+
+## 10. Verification checklist
+
+- [ ] Migration file is created by Django.
+- [ ] showmigrations shows unapplied state before migrate.
+- [ ] sqlmigrate prints SQL for the migration.
+- [ ] migrate applies the migration successfully.
+- [ ] showmigrations displays [X] after applying.
+- [ ] The learner explains migration file versus database schema.
+
+Run the general project check:
+
+```powershell
+python manage.py check
+```
+
+Expected when project configuration is valid:
+
+```text
+System check identified no issues (0 silenced).
+```
+
+The system check does not prove every browser interaction or database operation. Perform the specific checks above.
+
+## 11. Troubleshooting
+
+| Symptom | Likely cause | Diagnostic |
+|---|---|---|
+| manage.py not found | Wrong directory | Get-Location and locate manage.py |
+| No module named django | Wrong environment | Check sys.executable and Django version |
+| App not loaded | Missing app registration | Inspect INSTALLED_APPS |
+| Template not found | Incorrect folder/file path | Check app/templates/app_name/ |
+| Route returns 404 | URL pattern missing or order issue | Inspect root and app URLconf |
+| Database table missing | Migration not applied | Run showmigrations and migrate |
+| CSS missing | Incorrect static path | Inspect browser Network tab |
+| SyntaxError | Incorrect Python syntax | Read traceback file and line |
+
+### Safe debugging process
+1. Reproduce the problem.
+2. Read the complete error.
+3. Locate the first relevant line in your own code.
+4. Confirm the correct Python environment and project folder.
+5. Check the filename, imports, spelling and configuration.
+6. Change one thing at a time.
+7. Rerun the appropriate check.
+8. Verify the actual behavior again.
+
+## 12. Industry scenario
+
+A training institute needs to maintain a Student Portal. A backend developer must make the application easy to extend and debug. Today's concept is useful because it gives a predictable way to organize or operate one part of the system.
+
+Discuss:
+- What problem does the user face?
+- Which component is responsible?
+- What information enters the feature?
+- What result should the user or developer observe?
+- What failure case should be tested?
+
+## 13. Approved mini-project — Database Migration Practice
+
+### Objective
+Build a working demonstration of today's approved concept in the existing Student Portal.
+
+### Ordered tasks
+
+1. Run makemigrations profiles and inspect the created migration file.
+2. Run showmigrations profiles before applying; identify the unchecked migration.
+3. Run sqlmigrate and read the CREATE TABLE and constraints in the SQL.
+4. Run migrate.
+5. Run showmigrations again and confirm the migration is checked.
+6. Open Django shell and inspect Employee.objects.count().
+
+### Acceptance checks
+
+- [ ] Migration file is created by Django.
+- [ ] showmigrations shows unapplied state before migrate.
+- [ ] sqlmigrate prints SQL for the migration.
+- [ ] migrate applies the migration successfully.
+- [ ] showmigrations displays [X] after applying.
+- [ ] The learner explains migration file versus database schema.
 
 ### Submission evidence
+- Relevant source files.
+- Terminal output from checks and commands.
+- Browser screenshot or database evidence, where relevant.
+- README with setup and verification steps.
+- Short explanation of one error and its correction.
 
-- Updated source files.
-- Commands executed and terminal output.
-- Browser screenshot or migration status.
-- README with exact file paths and setup instructions.
-- Explanation of one design decision and one error handled.
+### Optional extension
+Make one small change, predict its result, run it and explain the difference.
 
-## 10. AI-assisted implementation guide
+## 14. AI-assisted implementation
 
-**Planning prompt:** "Help me plan Database Migration Practice. List the files, ordered tasks, commands and verification checks. Do not write the complete solution."
+Use the AI mentor to learn incrementally:
 
-**Guided prompt:** "Guide me through one file at a time. Explain why the file is needed, show only the next change and wait for my output."
+**Planning prompt**
+```text
+I am a beginner. Help me plan Database Migration Practice.
+Give me ordered tasks and checkpoints. Do not give me the complete solution.
+```
 
-**Debugging prompt:** "Inspect my exact Django error, file path and command. Explain the likely cause and how to verify the fix."
+**Guided implementation prompt**
+```text
+Guide me one file and one step at a time. Explain the command,
+the code and the expected output. Wait for my result before continuing.
+```
 
-**Review prompt:** "Review my implementation against the approved requirements. Identify missing validation, naming issues and maintainability concerns."
+**Debugging prompt**
+```text
+Here is my exact command, current directory, relevant file and full error.
+Explain the likely cause and the smallest safe fix. Do not rewrite unrelated files.
+```
 
-## 11. Five daily MCQs
+## 15. Daily MCQ assessment
 
-**Q1. What is the main purpose of today's concept?**  
-A. Organize Django presentation, data or database structure changes in a maintainable way.  
-B. Replace Python.  
-C. Disable validation.  
-D. Remove all configuration.  
-**Answer: A.** The concept supports a maintainable Django application.
+### Q1. What does makemigrations do?
 
-**Q2. What should you inspect when the result is missing?**  
-A. Only the browser theme.  
-B. The relevant file path, setting and Django output.  
-C. Delete the project.  
-D. Ignore the warning.  
-**Answer: B.** File paths and configuration commonly determine whether Django discovers the component.
+A. Applies SQL immediately
+B. Creates migration files from model changes
+C. Starts the web server
+D. Creates a superuser
 
-**Q3. Which practice is safest?**  
-A. Edit generated files without understanding them.  
-B. Ignore migrations.  
-C. Follow the correct workflow and verify each change.  
-D. Commit local secrets.  
-**Answer: C.** Use a repeatable workflow and inspect the result.
+**Answer: B.** It generates version-controlled schema-change instructions.
 
-**Q4. What is the best evidence of completion?**  
-A. A file exists.  
-B. The code is long.  
-C. The learner watched a video.  
-D. The feature works and its behavior is verified.  
-**Answer: D.** Evidence should show the required behavior.
+### Q2. What does migrate do?
 
-**Q5. What should the README contain?**  
-A. Setup, file paths, commands and validation results.  
-B. Only a title.  
-C. A private password.  
-D. No instructions.  
-**Answer: A.** Clear instructions make the project reproducible.
+A. Applies unapplied migrations
+B. Creates HTML templates
+C. Registers views
+D. Changes URL paths
 
-## 12. Interview preparation
+**Answer: A.** migrate applies the migration operations to the configured database.
 
-**Q1. Explain django migrations: makemigrations and migrate.**  
-**Answer:** Migrations are version-controlled instructions that describe changes to the database schema. makemigrations detects model changes and creates migration files. migrate applies unapplied migrations to the configured database. Model code and the actual database schema are related but separate; editing models.py alone does not automatically change database tables.
+### Q3. What does [X] mean in showmigrations?
 
-**Q2. Which files or commands are important?**  
-**Answer:** Explain each file or command from the demonstration and its responsibility.
+A. Migration is missing
+B. Migration is applied
+C. Migration has a syntax error
+D. Migration is ignored
 
-**Q3. How would you troubleshoot a failure?**  
-**Answer:** Read the full traceback, confirm file paths and configuration, run Django system checks and verify the result after one focused correction.
+**Answer: B.** The checked marker indicates the migration is applied to that database.
 
-**Follow-up:** What evidence would you show another developer?  
-**Answer:** The source change, command output, browser behavior or migration status and a concise README.
+### Q4. What does sqlmigrate show?
 
-## 13. Completion checklist
+A. Browser HTML
+B. Generated SQL for a migration
+C. Python version
+D. User passwords
 
-- [ ] Explain the concept.
-- [ ] Identify the relevant file paths.
-- [ ] Implement the example.
-- [ ] Run the required checks or commands.
-- [ ] Verify the expected result.
-- [ ] Complete Database Migration Practice.
-- [ ] Test normal and error cases.
-- [ ] Complete all five MCQs.
-- [ ] Answer the interview questions.
-- [ ] Submit source, README and evidence.
+**Answer: B.** It previews the SQL Django will execute for the named migration.
 
-**Next lesson:** Day 36.
+### Q5. Should migration files normally be committed?
+
+A. No, delete them after use
+B. Yes, they are part of the schema history
+C. Only if SQLite is used
+D. Only when there are no models
+
+**Answer: B.** Migration files allow teammates and deployments to apply the same schema evolution.
+
+## 16. Interview preparation
+
+### Q1. Explain today's topic in simple words.
+**Answer:** A model describes the database structure Django expects. A migration is a version-controlled instruction describing a schema change. makemigrations creates migration files from model changes. migrate applies unapplied migrations to the selected database. Creating a migration and applying it are two separate actions.
+
+**Follow-up:** Give an example from the Student Portal.
+
+### Q2. Which files or commands are important?
+**Answer:** `profiles/models.py`, `profiles/migrations/0001_initial.py (generated)`, `db.sqlite3 (local database file)`. Explain the responsibility of each.
+
+**Follow-up:** What would you inspect if the expected behavior did not appear?
+
+### Q3. How do you verify the implementation?
+**Answer:** Run the commands, inspect output and verify the browser or database behavior. Explain the edge case you tested.
+
+**Follow-up:** Does a successful system check guarantee that every feature works?
+
+**Answer:** No. It checks selected project configuration and framework conditions. Feature behavior needs direct testing.
+
+### Q4. What is a common beginner mistake?
+**Answer:** Running commands from the wrong folder, editing the wrong file or assuming code works without verification. Read the error and isolate the cause.
+
+## 17. Completion checklist
+
+- [ ] I can explain today's concept without reading.
+- [ ] I know the exact file paths.
+- [ ] I can explain the important code.
+- [ ] I ran the required commands.
+- [ ] The Django system check passes.
+- [ ] I verified the expected behavior.
+- [ ] I tested an edge case.
+- [ ] I completed Database Migration Practice.
+- [ ] I submitted reproducible evidence.
+- [ ] I can answer the interview questions.
+
+## 18. Trainer validation
+
+Do not mark the day complete merely because a file contains code. Ask the learner to demonstrate the result, explain the flow, modify one small part independently and diagnose one controlled mistake.
+
+**Next lesson:** Day 36 — Django Admin Panel and Model Registration

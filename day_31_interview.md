@@ -1,90 +1,92 @@
-# Day 31: Interview Questions — Django Views: Function-Based Views and Request-Response Cycle
+# Day 31: Interview Guide — Django Views: Function-Based Views and Request-Response Cycle
 
 **Pathway:** Python Backend Developer Career Pathway (Django)  
 **Phase:** 3 — Django Fundamentals  
-**Related notes:** [Day 31 class notes](day_31_notes.md)  
+**Related class notes:** [Day 31 notes](day_31_notes.md)  
 **Approved mini-project:** Dynamic Welcome Application
 
 ## 1. Core technical questions
 
-### Q1. Explain django views: function-based views and request-response cycle.
-**Answer:** A view is a Python callable that receives an HttpRequest object and returns an HttpResponse. Function-based views are ordinary Python functions with a request parameter. They contain request-specific application logic and decide what response to return.
+### Q1. What is the central purpose of this lesson?
+**Answer:** A view is a Python callable that receives an HttpRequest and returns an HttpResponse (or another compatible response). A function-based view is an ordinary Python function with a request parameter. Django selects the view through URL routing. The view decides what work to perform and what response to return.
 
-### Q2. Describe the request flow.
-**Answer:** HTTP request → URL pattern → view(request) → application logic → HttpResponse / rendered template → browser
+**Follow-up:** Explain this using the Student Portal example.
 
-### Q3. Which files are involved?
-**Answer:** profiles/views.py, profiles/urls.py. Explain the responsibility of each file and how the files connect.
+### Q2. Which files are responsible for the implementation?
+**Answer:** The files are profiles/views.py, profiles/urls.py, profiles/templates/profiles/welcome.html. Describe the responsibility of each file, rather than only listing names.
 
-### Q4. What is a common beginner error?
-**Answer:** Each view accepts request as its first parameter. If the result differs, inspect the exact URL, file path, import, function name and server traceback.
+**Follow-up:** Explain this using the Student Portal example.
 
-### Q5. How do you verify the implementation?
-**Answer:** Run python manage.py check, start the development server, open the expected route and test at least one invalid or unmatched case.
+### Q3. How would you verify the feature?
+**Answer:** Run the required commands, inspect the output, test the browser behavior and verify an edge case. Use the exact checks in Day 31 class notes.
+
+**Follow-up:** Explain this using the Student Portal example.
+
+### Q4. What mistakes commonly affect beginners?
+**Answer:** Common causes include an incorrect working directory, wrong Python environment, spelling errors, incorrect imports, a missing app registration or a route/file path mismatch. Read the traceback and correct one cause at a time.
+
+**Follow-up:** Explain this using the Student Portal example.
 
 ## 2. Scenario-based questions
 
-### Q6. A browser request does not show the expected page. What do you inspect?
+### Q5. The code exists, but the expected behavior is not visible. How do you debug it?
 **Suggested answer:**
-1. Confirm the development server is running.
-2. Verify the exact URL path.
-3. Inspect the project URLconf.
-4. Inspect the application URLconf.
-5. Confirm the view function exists and returns a response.
-6. If a template is used, verify its path and context values.
-7. Read the traceback and test again.
+1. Reproduce the problem.
+2. Read the complete error or terminal output.
+3. Confirm the current directory and active virtual environment.
+4. Inspect the file and line mentioned in the traceback.
+5. Check imports, names, configuration and route connections.
+6. Run `python manage.py check`.
+7. Test the browser behavior again.
 
-### Q7. Why should URL routing, views and templates have separate responsibilities?
-**Suggested answer:** URL routing selects the handler, the view implements request-specific logic and prepares data, and the template controls HTML presentation. Separating them makes the application easier to maintain.
+### Q6. A student says, "The command completed, so the feature is done." Is that enough?
+**Suggested answer:** No. A command may create a file or start a server without proving the required user behavior. Demonstrate the result, test an edge case and explain the implementation.
+
+### Q7. How would you explain your implementation to another developer?
+**Suggested answer:** State the requirement, name the files, explain the data or request flow, demonstrate the commands, show expected output and describe one failure and its fix.
 
 ## 3. Practical coding discussion
 
 Be ready to:
 - Identify the exact file path.
-- Explain each important import.
-- Explain the route and view connection.
-- Demonstrate the browser output.
-- Explain how invalid routes or missing templates are handled.
-- Describe how you would test the implementation.
+- Explain the important imports and statements.
+- Run the relevant management command.
+- Demonstrate the browser or terminal result.
+- Modify one small part and predict the outcome.
+- Test one invalid or unexpected case.
+- Diagnose one common error.
 
 ## 4. Mini-project viva — Dynamic Welcome Application
 
 1. What problem does the project solve?
-2. Which URL paths did you create?
-3. Which view handles each route?
-4. What data is passed to the view?
-5. What response does the view return?
-6. What did you verify in the browser?
-7. What error did you encounter?
-8. How did you fix it?
-9. Which test would you automate?
+2. What are the functional requirements?
+3. Which files did you create or update?
+4. What commands did you execute?
+5. What does the main code do?
+6. How did you test the normal case?
+7. Which edge case did you test?
+8. What error did you encounter?
+9. How did you resolve it?
 10. What would you improve next?
 
 ## 5. Rapid revision
 
-- **1.** Create a simple function-based view.
-- **2.** Import HttpResponse from django.http.
-- **3.** Return an HttpResponse from the view.
-- **4.** Connect the view to a URL pattern.
-- **5.** Add a second view that accepts a URL parameter.
-- **6.** Inspect request.method and request.path in a safe demonstration.
-- **7.** Explain that a view must return an HttpResponse-compatible response.
+- Explain the concept in one minute.
+- Identify the exact files and their responsibilities.
+- Trace the relevant execution flow.
+- Demonstrate the mini-project.
+- Run the required checks.
+- Explain an edge case.
+- Describe a safe debugging process.
 
-## 6. Common incorrect answers
+## 6. Readiness checklist
 
-| Incorrect answer | Better answer |
-|---|---|
-| URLconf contains all business logic | URLconf maps paths to views |
-| A view can return any object | A view should return an HttpResponse-compatible response |
-| A template runs Python code | Django templates use a restricted template language |
-| A 404 always means the server is stopped | It may mean no URL pattern matched |
-| The file path is unimportant | Django file and template paths must be correct |
+- [ ] I can define the topic.
+- [ ] I can explain the relevant files.
+- [ ] I can reproduce the implementation.
+- [ ] I can explain the important code.
+- [ ] I can verify the expected behavior.
+- [ ] I can explain an edge case.
+- [ ] I can present Dynamic Welcome Application without reading the notes.
 
-## 7. Readiness checklist
-
-- [ ] Explain the concept.
-- [ ] Explain the file structure.
-- [ ] Trace the request to the response.
-- [ ] Demonstrate the mini-project.
-- [ ] Explain one error and its resolution.
-- [ ] Answer follow-up questions.
+**Trainer note:** Ask the learner to predict the result of a small code or configuration change. Reward reasoning and evidence, not memorized definitions.
