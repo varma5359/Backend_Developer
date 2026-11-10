@@ -55,7 +55,7 @@ from .models import Employee
 class EmployeeForm(forms.ModelForm):
     class Meta:
         model = Employee
-        fields = ["employee_code", "full_name", "email", "salary"]
+        fields = ["employee_code", "full_name", "email", "department", "salary", "joining_date"]
 
     def clean_employee_code(self):
         code = self.cleaned_data["employee_code"].strip().upper()
