@@ -54,7 +54,7 @@ This index tracks the detailed trainer manuscripts and interview guides. The syl
 
 **Phase 2 assessment:** Web-Connected Employee Database Workflow — see [Day 26 notes](day_26_notes.md).
 
-## Class-notes quality revision — Days 13–25
+## Class-notes quality revision — Days 13–25 and Django Phase 3
 
 The class-note manuscripts for Days 13–25 have been rewritten as detailed, beginner-first lessons. Each lesson includes concept explanations, worked examples, runnable demonstrations where applicable, code walkthroughs, expected behavior, practical exercises, troubleshooting, mini-project guidance, interview questions and MCQs.
 
@@ -66,11 +66,15 @@ The class-note manuscripts for Days 13–25 have been rewritten as detailed, beg
 
 **Important:** This status refers to the class-note manuscripts. The separate interview-guide files have not been quality-rewritten as part of this class-notes revision.
 
+## Django Phase 3 quality revision
+
+Day 27 has been rewritten as a beginner-first, step-by-step Django introduction and environment setup lesson. Days 28–41 already have files, but their existence does not mean they meet the new teaching standard. They remain pending detailed review and revision. Do not treat Phase 3 as complete until each day's lesson and practical project have been checked.
+
 ## Remaining phases
 
 | Phase | Days | Module | Authoring status |
 |---|---:|---|---|
-| 3 | 27–41 | Django fundamentals | Class notes and interview guides completed |
+| 3 | 27–41 | Django fundamentals | Quality revision in progress — Day 27 rewritten; Days 28–41 pending review |
 | 4 | 42–54 | Django ORM, forms and authentication | Class notes and interview guides completed |
 | 5 | 55–69 | REST API development with Django REST Framework | Class notes and interview guides completed |
 | 6 | 70–81 | Advanced backend development | Class notes and interview guides completed |
