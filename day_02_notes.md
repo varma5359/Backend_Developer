@@ -5,284 +5,327 @@
 **Estimated time:** 2–3 hours  
 **Difficulty:** Beginner  
 **Prerequisites:** Day 1 — backend development overview  
-**Required tools:** Windows, Python 3, VS Code, terminal/PowerShell, optional Jupyter  
+**Required tools:** Windows, Python 3, VS Code and PowerShell or Command Prompt  
 **Approved mini-project:** Python Environment Setup
 
 ## 1. Learning objectives
-- Explain the Python interpreter and how a Python program runs.
-- Verify a Python installation from the terminal.
-- Create and run a Python file in VS Code.
+
+- Explain what Python and the Python interpreter do.
+- Verify Python installation from a terminal.
+- Create and run a `.py` file in VS Code.
 - Create and activate a virtual environment.
-- Install and verify a package inside the environment.
+- Install and verify a package in the correct environment.
+- Explain when a notebook is useful and when a normal Python file is preferable.
 
 ## 2. What is Python?
-Python is a general-purpose programming language. A Python source file usually has the `.py` extension.
 
-Example:
+Python is a general-purpose programming language. It is used for scripting, automation, web development, data processing and many other tasks.
+
+Python source files commonly use the `.py` extension.
+
 ```python
 print("Hello, Backend Developer!")
 ```
 
-Save this as `hello.py`. The `print()` function displays output.
+Save this code in a file named `hello.py`. The `print()` function displays a value in the terminal.
 
 ## 3. What is the Python interpreter?
-The interpreter is the program that executes Python code. When you run a script, Python reads and executes the code.
 
-Common commands on Windows:
+The Python interpreter is the program that runs Python code. When you execute a script, the interpreter reads the program and carries out its instructions.
+
+Open PowerShell or Command Prompt and check:
 
 ```powershell
 python --version
+```
+
+Possible output:
+
+```text
+Python 3.12.5
+```
+
+Your version may be different. The important point is that the command prints a Python 3 version.
+
+On Windows, the Python launcher may also be available:
+
+```powershell
 py --version
 ```
 
-Expected output is a Python version, for example:
-```text
-Python 3.x.x
+To locate the executable:
+
+```powershell
+where.exe python
 ```
 
-The exact version depends on the installed release.
+If Python is not recognized:
 
-If the command is not recognized:
-- Check whether Python is installed.
-- Reopen the terminal after installation.
-- Check PATH configuration.
-- On Windows, try the Python launcher command `py`.
+1. Confirm Python is installed.
+2. Close and reopen the terminal after installation.
+3. Check whether the Python installation directory is available through PATH.
+4. Try `py --version` on Windows.
+5. In VS Code, select the intended Python interpreter.
 
-## 4. Create and run your first file
+Do not install Python repeatedly before checking which executable your terminal is using.
 
-### Step 1: Create a project folder
-In PowerShell:
+## 4. Create a project folder
+
+A project folder keeps related files together.
+
 ```powershell
 mkdir backend_learning
 cd backend_learning
 ```
 
-### Step 2: Create a Python file
-Create `hello.py` in VS Code and enter:
+- `mkdir` creates a directory.
+- `cd` changes the current directory.
+
+Create a file named `hello.py` in this folder.
+
 ```python
 message = "Python is ready for backend development"
 print(message)
 ```
 
-### Step 3: Run the file
+Run it from the terminal:
+
 ```powershell
 python hello.py
 ```
 
 Expected output:
+
 ```text
 Python is ready for backend development
 ```
 
-Explanation:
-- `message` is a variable holding text.
-- The assignment operator `=` stores the value.
-- `print(message)` displays the value.
+The terminal must be in the folder containing `hello.py`, or you must provide the correct file path.
 
 ## 5. What is VS Code?
-Visual Studio Code is a code editor. With the Python extension, it can provide syntax highlighting, code completion, debugging and interpreter selection.
 
-Basic workflow:
-1. Open the project folder.
-2. Create a `.py` file.
-3. Select the installed Python interpreter.
-4. Run the file using the terminal or editor controls.
-5. Read errors in the terminal and correct them.
+Visual Studio Code is a code editor. It is not Python itself. With the Python extension, it can help you:
 
-Keep the project folder open rather than opening unrelated files one by one. This makes relative paths and project organization easier to understand.
+- Highlight Python syntax.
+- Suggest code while typing.
+- Select a Python interpreter.
+- Run Python files.
+- Set breakpoints and debug programs.
+- Work with project folders and a terminal.
+
+Basic setup:
+
+1. Install VS Code.
+2. Open the project folder using **File → Open Folder**.
+3. Install the Microsoft Python extension.
+4. Open or create a `.py` file.
+5. Select the intended interpreter from the interpreter selector.
+6. Run the file and inspect terminal output.
+
+If VS Code runs a different Python version from PowerShell, compare the selected interpreter path with the terminal executable.
 
 ## 6. What is a virtual environment?
-A virtual environment creates an isolated Python environment for a project. It helps prevent package versions from different projects interfering with one another.
 
-Create it from the project folder:
+A virtual environment is an isolated Python environment for one project. It keeps that project's installed packages separate from packages used by other projects.
+
+Example: Project A may need one version of a library while Project B needs another. Separate environments reduce dependency conflicts.
+
+Create an environment from the project folder:
+
 ```powershell
 python -m venv .venv
 ```
 
-Activate in PowerShell:
+Explanation:
+
+- `python` runs the selected Python interpreter.
+- `-m venv` runs Python's built-in virtual-environment module.
+- `.venv` is the directory where the environment is created.
+
+### Activate in PowerShell
+
 ```powershell
 .venv\Scripts\Activate.ps1
 ```
 
-If PowerShell blocks activation, you may use the Command Prompt activation command:
+The prompt commonly shows `(.venv)` when activation succeeds.
+
+### Activate in Command Prompt
+
 ```cmd
 .venv\Scripts\activate.bat
 ```
 
-Or run the interpreter directly without activation:
+### Verify the active interpreter
+
 ```powershell
-.venv\Scripts\python.exe --version
+python -c "import sys; print(sys.executable)"
 ```
 
-Deactivate an activated environment:
+The printed path should point inside your project's `.venv` directory.
+
+### Deactivate
+
 ```powershell
 deactivate
 ```
 
-## 7. Install a package
+Deactivation exits the virtual environment in the current terminal session. It does not delete it.
+
+If PowerShell blocks activation because of its execution policy, do not change machine-wide security settings casually. You can use Command Prompt activation or call the environment's Python executable directly:
+
+```powershell
+.venv\Scripts\python.exe --version
+```
+
+## 7. Install and verify a package
+
 With the environment activated:
+
 ```powershell
 python -m pip install requests
 ```
 
-Verify:
+Verify installation:
+
 ```powershell
 python -m pip show requests
 ```
 
-Why use `python -m pip`?
-- It runs pip using the selected Python interpreter.
-- It reduces confusion when multiple Python installations exist.
-- It helps ensure the package is installed into the expected environment.
+Test importing it:
 
-## 8. Save project dependencies
+```python
+import requests
+
+print("Requests package is available")
+print(requests.__version__)
+```
+
+Run the test file using the environment's Python interpreter.
+
+Why use `python -m pip` instead of only `pip`?
+
+- It runs pip through the Python interpreter selected by `python`.
+- It reduces confusion when multiple Python installations exist.
+- It helps install the package into the environment you intend to use.
+
+If an import fails after installation, check whether the package was installed using the same interpreter that runs the script.
+
+## 8. Record project dependencies
+
+A dependency is an external package that your project uses.
+
+Create a dependency list:
+
 ```powershell
 python -m pip freeze > requirements.txt
 ```
 
-Install recorded dependencies later:
+The `>` operator redirects command output into a file.
+
+Install dependencies later:
+
 ```powershell
 python -m pip install -r requirements.txt
 ```
 
-For a small training exercise, this captures the installed environment. In maintained projects, review and pin only the dependencies actually required by the application.
+For a learning exercise, `pip freeze` records installed packages and versions. In a maintained project, review the file and keep only dependencies the project actually needs.
 
-## 9. What is Jupyter?
-Jupyter Notebook is an interactive environment where code is run in separate cells. It is useful for experiments and learning.
+## 9. What is Jupyter Notebook?
 
-Install:
+Jupyter Notebook is an interactive environment where code is organized into cells. A student can run one cell, inspect its output and then run another cell.
+
+Install it inside the selected environment:
+
 ```powershell
 python -m pip install notebook
 ```
 
-Start:
+Start it:
+
 ```powershell
 jupyter notebook
 ```
 
-For backend application development, normal `.py` files and a clear project structure are generally more suitable than putting the application entirely in a notebook. Jupyter is optional in this pathway.
+A browser tab normally opens with the notebook interface.
 
-## 10. Common environment commands
+### Notebook versus Python script
+
+| Python script (`.py`) | Jupyter Notebook (`.ipynb`) |
+|---|---|
+| Runs as a program or module | Runs code in separate cells |
+| Suitable for application logic | Useful for interactive exploration |
+| Common for Django projects | Useful for demonstrations and experiments |
+| Easier to organize as application modules | Cell execution order can affect state |
+
+For backend development, use normal Python files for application code. Jupyter is optional and useful for learning or experimentation.
+
+## 10. Useful environment commands
 
 | Command | Purpose |
 |---|---|
-| `python --version` | Display selected Python version |
-| `where.exe python` | Locate Python executables on Windows |
-| `python -m venv .venv` | Create virtual environment |
+| `python --version` | Show the selected Python version |
+| `py --version` | Show the Windows Python launcher version |
+| `where.exe python` | Locate Python executables |
+| `python -m venv .venv` | Create a virtual environment |
 | `.venv\Scripts\Activate.ps1` | Activate in PowerShell |
-| `python -m pip install package` | Install a package |
+| `.venv\Scripts\activate.bat` | Activate in Command Prompt |
+| `python -m pip install requests` | Install a package |
 | `python -m pip list` | List installed packages |
-| `python -m pip freeze` | List installed packages with versions |
-| `deactivate` | Leave active virtual environment |
+| `python -m pip freeze` | List installed packages and versions |
+| `deactivate` | Deactivate the environment |
 
-## 11. Industry scenario
-A team maintains two Django services. One project depends on a specific package version while the other uses a newer release. Separate virtual environments allow both projects to install their own dependencies without unnecessarily changing the global Python installation.
+## 11. Common problems and troubleshooting
 
-## 12. Approved mini-project — Python Environment Setup
+| Problem | Likely reason | What to check |
+|---|---|---|
+| `python is not recognized` | Python is not installed or PATH is not configured | Installation and terminal PATH |
+| Wrong Python version runs | Multiple Python installations | `where.exe python` and VS Code interpreter |
+| `ModuleNotFoundError` | Package missing from active environment | `python -m pip show package_name` |
+| Activation script is blocked | PowerShell execution policy | Use Command Prompt or direct interpreter path |
+| File cannot be found | Terminal is in a different folder | Run `pwd` and check the file path |
+| Package installs but import fails | pip and script use different interpreters | Compare `sys.executable` |
 
-**Objective:** Create a clean, reproducible Python workspace ready for later Django lessons.
+## 12. Industry scenario
 
-### Requirements
-1. Create a project directory named `python_environment_setup`.
-2. Verify the Python version.
-3. Create a `.venv` environment.
-4. Activate it and verify which Python executable is being used.
-5. Install the `requests` package.
-6. Create and run `hello.py`.
-7. Generate `requirements.txt`.
-8. Add a README that documents setup and activation commands.
+A team maintains two Python services. One service depends on an older compatible version of a package, while another service uses a newer version. Installing both dependencies globally can create conflicts.
 
-**Suggested structure**
+Separate virtual environments allow each project to use its own dependencies. This makes development more predictable and helps another developer reproduce the setup.
+
+## 13. Connection to the approved mini-project
+
+**Python Environment Setup**
+
+Create a folder named `python_environment_setup` and demonstrate that:
+
+- Python is installed and its version is recorded.
+- A `.venv` environment exists.
+- The environment's interpreter is being used.
+- The `requests` package is installed in that environment.
+- A `hello.py` file runs successfully.
+- A `requirements.txt` file records dependencies.
+- A README explains how to recreate the environment.
+
+Suggested structure:
+
 ```text
 python_environment_setup/
 ├── .venv/
 ├── hello.py
 ├── requirements.txt
+├── .gitignore
 └── README.md
 ```
 
-Do not upload the `.venv` directory to GitHub. Add it to `.gitignore` when you begin version control.
+Add `.venv/` to `.gitignore`. Do not commit the virtual-environment directory to GitHub; another developer should recreate it from the setup instructions.
 
-### Validation
-- `python --version` works.
-- The active Python points to the project's virtual environment.
-- `requests` is installed in that environment.
-- `hello.py` runs successfully.
-- `requirements.txt` contains dependency information.
-- README instructions work in a second terminal session.
+## 14. Key takeaways
 
-## 13. AI-assisted implementation guide
-| Level | Prompt |
-|---|---|
-| 1 — Hint | "Give me one hint to verify whether my virtual environment is active." |
-| 2 — Plan | "Break Python environment setup into commands for Windows PowerShell." |
-| 3 — Example | "Show a small example requirements.txt and explain it." |
-| 4 — Guided implementation | "Guide me through creating .venv, then wait while I run the command." |
-| 5 — Explanation | "Explain the difference between Python, pip and a virtual environment." |
-| 6 — Debugging | "My PowerShell activation command failed. Ask me for the error and help diagnose it." |
-| 7 — Review | "Review my setup README and check whether another fresher could reproduce the environment." |
-
-**Planning prompt:** "Help me plan the Python Environment Setup deliverable with commands, expected outputs and verification checks."
-
-**Implementation prompt:** "Guide me through one setup command at a time. Explain what it does and wait for my terminal result."
-
-**Debugging/review prompt:** "Review my terminal output and folder structure. Identify environment or PATH issues without giving unrelated installation steps."
-
-## 14. Daily quiz
-
-**Q1. What is the role of the Python interpreter?**  
-A. Store database tables  
-B. Execute Python code  
-C. Design CSS  
-D. Create GitHub accounts  
-**Correct: B.** The interpreter executes Python programs.
-
-**Q2. What does `python -m venv .venv` do?**  
-A. Deletes Python  
-B. Creates a virtual environment  
-C. Runs a Django server  
-D. Creates a database  
-**Correct: B.** It creates an isolated environment in the `.venv` folder.
-
-**Q3. Why use a virtual environment?**  
-A. To isolate project dependencies  
-B. To speed up the monitor  
-C. To replace source code  
-D. To publish an API  
-**Correct: A.** Each project can manage its dependencies separately.
-
-**Q4. What does `python -m pip install requests` do?**  
-A. Installs requests using the selected Python interpreter  
-B. Creates a virtual environment  
-C. Starts Jupyter  
-D. Deletes the package  
-**Correct: A.** It runs pip through that interpreter.
-
-**Q5. Which file commonly records Python project dependencies?**  
-A. index.html  
-B. requirements.txt  
-C. manage.py  
-D. Docker network file  
-**Correct: B.** requirements.txt can list packages and versions needed by the project.
-
-## 15. Interview preparation
-
-### Q1. What is a Python virtual environment?
-**Answer:** A virtual environment is an isolated Python environment for a project. It allows the project to install and use its own packages without interfering with other Python projects or the global environment.
-
-**Follow-up:** How do you create and activate one on Windows?
-
-### Q2. What is the difference between Python and pip?
-**Answer:** Python is the interpreter used to execute Python programs. pip is a package installer used to install Python libraries. Running `python -m pip` uses pip associated with the selected Python interpreter.
-
-**Follow-up:** Why might `pip install` and `python -m pip install` affect different environments?
-
-## 16. Completion checklist
-- [ ] Verify Python installation.
-- [ ] Create and activate .venv.
-- [ ] Run a Python file in VS Code.
-- [ ] Install and verify a package.
-- [ ] Create requirements.txt and README.
-- [ ] Complete Python Environment Setup.
+- Python is the language; the interpreter executes Python programs.
+- VS Code is an editor that can be configured to use Python.
+- A virtual environment isolates project dependencies.
+- Use `python -m pip` to install packages through the intended interpreter.
+- Use `requirements.txt` to record dependencies.
+- Jupyter is useful for interactive learning, while Django application code belongs in organized Python files.
 
 **Next lesson:** Day 3 — Variables, data types, type conversion and operators.
