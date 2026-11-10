@@ -427,24 +427,6 @@ except HTTPError as error:
     print("HTTP error:", error.code)
 except URLError as error:
     print("Network error:", error.reason)
-TimeoutError:
-    print("The request timed out")
-```
-
-Note: Python's exception syntax for a timeout should be written as an except clause. Use this corrected complete version:
-
-```python
-from urllib.error import HTTPError, URLError
-from urllib.request import urlopen
-
-try:
-    with urlopen("https://httpbin.org/get", timeout=5) as response:
-        print("Status:", response.status)
-        print(response.read().decode("utf-8"))
-except HTTPError as error:
-    print("HTTP error:", error.code)
-except URLError as error:
-    print("Network error:", error.reason)
 except TimeoutError:
     print("The request timed out")
 ```
