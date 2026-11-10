@@ -75,10 +75,10 @@ Day 27 has been rewritten as a beginner-first, step-by-step Django introduction 
 | Phase | Days | Module | Authoring status |
 |---|---:|---|---|
 | 3 | 27–41 | Django fundamentals | Quality revision in progress — Day 27 rewritten; Days 28–41 pending review |
-| 4 | 42–54 | Django ORM, forms and authentication | Class notes and interview guides completed |
-| 5 | 55–69 | REST API development with Django REST Framework | Class notes and interview guides completed |
-| 6 | 70–81 | Advanced backend development | Class notes and interview guides completed |
-| 7 | 82–88 | Testing, deployment and production readiness | Class notes and interview guides completed |
+| 4 | 42–54 | Django ORM, forms and authentication | Existing files; quality review and revision pending |
+| 5 | 55–69 | REST API development with Django REST Framework | Existing files; quality review and revision pending |
+| 6 | 70–81 | Advanced backend development | Existing files; quality review and revision pending |
+| 7 | 82–88 | Testing, deployment and production readiness | Existing files; quality review and revision pending |
 | 8 | 89–96 | End-to-end backend capstone | Not yet authored |
 
 ## Authoring conventions
