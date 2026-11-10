@@ -42,7 +42,7 @@ class EmployeeAPITests(APITestCase):
         self.client.force_authenticate(user=self.user)
 
     def test_employee_list_returns_200(self):
-        url = reverse("employee-list")
+        url = reverse("employee_collection")
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
