@@ -4,192 +4,288 @@
 **Phase:** 1 — Python Programming Foundations  
 **Estimated time:** 2–3 hours  
 **Difficulty:** Beginner  
-**Prerequisites:** Days 1–10; strings, collections, functions and imports  
-**Required tools:** Python 3, VS Code, terminal  
+**Prerequisites:** Days 1–10 — strings, collections, functions and imports  
+**Required tools:** Python 3, VS Code and terminal  
 **Approved mini-project:** File-Based User Management System
 
 ## 1. Learning objectives
-- Explain why applications read and write files.
-- Open and close files safely using with.
-- Read text and write text.
-- Read and write CSV records using the csv module.
-- Read and write JSON using the json module.
-- Choose an appropriate file format for simple structured data.
 
-## 2. What is file handling?
-File handling lets a program read information from storage and write results for later use.
+- Explain why programs read and write files.
+- Open and close files safely using `with`.
+- Understand common file modes.
+- Read and write text files.
+- Read and write CSV records.
+- Convert between Python data and JSON.
+- Recognize basic file path and data-loss risks.
+
+## 2. Why is file handling needed?
+
+Variables and collections hold data while a program runs. When the program exits, those in-memory values normally disappear.
+
+Files allow a small program to save information and load it during a later run.
 
 Examples:
-- Save application settings.
-- Read a list of records from a CSV file.
-- Exchange JSON data with another system.
-- Write diagnostic or report output.
 
-Files are not a replacement for a production database when multiple users need concurrent, reliable record operations. Database use is covered later in this pathway.
+- Export a report.
+- Read configuration values.
+- Import employee records.
+- Exchange structured data with another system.
+- Save a local training exercise's records.
 
-## 3. Open and close files
-Python's open() function opens a file. Use a context manager with `with` so the file is closed automatically after the block.
+A file is useful for learning and simple interchange. A production multi-user backend usually uses a database for concurrent, reliable data management.
+
+## 3. Open and close a file
+
+Python's built-in `open()` function opens a file.
 
 ```python
-with open("notes.txt", "w", encoding="utf-8") as file:
-    file.write("Learning Python file handling")
+file = open("welcome.txt", "w")
+file.write("Welcome to Python file handling")
+file.close()
 ```
 
-Modes:
-- `"r"`: read.
-- `"w"`: write, replacing existing content.
-- `"a"`: append at the end.
-- `"x"`: create a new file and fail if it already exists.
+- The first argument is the file path.
+- `"w"` opens the file for writing.
+- `write()` writes text.
+- `close()` releases the file resource.
 
-## 4. Read a text file
+If an error occurs before `close()`, manual cleanup can be missed. Prefer a context manager.
+
+## 4. Use with open()
+
 ```python
-with open("notes.txt", "r", encoding="utf-8") as file:
+with open("welcome.txt", "w", encoding="utf-8") as file:
+    file.write("Welcome to Python file handling")
+
+print("File saved")
+```
+
+The file is closed automatically when execution leaves the `with` block, including when an exception occurs.
+
+Read the file:
+
+```python
+with open("welcome.txt", "r", encoding="utf-8") as file:
     content = file.read()
 
 print(content)
 ```
 
-If the file does not exist in read mode, Python raises FileNotFoundError.
+Output:
 
-## 5. Read lines
+```text
+Welcome to Python file handling
+```
+
+## 5. Common file modes
+
+| Mode | Meaning |
+|---|---|
+| `r` | Read; file must exist |
+| `w` | Write; creates or truncates an existing file |
+| `a` | Append; adds content at the end |
+| `x` | Create a new file; fails if it already exists |
+| `b` | Binary mode modifier |
+| `+` | Read and write modifier |
+
+Important: `w` can erase existing file content. Use it only when replacing the content is intended. Use `a` when appending is appropriate.
+
+## 6. Read a file in different ways
+
+`read()` reads the content as one string.
+
+```python
+with open("employees.txt", "r", encoding="utf-8") as file:
+    content = file.read()
+
+print(content)
+```
+
+`readline()` reads one line. Iterating over the file reads it line by line:
+
 ```python
 with open("employees.txt", "r", encoding="utf-8") as file:
     for line in file:
         print(line.strip())
 ```
 
-Iterating over the file reads it line by line, which can be more memory-efficient than reading a very large file entirely into one string.
+Line-by-line processing can be useful when a file is too large to load entirely into memory.
 
-## 6. Append to a file
-```python
-with open("activity.txt", "a", encoding="utf-8") as file:
-    file.write("New activity recorded\n")
+## 7. Work with CSV files
+
+CSV means Comma-Separated Values. It is a simple tabular format with rows and columns.
+
+Example file `employees.csv`:
+
+```csv
+employee_id,name,department
+101,Asha,Engineering
+102,Ravi,Finance
 ```
 
-Append mode preserves existing content and adds new content at the end.
+Use Python's built-in `csv` module.
 
-## 7. Work with CSV
-CSV (Comma-Separated Values) stores tabular rows. Python's csv module provides readers and writers.
+### Read CSV using DictReader
 
-Create `employees.csv`:
-```python
-import csv
-
-employees = [
-    {"id": 101, "name": "Asha", "department": "IT"},
-    {"id": 102, "name": "Ravi", "department": "HR"}
-]
-
-with open("employees.csv", "w", newline="", encoding="utf-8") as file:
-    fieldnames = ["id", "name", "department"]
-    writer = csv.DictWriter(file, fieldnames=fieldnames)
-    writer.writeheader()
-    writer.writerows(employees)
-```
-
-Read CSV:
 ```python
 import csv
 
 with open("employees.csv", "r", newline="", encoding="utf-8") as file:
     reader = csv.DictReader(file)
+
     for row in reader:
-        print(row["id"], row["name"], row["department"])
+        print(row["employee_id"], row["name"], row["department"])
 ```
 
-CSV values are read as strings. Convert fields such as id to int if numerical operations are needed.
+Expected output:
+
+```text
+101 Asha Engineering
+102 Ravi Finance
+```
+
+Each row is represented as a dictionary using the header names as keys.
+
+### Write CSV using DictWriter
+
+```python
+import csv
+
+employees = [
+    {"employee_id": 101, "name": "Asha", "department": "Engineering"},
+    {"employee_id": 102, "name": "Ravi", "department": "Finance"}
+]
+
+with open("employee_export.csv", "w", newline="", encoding="utf-8") as file:
+    fieldnames = ["employee_id", "name", "department"]
+    writer = csv.DictWriter(file, fieldnames=fieldnames)
+
+    writer.writeheader()
+    writer.writerows(employees)
+```
+
+`writeheader()` writes the column names. `writerows()` writes all records.
 
 ## 8. Work with JSON
-JSON (JavaScript Object Notation) is a text format commonly used for structured data exchange.
 
-Python's json module converts between Python data and JSON text:
-- json.dump(): write Python data to a file.
-- json.load(): read JSON data from a file.
-- json.dumps(): convert Python data to a JSON string.
-- json.loads(): parse a JSON string.
+JSON stands for JavaScript Object Notation. It is a text format commonly used for exchanging structured data between applications.
 
-Write JSON:
+Example JSON:
+
+```json
+{
+  "employee_id": 101,
+  "name": "Asha",
+  "skills": ["Python", "Django"]
+}
+```
+
+Python's `json` module converts between JSON text and Python objects.
+
+### Write JSON to a file
+
 ```python
 import json
 
-user = {
-    "id": 101,
+employee = {
+    "employee_id": 101,
     "name": "Asha",
     "skills": ["Python", "Django"]
 }
 
-with open("user.json", "w", encoding="utf-8") as file:
-    json.dump(user, file, indent=4)
+with open("employee.json", "w", encoding="utf-8") as file:
+    json.dump(employee, file, indent=4)
 ```
 
-Read JSON:
+- `json.dump()` writes a Python object to a file object.
+- `indent=4` makes the saved JSON easier to read.
+
+### Read JSON from a file
+
 ```python
-with open("user.json", "r", encoding="utf-8") as file:
-    loaded_user = json.load(file)
+import json
 
-print(loaded_user["name"])
-print(loaded_user["skills"])
+with open("employee.json", "r", encoding="utf-8") as file:
+    employee = json.load(file)
+
+print(employee["name"])
+print(employee["skills"])
 ```
 
-Expected output:
+Output:
+
 ```text
 Asha
 ['Python', 'Django']
 ```
 
-JSON objects normally map to Python dictionaries, arrays to lists, strings to strings, numbers to numeric types, booleans to bool and null to None.
+Remember the difference:
+
+| Function | Purpose |
+|---|---|
+| `json.dump()` | Write Python data to a file |
+| `json.load()` | Read JSON data from a file |
+| `json.dumps()` | Convert Python data to a JSON string |
+| `json.loads()` | Convert a JSON string to Python data |
 
 ## 9. CSV versus JSON
+
 | CSV | JSON |
 |---|---|
-| Best suited to rows and columns | Best suited to nested structured data |
-| Often used for spreadsheet exchange | Often used for API payloads and configuration |
-| Fields are usually read as text | Supports strings, numbers, booleans, arrays, objects and null |
-| Simple tabular layout | Supports nested structures |
+| Best suited to rows and columns | Supports objects, arrays and nested structures |
+| Often used for spreadsheet exchange | Commonly used in APIs and configuration |
+| Usually has a header row | Uses keys and values |
+| Less suitable for nested data | Represents nested data naturally |
 
-Choose based on the data structure and the system that consumes the file.
+Choose the format based on the structure and needs of the system receiving the data.
 
-## 10. File paths and folders
-Use pathlib to work with paths more reliably:
+## 10. File paths and common errors
+
+A relative path is interpreted from the program's current working directory.
+
+Check the working directory:
+
 ```python
-from pathlib import Path
+import os
 
-data_folder = Path("data")
-data_folder.mkdir(exist_ok=True)
-
-file_path = data_folder / "users.json"
-print(file_path)
+print(os.getcwd())
 ```
 
-Relative paths are resolved from the process's current working directory. Understand where the program is being run when a file cannot be found.
+Common issues:
 
-## 11. Common beginner mistakes
-- Using write mode when append mode was intended.
-- Forgetting that write mode replaces existing content.
-- Using a wrong relative path.
-- Forgetting encoding when working with text.
-- Forgetting newline="" for CSV files on platforms where it matters.
-- Treating CSV field values as numeric automatically.
-- Assuming JSON files contain valid JSON without checking.
+| Error/problem | Possible reason | Response |
+|---|---|---|
+| `FileNotFoundError` | Path is wrong or file is absent | Check working directory and path |
+| `PermissionError` | Process cannot access the file | Check permissions and whether another process holds it |
+| Existing content disappears | File opened with `w` | Use append or a safe replacement strategy |
+| `JSONDecodeError` | File does not contain valid JSON | Inspect the saved content |
+| CSV columns are incorrect | Header or delimiter mismatch | Check the file format and DictReader configuration |
 
-## 12. Industry scenario
-A small internal tool needs to import employee records from a CSV file and export a summary to JSON for another application. Python can read each CSV row, validate fields and write a structured JSON file. A larger multi-user system would normally use a database and API instead of a shared local file.
+Do not assume that a missing file is always an error. A new application may intentionally initialize an empty data store, but this behavior should be explicit.
 
-## 13. Approved mini-project — File-Based User Management System
+## 11. Industry scenario
 
-**Objective:** Create a simple terminal application that stores and retrieves user records using a JSON file and exports records to CSV.
+An internal tool imports employee records from a CSV file and exports a structured JSON summary for another application. Python can read rows, validate fields and write the result.
+
+A local file is suitable for this controlled exercise. A real multi-user employee application would generally use a database and backend APIs rather than a shared JSON file.
+
+## 12. Approved mini-project — File-Based User Management System
+
+**Objective:** Create a terminal application that stores user records in JSON and exports them to CSV.
 
 ### Requirements
+
 1. Store users as a list of dictionaries.
-2. Each user has ID, name and email.
+2. Each user has an ID, name and email.
 3. Load existing users from a JSON file if it exists.
 4. Add a user record.
 5. Display all users.
 6. Save records back to JSON.
-7. Export the records to CSV.
-8. Avoid storing passwords or other secrets in this exercise.
+7. Export records to CSV.
+8. Do not store passwords or other secrets.
 
-**Suggested structure**
+### Suggested structure
+
 ```text
 file_based_user_management/
 ├── main.py
@@ -198,86 +294,24 @@ file_based_user_management/
 ```
 
 ### Validation
-- Start when users.json does not yet exist.
+
+- Start when `users.json` does not exist.
 - Add at least two users.
-- Run the application again and confirm saved records can be loaded.
-- Export and open the CSV.
-- Check that IDs, names and emails are written to the correct columns.
+- Run the program again and confirm saved records load.
+- Export and inspect the CSV.
+- Check that IDs, names and emails appear in the correct columns.
+- Confirm that the program does not unintentionally erase records.
 
-For safe persistence, avoid overwriting an existing file until the program has successfully built the new data. The project is a learning exercise, not a concurrent multi-user storage service.
+For a safer replacement workflow, write new content to a temporary file and replace the old file only after the new data has been written successfully. This exercise is not a concurrent multi-user storage service.
 
-## 14. AI-assisted implementation guide
-| Level | Prompt |
-|---|---|
-| 1 — Hint | "Give me one hint for loading JSON only when the file exists." |
-| 2 — Plan | "Break File-Based User Management System into load, add, display, save and export steps." |
-| 3 — Example | "Show a small csv.DictWriter example for two records." |
-| 4 — Guided implementation | "Guide me through JSON loading first; wait for my output." |
-| 5 — Explanation | "Explain the difference between json.dump, json.load, dumps and loads." |
-| 6 — Debugging | "Help me diagnose this FileNotFoundError using my current working directory." |
-| 7 — Review | "Review my file-based user manager for data loss, malformed data and path issues." |
+## 13. Key takeaways
 
-**Planning prompt:** "Help me design the record structure, file formats and operations. Do not write the complete program."
-
-**Implementation prompt:** "Guide me one file operation at a time and explain the expected file contents."
-
-**Debugging/review prompt:** "Inspect my file-handling code and explain any risky write mode, path or serialization issue."
-
-## 15. Daily quiz
-
-**Q1. Which mode opens a file for appending?**  
-A. r  
-B. w  
-C. a  
-D. x  
-**Correct: C.** Append mode adds data at the end.
-
-**Q2. Why use with open(...)?**  
-A. It closes the file automatically after the block  
-B. It converts CSV to JSON  
-C. It starts a server  
-D. It deletes the file  
-**Correct: A.** The context manager handles file cleanup.
-
-**Q3. Which module is used for CSV operations?**  
-A. csv  
-B. json  
-C. math  
-D. datetime  
-**Correct: A.** Python provides the csv module for tabular text files.
-
-**Q4. Which function reads JSON from an opened file object?**  
-A. json.dump()  
-B. json.load()  
-C. json.dumps()  
-D. json.loads()  
-**Correct: B.** json.load parses JSON from a file object.
-
-**Q5. What happens when a file is opened with mode "w"?**  
-A. Existing content is normally replaced  
-B. Content is always appended  
-C. File is read only  
-D. File is renamed  
-**Correct: A.** Write mode truncates an existing file or creates a new one.
-
-## 16. Interview preparation
-
-### Q1. What is the difference between CSV and JSON?
-**Answer:** CSV is a simple tabular format with rows and fields, often used for spreadsheet exchange. JSON supports nested objects and arrays and is widely used for APIs and structured configuration. Choose based on the shape of the data and the consuming system.
-
-**Follow-up:** Which format would you choose for nested employee profile data and why?
-
-### Q2. Why use a context manager when opening files?
-**Answer:** The with statement ensures the file is closed after the block, including when an error occurs. This helps manage file resources safely and keeps code shorter than manually opening and closing files.
-
-**Follow-up:** What problem can happen if a file remains open?
-
-## 17. Completion checklist
-- [ ] Read and write a text file.
-- [ ] Explain read, write and append modes.
-- [ ] Create and read CSV records.
-- [ ] Create and read JSON data.
-- [ ] Complete File-Based User Management System.
-- [ ] Verify persistence across separate runs.
+- Files preserve data after a program exits.
+- Use `with open()` to manage file resources safely.
+- Understand the difference between read, write, append and create modes.
+- Python's `csv` module handles tabular text files.
+- Python's `json` module exchanges structured data.
+- Be careful with relative paths and write mode.
+- Files are useful for learning and interchange; databases are normally used for production multi-user applications.
 
 **Next lesson:** Day 12 — Exception handling, debugging and basic logging.
