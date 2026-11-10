@@ -76,7 +76,7 @@ services:
     environment:
       POSTGRES_DB: backend_db
       POSTGRES_USER: backend_user
-      POSTGRES_PASSWORD: change-this-local-password
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
