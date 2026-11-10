@@ -1,37 +1,37 @@
-# Day 19: Interview Questions — SQL filtering, sorting, joins, grouping and aggregate functions
+# Day 19: Interview Questions — Client-server architecture and how websites work
 
 **Pathway:** Python Backend Developer (Django)  
 **Phase:** 2 — Web Fundamentals, SQL and Development Tools
 
 ## 1. Core technical questions
 
-### Q1. What is the difference between WHERE and HAVING?
+### Q1. What is a client-server architecture?
 **Answer:**
-- WHERE filters rows before grouping; HAVING filters grouped results after aggregation.
+- The client requests a resource or operation; the server receives, processes and responds. A browser and web backend are common examples.
 - The concept should be demonstrated with observable output.
 - In production, verify input validation, error handling and security.
 
-**Example:** A retail manager wants total sales by customer and highest-value orders.
+**Example:** An online shopping website loads product information from a backend.
 
 **Follow-up:** How would you test the explanation with a real request, command or query?
 
-### Q2. What is the difference between INNER JOIN and LEFT JOIN?
+### Q2. What does DNS do?
 **Answer:**
-- INNER JOIN returns matching rows; LEFT JOIN retains all rows from the left table, filling unmatched right-side columns with NULL.
+- DNS resolves a hostname to network address records; it does not itself serve the webpage.
 - The concept should be demonstrated with observable output.
 - In production, verify input validation, error handling and security.
 
-**Example:** A retail manager wants total sales by customer and highest-value orders.
+**Example:** An online shopping website loads product information from a backend.
 
 **Follow-up:** How would you test the explanation with a real request, command or query?
 
-### Q3. What is the main purpose of WHERE?
-**Answer:** WHERE filters rows, ORDER BY sorts, JOIN combines related tables, GROUP BY aggregates categories. COUNT, SUM, AVG, MIN and MAX summarize records.
+### Q3. What is the main purpose of client?
+**Answer:** A client sends a request; a server processes it and returns a response. DNS resolves a domain to an address; a browser then connects to the service.
 
 **Follow-up:** What would go wrong if the concept were misunderstood?
 
 ### Q4. Which tools are appropriate for this lesson?
-**Answer:** Python and VS Code for demonstrations, terminal commands for execution, and SQLite for local practice and PostgreSQL for later production database work.
+**Answer:** Python and VS Code for demonstrations, terminal commands for execution, and HTTP/browser inspection or structured data tools as appropriate.
 
 **Follow-up:** What would change in a deployed Django service?
 
@@ -42,10 +42,10 @@
 
 ## 2. Scenario-based interview questions
 
-### Q6. A retail manager wants total sales by customer and highest-value orders. What should the developer verify?
+### Q6. An online shopping website loads product information from a backend. What should the developer verify?
 **Answer:**
 - Define the expected result before implementation.
-- Check that the chosen WHERE behavior matches the requirement.
+- Check that the chosen client behavior matches the requirement.
 - Validate inputs and inspect actual results.
 - Record reproducible test evidence.
 
@@ -63,10 +63,10 @@
 
 ## 3. Project and practical questions
 
-### Q8. Explain your Sales Database Analyzer.
+### Q8. Explain your Client-Server Communication Simulator.
 **Answer:**
 - I defined the inputs, operations and expected outputs.
-- I implemented a small demonstration of sql filtering, sorting, joins, grouping and aggregate functions.
+- I implemented a small demonstration of client-server architecture and how websites work.
 - I tested normal and edge cases.
 - I captured evidence and documented limitations.
 - I did not assume a learning exercise was production-ready.
@@ -84,13 +84,11 @@
 **Follow-up:** What is one automated test you would add?
 
 ## 4. Rapid revision
-- **WHERE:** explain its role in sql filtering, sorting, joins, grouping and aggregate functions.
-- **ORDER BY:** explain its role in sql filtering, sorting, joins, grouping and aggregate functions.
-- **INNER JOIN:** explain its role in sql filtering, sorting, joins, grouping and aggregate functions.
-- **LEFT JOIN:** explain its role in sql filtering, sorting, joins, grouping and aggregate functions.
-- **GROUP BY:** explain its role in sql filtering, sorting, joins, grouping and aggregate functions.
-- **HAVING:** explain its role in sql filtering, sorting, joins, grouping and aggregate functions.
-- **SUM:** explain its role in sql filtering, sorting, joins, grouping and aggregate functions.
-- **COUNT:** explain its role in sql filtering, sorting, joins, grouping and aggregate functions.
+- **client:** explain its role in client-server architecture and how websites work.
+- **server:** explain its role in client-server architecture and how websites work.
+- **DNS:** explain its role in client-server architecture and how websites work.
+- **IP address:** explain its role in client-server architecture and how websites work.
+- **port:** explain its role in client-server architecture and how websites work.
+- **request-response:** explain its role in client-server architecture and how websites work.
 
 **Interview preparation tip:** Give a definition, show a small practical example, explain a failure mode, and state how you would verify it.
