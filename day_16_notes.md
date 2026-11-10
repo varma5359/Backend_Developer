@@ -1,362 +1,630 @@
 # Day 16: Inheritance and Method Overriding
 
 **Pathway:** Python Backend Developer Career Pathway (Django)  
-**Phase:** 1 — Python Programming Foundations and OOP  
-**Estimated time:** 2–3 hours  
-**Difficulty:** Beginner to Intermediate  
-**Prerequisites:** Day 15 — previous OOP lesson  
-**Tools:** Python 3, VS Code and terminal  
+**Phase:** 1B — Object-Oriented Programming  
+**Time:** 2–3 hours | **Level:** Beginner to Intermediate  
+**Prerequisites:** Days 13–15 — Classes, objects, initialization and methods  
+**Tools:** Python 3.10+, VS Code and terminal  
 **Approved mini-project:** Employee Role Management System
 
-> **Trainer approach:** First understand the problem, then run the smallest example, inspect the output and only then extend the code. Do not memorize a definition without being able to explain the example.
+---
 
 ## 1. Learning objectives
 
-By the end of this lesson, you should be able to:
-1. Explain Inheritance and Method Overriding in simple language.
-2. Identify the problem this OOP concept solves.
-3. Write and run a small Python example.
-4. Explain the important statements and predict the output.
-5. Apply the concept in Employee Role Management System.
-6. Describe one relevant backend development use case.
+By the end of this lesson, you can:
+1. Explain why inheritance is useful.
+2. Identify a parent/base class and child/derived class.
+3. Reuse parent attributes and methods in a child class.
+4. Add child-specific attributes and methods.
+5. Override a parent method.
+6. Use `super()` to call parent behavior.
+7. Understand the basic method resolution order.
+8. Recognize when inheritance is appropriate and when composition is better.
+9. Build an Employee Role Management System.
 
-## 2. Why this concept matters
+## 2. Start with a real-world problem
 
-Developer, Tester and Manager are all employees. They share employee ID and name but perform different work. Inheritance allows common behavior to be placed in a parent class and specialized behavior in child classes.
+Imagine a company has three employee types:
 
-A backend developer should be able to read code written by other developers and understand why the code is divided into classes and methods. OOP gives a vocabulary for discussing responsibilities, reusable behavior and object state.
+- Developer
+- Manager
+- HR Executive
 
-## 3. Key terms
+All employees have common details:
+- Employee ID
+- Name
+- Department
 
-Inheritance is an is-a relationship. Method overriding means a child supplies its own implementation of a method. super() accesses the next implementation in the method resolution order.
+But each role also has its own behavior:
+- A developer writes code and works with technical tasks.
+- A manager leads a team and reviews progress.
+- An HR executive manages recruitment and employee records.
+
+A first attempt might define three independent classes and repeat the common attributes and methods. That creates duplication.
+
+Inheritance allows a child class to reuse common behavior from a parent class and add or customize its own behavior.
+
+## 3. What is inheritance?
+
+**Inheritance** is an OOP feature in which a new class can reuse and extend the attributes and methods of an existing class.
+
+Vocabulary:
 
 | Term | Meaning |
 |---|---|
-| Class | A definition describing the structure and behavior of objects |
-| Object | One instance created from a class |
-| Attribute | Data associated with an object or class |
-| Method | A function defined inside a class |
-| Instance | A particular object created from a class |
-| Responsibility | The work that a class or method is expected to perform |
+| Parent class | Existing class whose behavior is inherited |
+| Base class | Another name for parent class |
+| Child class | New class that inherits from another class |
+| Derived class | Another name for child class |
+| Inheritance | Reuse and extension relationship |
 
-## 4. Start with the problem before the syntax
+Example:
+- Employee is the parent class.
+- Developer is a child class.
+- Manager is another child class.
 
-Ask these questions before writing code:
-1. What real-world concept are we representing?
-2. What information must be stored?
-3. What actions must be supported?
-4. Which information belongs to one object?
-5. Which behavior can be reused?
-6. What invalid situations must be prevented?
-7. How will we prove the result is correct?
+A Developer is an Employee. This is an **is-a** relationship.
 
-This small analysis prevents you from creating classes without a clear purpose.
-
-## 5. Main worked example
-
-Save this code in `day_16/main.py` and run `python main.py`.
+## 4. First inheritance example
 
 ```python
 class Employee:
-    def __init__(self, name, employee_id):
-        self.name = name
-        self.employee_id = employee_id
-
-    def work(self):
-        print("Complete assigned work")
+    def show_company(self):
+        print("Company: TechPhile")
 
 class Developer(Employee):
-    def __init__(self, name, employee_id, language):
-        super().__init__(name, employee_id)
+    def write_code(self):
+        print("Developer writes code")
+
+developer = Developer()
+
+developer.show_company()
+developer.write_code()
+```
+
+Output:
+
+```text
+Company: TechPhile
+Developer writes code
+```
+
+Explanation:
+1. Employee defines `show_company`.
+2. Developer(Employee) declares that Developer inherits from Employee.
+3. Developer defines its own `write_code` method.
+4. We create an object from Developer.
+5. The object can call the child method.
+6. It can also call the inherited parent method.
+
+The child does not need to copy the parent method.
+
+## 5. Parent and child with attributes
+
+```python
+class Employee:
+    def __init__(self, employee_id, name):
+        self.employee_id = employee_id
+        self.name = name
+
+    def display_employee(self):
+        print("ID:", self.employee_id)
+        print("Name:", self.name)
+
+class Developer(Employee):
+    def write_code(self):
+        print(self.name, "is writing Python code")
+
+developer = Developer(101, "Anil")
+developer.display_employee()
+developer.write_code()
+```
+
+Output:
+
+```text
+ID: 101
+Name: Anil
+Anil is writing Python code
+```
+
+The child class inherits the parent's initializer. Therefore, Developer can be initialized with employee_id and name even though it does not define its own `__init__`.
+
+## 6. Add child-specific attributes
+
+A Developer may also have a programming language. A Manager may have a team size.
+
+```python
+class Employee:
+    def __init__(self, employee_id, name):
+        self.employee_id = employee_id
+        self.name = name
+
+    def display_employee(self):
+        print("ID:", self.employee_id)
+        print("Name:", self.name)
+
+class Developer(Employee):
+    def __init__(self, employee_id, name, language):
+        self.employee_id = employee_id
+        self.name = name
+        self.language = language
+
+    def display_language(self):
+        print("Language:", self.language)
+
+developer = Developer(101, "Anil", "Python")
+developer.display_employee()
+developer.display_language()
+```
+
+This works, but notice that we repeated the parent's initialization logic. If the parent later adds a new common attribute, we must remember to update the child too.
+
+We can avoid this repetition with `super()`.
+
+## 7. Understand super()
+
+`super()` gives access to the next implementation in the method resolution order. In a simple single-inheritance example, it is commonly used to call the parent class's method.
+
+Improved code:
+
+```python
+class Employee:
+    def __init__(self, employee_id, name):
+        self.employee_id = employee_id
+        self.name = name
+
+    def display_employee(self):
+        print("ID:", self.employee_id)
+        print("Name:", self.name)
+
+class Developer(Employee):
+    def __init__(self, employee_id, name, language):
+        super().__init__(employee_id, name)
+        self.language = language
+
+    def display_language(self):
+        print("Language:", self.language)
+
+developer = Developer(101, "Anil", "Python")
+developer.display_employee()
+developer.display_language()
+```
+
+Output:
+
+```text
+ID: 101
+Name: Anil
+Language: Python
+```
+
+Read the important line:
+
+`super().__init__(employee_id, name)`
+
+- Call the next initializer in the method resolution order.
+- Pass the common employee values to it.
+- The parent initializer stores employee_id and name.
+- The child initializer stores language.
+
+This avoids repeating the parent's initialization code.
+
+## 8. Method overriding
+
+A child class can provide its own implementation of a method that already exists in the parent. This is called **method overriding**.
+
+```python
+class Employee:
+    def work(self):
+        print("Employee performs assigned work")
+
+class Developer(Employee):
+    def work(self):
+        print("Developer writes and tests code")
+
+class Manager(Employee):
+    def work(self):
+        print("Manager plans and reviews team work")
+
+employee = Employee()
+developer = Developer()
+manager = Manager()
+
+employee.work()
+developer.work()
+manager.work()
+```
+
+Output:
+
+```text
+Employee performs assigned work
+Developer writes and tests code
+Manager plans and reviews team work
+```
+
+The method name is the same, but the child classes provide role-specific behavior.
+
+## 9. Extend parent behavior instead of replacing it completely
+
+Sometimes the child needs the parent's behavior and additional behavior.
+
+```python
+class Employee:
+    def display(self):
+        print("Common employee details")
+
+class Developer(Employee):
+    def display(self):
+        super().display()
+        print("Role: Developer")
+
+developer = Developer()
+developer.display()
+```
+
+Output:
+
+```text
+Common employee details
+Role: Developer
+```
+
+The child first calls the inherited implementation and then adds its own output.
+
+## 10. Inheritance types: first overview
+
+Python supports several inheritance structures.
+
+### 10.1 Single inheritance
+
+One child inherits from one parent.
+
+```python
+class Person:
+    pass
+
+class Employee(Person):
+    pass
+```
+
+### 10.2 Multilevel inheritance
+
+A class inherits from a child class, forming a chain.
+
+```python
+class Person:
+    def identify(self):
+        print("Person")
+
+class Employee(Person):
+    def work(self):
+        print("Employee works")
+
+class Developer(Employee):
+    def code(self):
+        print("Developer codes")
+
+developer = Developer()
+developer.identify()
+developer.work()
+developer.code()
+```
+
+### 10.3 Multiple inheritance
+
+A child inherits from more than one parent.
+
+```python
+class Logger:
+    def log(self):
+        print("Logging activity")
+
+class Exporter:
+    def export(self):
+        print("Exporting report")
+
+class ReportService(Logger, Exporter):
+    pass
+
+service = ReportService()
+service.log()
+service.export()
+```
+
+Output:
+
+```text
+Logging activity
+Exporting report
+```
+
+Multiple inheritance is supported, but it introduces method resolution and design complexity. Do not use it merely to reuse a few lines.
+
+### 10.4 Hierarchical inheritance
+
+Multiple child classes inherit from one parent.
+
+```python
+class Employee:
+    def show_company(self):
+        print("TechPhile")
+
+class Developer(Employee):
+    pass
+
+class Manager(Employee):
+    pass
+```
+
+Both child types inherit the common behavior.
+
+## 11. Method Resolution Order (MRO)
+
+When a class inherits from multiple parents and methods have the same name, Python needs a predictable rule for finding which implementation to use. This is called Method Resolution Order.
+
+Inspect it with:
+
+```python
+print(ReportService.mro())
+```
+
+The output lists the order Python searches. In everyday single inheritance, you usually do not need to calculate MRO manually. You should still know that Python follows a defined order rather than randomly selecting a parent.
+
+## 12. When inheritance is useful
+
+Use inheritance when:
+- The child really is a specialized form of the parent.
+- Several child classes share common data and behavior.
+- The child should satisfy the parent's expected interface.
+- The shared behavior has a clear common meaning.
+
+Avoid inheritance when:
+- The relationship is actually "has-a".
+- The parent class is becoming a large collection of unrelated features.
+- A child must disable most parent behavior.
+- The hierarchy is difficult to explain.
+- Composition gives a simpler design.
+
+Example:
+- Developer is an Employee: inheritance can fit.
+- Employee has a Laptop: composition is usually more suitable. An employee is not a laptop.
+
+## 13. Composition: a quick contrast
+
+```python
+class Laptop:
+    def __init__(self, brand):
+        self.brand = brand
+
+class Employee:
+    def __init__(self, name, laptop):
+        self.name = name
+        self.laptop = laptop
+
+laptop = Laptop("Dell")
+employee = Employee("Anil", laptop)
+
+print(employee.name)
+print(employee.laptop.brand)
+```
+
+Output:
+
+```text
+Anil
+Dell
+```
+
+Employee contains a reference to a Laptop object. That is composition: a has-a relationship.
+
+## 14. Complete mini-project — Employee Role Management System
+
+### Requirements
+
+Create:
+- A base Employee class with ID, name and department.
+- A Developer class with programming language.
+- A Manager class with team size.
+- A shared display method.
+- An overridden work method for each role.
+- Use super() to initialize common attributes.
+
+### Project structure
+
+```text
+day_16_employee_roles/
+├── main.py
+└── README.md
+```
+
+### Complete runnable code
+
+```python
+class Employee:
+    def __init__(self, employee_id, name, department):
+        if employee_id <= 0:
+            raise ValueError("Employee ID must be positive")
+        if not name.strip():
+            raise ValueError("Employee name cannot be empty")
+
+        self.employee_id = employee_id
+        self.name = name.strip()
+        self.department = department.strip()
+
+    def display_details(self):
+        print("Employee ID:", self.employee_id)
+        print("Name:", self.name)
+        print("Department:", self.department)
+
+    def work(self):
+        print("Employee performs assigned work")
+
+
+class Developer(Employee):
+    def __init__(self, employee_id, name, department, language):
+        super().__init__(employee_id, name, department)
         self.language = language
 
     def work(self):
-        print("Write and test", self.language, "code")
+        print(self.name, "develops software using", self.language)
 
-class Tester(Employee):
+
+class Manager(Employee):
+    def __init__(self, employee_id, name, department, team_size):
+        super().__init__(employee_id, name, department)
+        if team_size < 0:
+            raise ValueError("Team size cannot be negative")
+        self.team_size = team_size
+
     def work(self):
-        print("Test the application")
+        print(self.name, "leads a team of", self.team_size)
 
-developer = Developer("Asha", 101, "Python")
-tester = Tester("Ravi", 102)
 
-developer.work()
-tester.work()
+employees = [
+    Developer(101, "Anil", "Engineering", "Python"),
+    Manager(102, "Priya", "Engineering", 8),
+]
+
+for employee in employees:
+    employee.display_details()
+    employee.work()
+    print("----------------")
 ```
 
-### Expected output
+### Run
 
-```text
-Write and test Python code\nTest the application
+```powershell
+python main.py
 ```
 
-### Read the code step by step
+Expected behavior:
+- First record shows Anil as a Developer and describes Python development.
+- Second record shows Priya as a Manager and describes team leadership.
+- Both records use the common employee display method.
 
-1. Employee is the parent or base class containing common data and behavior.
-2. Developer(Employee) declares Developer as a child class of Employee.
-3. super().__init__(...) calls the next initializer in the method resolution order so shared attributes are initialized once.
-4. Developer adds a language attribute and overrides work().
-5. Tester inherits the parent initializer and supplies its own work() implementation.
+### Test cases
 
-### Run it yourself
-
-1. Create the file in VS Code.
-2. Type the code rather than blindly copying it.
-3. Save the file.
-4. Open the integrated terminal.
-5. Run `python main.py`.
-6. Compare your output with the expected output.
-7. Change one value and run it again.
-8. Explain what changed and why.
-
-## 6. Understand the flow
-
-```text
-Requirement
-    ↓
-Identify the objects and responsibilities
-    ↓
-Define the class or classes
-    ↓
-Create objects
-    ↓
-Call methods / exchange objects
-    ↓
-Inspect output and validate behavior
-```
-
-The flow is a thinking guide, not a Python command sequence. A small exercise may use only one class. A larger application may use multiple cooperating objects.
-
-## 7. How to read and debug OOP code
-
-When an example does not behave as expected:
-1. Check the class name and spelling.
-2. Check indentation inside the class.
-3. Check that the object was created.
-4. Check the values passed to the initializer or method.
-5. Print the relevant attribute values.
-6. Check whether a method changes the intended object.
-7. Re-run the smallest reproducible example.
-
-| Symptom | Likely area to inspect |
-|---|---|
-| AttributeError | Attribute or method name, object initialization |
-| TypeError | Number or order of arguments |
-| NameError | Variable or class name is not defined in the current scope |
-| Wrong object's value changes | Object reference passed to the method |
-| Method does not override | Method name or inheritance declaration |
-| Abstract class cannot be instantiated | Required abstract method is not implemented |
-
-Do not fix several unrelated lines at once. Identify the exact failing statement first.
-
-## 8. Industry scenario
-
-Developer, Tester and Manager are all employees. They share employee ID and name but perform different work. Inheritance allows common behavior to be placed in a parent class and specialized behavior in child classes.
-
-A professional implementation would also consider input validation, access control, error handling, tests, database persistence and concurrent requests. The class examples in this lesson are learning exercises, not production-ready services.
-
-## 9. When to use the concept and when to avoid overengineering
-
-- Use a class when related state and behavior need a clear reusable structure.
-- Keep a simple value as a variable when a class adds no meaningful behavior.
-- Give each class a focused responsibility.
-- Avoid a class hierarchy just to save a few lines.
-- Prefer composition when one object contains or manages another object.
-- Add abstractions when they clarify a real variation or contract, not merely to make the code look advanced.
-
-## 10. Common beginner mistakes
-
-| Mistake | Why it causes trouble | Better approach |
+| Test | Action | Expected |
 |---|---|---|
-| Memorizing OOP terms without running code | Definitions are hard to apply | Trace a real example |
-| Creating one huge class | Responsibilities become mixed | Split meaningful responsibilities |
-| Duplicating common behavior | Updates must be repeated | Reuse a parent class when an is-a relationship exists |
-| Using inheritance for every relationship | Creates confusing hierarchies | Use composition for has-a relationships |
-| Ignoring object state | Methods may update the wrong instance | Inspect attributes before and after a call |
-| Assuming Python underscore names are secure | Naming conventions are not access-control security | Use application-level authorization and safe design |
-| Writing a method without a clear purpose | Class becomes difficult to understand | Name methods after meaningful actions |
+| 1 | Create Developer with valid data | Object created |
+| 2 | Create Manager with valid data | Object created |
+| 3 | Use employee ID 0 | ValueError |
+| 4 | Use blank name | ValueError |
+| 5 | Use negative team size | ValueError |
+| 6 | Call Developer.work | Developer-specific output |
+| 7 | Call Manager.work | Manager-specific output |
+| 8 | Call display_details on both | Common details displayed |
 
-## 11. Guided practice
+## 15. Troubleshooting
 
-Complete each exercise in a separate small file or notebook cell.
-
-### Exercise A — identify the design
-
-Write down:
-- The class or classes you need.
-- The data each class should store.
-- The methods each class should expose.
-- One invalid input or state to test.
-
-### Exercise B — modify the example
-
-Change one attribute, method or class responsibility. Run the code again and record the changed output.
-
-### Exercise C — explain it aloud
-
-Explain the code as if you are teaching a fresher:
-1. What problem does it solve?
-2. What does each class represent?
-3. Which object is being used?
-4. Which method is called?
-5. What output proves it worked?
-
-## 12. Approved mini-project — Employee Role Management System
-
-**Objective:** Build a small, understandable Python application using the day's OOP concept.
-
-### Functional requirements
-
-1. Create Employee with common attributes and display_profile().
-2. Create Developer and Tester child classes.
-3. Use super() to initialize shared employee fields.
-4. Add role-specific fields such as programming_language and testing_tool.
-5. Override work() in each child class.
-6. Create objects and demonstrate inherited and overridden methods.
-
-### Suggested project structure
-
-```text
-projects/day_16/
-├── README.md
-├── main.py
-├── models.py
-└── tests/
-    └── manual_test_cases.md
-```
-
-For the first attempt, you may keep the code in one file. Split it into modules only after the working version is understood.
-
-### Implementation milestones
-
-| Milestone | Work | Evidence |
+| Symptom | Cause | Fix |
 |---|---|---|
-| 1 | Read the requirement and list the classes | Short design notes |
-| 2 | Implement the smallest class or object | First successful run |
-| 3 | Add required attributes and methods | Updated terminal output |
-| 4 | Implement the main workflow | Demonstration run |
-| 5 | Test normal and invalid cases | Test-case table |
-| 6 | Explain the design | README and short walkthrough |
+| TypeError in child initializer | Parent arguments were not supplied correctly | Check super().__init__ arguments |
+| Parent attributes missing | Parent initializer was never called | Use super().__init__ when required |
+| Parent method runs instead of child method | Child method name/signature differs | Check exact method name |
+| AttributeError for child attribute | Child initializer did not assign it | Assign the child-specific attribute |
+| Unexpected method selected | Inheritance hierarchy or MRO differs from assumption | Inspect ClassName.mro() |
+| Deep hierarchy is hard to follow | Too many inheritance layers | Simplify or use composition |
 
-### Validation checklist
+## 16. Practice exercises
 
-- [ ] Both child classes reuse the parent attributes.
-- [ ] Each role prints its own work description.
-- [ ] No unnecessary duplication of common initialization.
-- [ ] The learner distinguishes inheritance from composition.
+1. Create a Vehicle parent class and Car child class.
+2. Add a Bike child class with its own overridden start method.
+3. Create a Person → Employee → Developer multilevel hierarchy.
+4. Create a Printer and Scanner class and combine them in an OfficeMachine using multiple inheritance.
+5. Build an Employee with a Laptop object using composition.
+6. Explain why a Developer is an Employee but an Employee is not a Laptop.
+7. Override a display method and call the parent method using super().
 
-### Submission requirements
+## 17. Interview questions
 
-- Source code.
-- README with problem statement and run instructions.
-- At least three test cases.
-- Expected and actual output.
-- Short explanation of each class and method.
-- Limitations and one possible future improvement.
+**1. What is inheritance?**  
+A mechanism where a child class reuses and extends attributes and methods from a parent class.
 
-### Optional extension
+**2. What is a parent class?**  
+The base class whose behavior is inherited.
 
-Add one additional requirement only after all core requirements pass. Explain why the extension belongs in the existing class or requires a new responsibility.
+**3. What is method overriding?**  
+A child class provides its own implementation of an inherited method with the same method name.
 
-## 13. AI-assisted learning guide
+**4. What is super()?**  
+A proxy that provides access to the next class in the method resolution order. In simple inheritance it is commonly used to call parent behavior.
 
-Use AI as a mentor, not as a replacement for your own implementation.
+**5. What is single inheritance?**  
+One child class inherits from one parent class.
 
-| Assistance level | Prompt |
-|---|---|
-| Hint | Give one small hint for Employee Role Management System; do not give the solution |
-| Plan | Break the project into small implementation steps |
-| Example | Show a tiny example of the specific concept only |
-| Guided implementation | Help with one method, then wait for my output |
-| Explanation | Explain each statement and object state |
-| Debugging | Inspect my exact error and identify the root cause |
-| Review | Compare my implementation with the requirements and tests |
+**6. What is multiple inheritance?**  
+One class inherits from more than one parent class.
 
-**Planning prompt**
+**7. What is MRO?**  
+Method Resolution Order is the order Python follows to find attributes and methods in an inheritance hierarchy.
 
-"Help me plan Employee Role Management System. List the classes, responsibilities, attributes, methods, test cases and implementation order. Do not write the complete solution."
+**8. Difference between inheritance and composition?**  
+Inheritance models an is-a relationship; composition models a has-a relationship.
 
-**Implementation prompt**
+**9. Can a child class override an initializer?**  
+Yes. If it defines its own __init__, it should call super().__init__ when it needs the parent's initialization.
 
-"Guide me through the first step only. Explain the code and wait until I run it before moving to the next step."
+**10. Why should inheritance not be overused?**  
+It can create tight coupling and complicated hierarchies. Composition may be simpler for has-a relationships.
 
-**Debugging prompt**
+## 18. MCQs
 
-"Here is my code, input and exact error. Identify the failing statement, explain the cause and suggest the smallest correction. Do not rewrite the whole project."
+**Q1. Which syntax declares inheritance?**  
+A. `class Developer(Employee):`  
+B. `class Developer -> Employee:`  
+C. `inherit Developer Employee`  
+D. `Developer extends Employee`  
+**Answer: A.** The parent class is placed in parentheses.
 
-**Review prompt**
+**Q2. Which function commonly calls parent initialization?**  
+A. print()  
+B. super().__init__()  
+C. self.parent()  
+D. class()  
+**Answer: B.** super() accesses the next initializer in the MRO.
 
-"Review my implementation against the approved requirements. Identify missing behavior, edge cases and design problems. Explain each finding before suggesting a change."
+**Q3. What is method overriding?**  
+A. Deleting every parent method  
+B. Child providing its own implementation of an inherited method  
+C. Renaming a class  
+D. Importing a module  
+**Answer: B.** The child customizes inherited behavior.
 
-## 14. Daily quiz — multiple-choice questions
+**Q4. An Employee has a Laptop. Which relationship is this?**  
+A. Is-a  
+B. Has-a  
+C. Is-not-a  
+D. Overrides  
+**Answer: B.** The employee contains or uses a laptop object.
 
-### Q1. Which statement best describes today's main concept?
-A. It is a Python feature used to organize related data and behavior.  
-B. It removes the need for testing.  
-C. It automatically saves every object to PostgreSQL.  
-D. It replaces all functions in Python.
+**Q5. What does MRO stand for?**  
+A. Method Runtime Object  
+B. Method Resolution Order  
+C. Main Return Operation  
+D. Multiple Record Output  
+**Answer: B.** It describes the order Python searches for methods.
 
-**Correct answer: A.** The concept helps organize related state and behavior. It does not automatically provide database persistence or remove the need for tests.
+**Q6. Which inheritance form has two or more parent classes?**  
+A. Single  
+B. Multiple  
+C. Hierarchical  
+D. None  
+**Answer: B.** Multiple inheritance uses more than one base class.
 
-### Q2. What should you inspect when the output is incorrect?
-A. Only the filename.  
-B. Object creation, values, method calls and state changes.  
-C. Delete the class.  
-D. Ignore the output.
+## 19. Daily completion checklist
 
-**Correct answer: B.** OOP behavior depends on the object, its data and the method being called.
-
-### Q3. Which is the best project practice?
-A. Put all behavior into one giant method.  
-B. Avoid all validation.  
-C. Give each class a clear responsibility and test normal and invalid cases.  
-D. Store secrets in the source code.
-
-**Correct answer: C.** Clear responsibilities and validation make the project easier to understand and maintain.
-
-### Q4. Why should you not treat the example as production-ready?
-A. Python cannot run classes.  
-B. A classroom example does not include all production concerns such as persistence, security, concurrency and monitoring.  
-C. Methods cannot be tested.  
-D. Objects cannot store data.
-
-**Correct answer: B.** The demonstration teaches one concept; production systems need additional engineering controls.
-
-### Q5. What is the strongest evidence that your mini-project is complete?
-A. A project folder exists.  
-B. You watched a video.  
-C. The code is long.  
-D. Required scenarios pass, output is recorded and you can explain the implementation.
-
-**Correct answer: D.** Completion requires working behavior and the ability to explain and verify it.
-
-## 15. Interview preparation
-
-**Q1. Explain inheritance and method overriding in your own words.**  
-**Answer:** Inheritance is an is-a relationship. Method overriding means a child supplies its own implementation of a method. super() accesses the next implementation in the method resolution order.
-
-**Practical follow-up:** Explain the main worked example and identify the class, object, method and state involved.
-
-**Q2. Where can this concept help a backend developer?**  
-**Answer:** It helps structure reusable application code and model business responsibilities. Django uses Python classes extensively, so a strong OOP foundation makes framework code easier to understand.
-
-**Q3. What is one mistake a beginner should avoid?**  
-**Answer:** Do not add complexity without a clear requirement. Keep responsibilities understandable, validate inputs and test the behavior.
-
-**Follow-up:** What would you add before using this learning example in a production service?  
-**Answer:** Tests, error handling, authorization where needed, safe data persistence, configuration management, logging and operational monitoring.
-
-## 16. Day completion checklist
-
-- [ ] Read the lesson and explain the key terms.
-- [ ] Run the worked example successfully.
-- [ ] Explain the important statements.
-- [ ] Complete the guided exercises.
-- [ ] Build Employee Role Management System.
-- [ ] Validate normal and invalid scenarios.
-- [ ] Complete all five MCQs.
-- [ ] Answer the interview questions without copying.
-- [ ] Submit source code, README and evidence.
+- [ ] I can explain inheritance.
+- [ ] I can identify parent and child classes.
+- [ ] I can reuse parent attributes and methods.
+- [ ] I can add child-specific data.
+- [ ] I can use super().
+- [ ] I can override a method.
+- [ ] I know the basic inheritance types.
+- [ ] I can explain MRO at a high level.
+- [ ] I can distinguish inheritance from composition.
+- [ ] I completed Employee Role Management System.
 
 **Next lesson:** Day 17 — Encapsulation, Abstraction and Polymorphism.
-
