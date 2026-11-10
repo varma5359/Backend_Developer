@@ -54,6 +54,18 @@ This index tracks the detailed trainer manuscripts and interview guides. The syl
 
 **Phase 2 assessment:** Web-Connected Employee Database Workflow — see [Day 26 notes](day_26_notes.md).
 
+## Class-notes quality revision — Days 13–25
+
+The class-note manuscripts for Days 13–25 have been rewritten as detailed, beginner-first lessons. Each lesson includes concept explanations, worked examples, runnable demonstrations where applicable, code walkthroughs, expected behavior, practical exercises, troubleshooting, mini-project guidance, interview questions and MCQs.
+
+| Day range | Coverage | Class-note status |
+|---|---|---|
+| 13–18 | OOP foundations and integration | Revised |
+| 19–22 | Client-server, HTTP, status codes, JSON and XML | Revised |
+| 23–25 | Relational database design and SQL | Revised |
+
+**Important:** This status refers to the class-note manuscripts. The separate interview-guide files have not been quality-rewritten as part of this class-notes revision.
+
 ## Remaining phases
 
 | Phase | Days | Module | Authoring status |
