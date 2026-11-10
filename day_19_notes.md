@@ -1,28 +1,28 @@
-# Day 19: SQL filtering, sorting, joins, grouping and aggregate functions
+# Day 19: Client-server architecture and how websites work
 
 **Pathway:** Python Backend Developer Career Pathway (Django)  
 **Phase:** 2 — Web Fundamentals, SQL and Development Tools  
 **Time:** 2–3 hours | **Level:** Beginner  
-**Prerequisites:** Python foundations (Days 1–12), Day 18  
+**Prerequisites:** Python foundations (Days 1–12)  
 **Tools:** Python 3, VS Code, terminal  
-**Approved mini-project:** Sales Database Analyzer
+**Approved mini-project:** Client-Server Communication Simulator
 
 ## 1. Learning objectives
-1. Define the central terms of sql filtering, sorting, joins, grouping and aggregate functions.
+1. Define the central terms of client-server architecture and how websites work.
 2. Explain how this concept supports backend applications.
 3. Run and interpret a working example.
 4. Diagnose a common mistake or failure.
-5. Apply the concept in **Sales Database Analyzer**.
+5. Apply the concept in **Client-Server Communication Simulator**.
 
 ## 2. Concept and motivation
-WHERE filters rows, ORDER BY sorts, JOIN combines related tables, GROUP BY aggregates categories. COUNT, SUM, AVG, MIN and MAX summarize records.
+A client sends a request; a server processes it and returns a response. DNS resolves a domain to an address; a browser then connects to the service.
 
 **Why it matters:** Backend developers must reason about communication, data, and reproducible software changes. A correct implementation should produce observable evidence rather than rely on assumptions.
 
-**Key vocabulary:** `WHERE`, `ORDER BY`, `INNER JOIN`, `LEFT JOIN`, `GROUP BY`, `HAVING`, `SUM`, `COUNT`.
+**Key vocabulary:** `client`, `server`, `DNS`, `IP address`, `port`, `request-response`.
 
 ## 3. How it works
-Input or request → validation/processing → result → inspection and verification.
+Browser → DNS lookup → network connection → HTTP request → server logic → HTTP response → browser rendering.
 
 **Use it when:** You need the relevant behavior in a web or data workflow. **Avoid:** Treating a successful example as proof that production concerns (authentication, error handling, scalability or concurrent use) are solved.
 
@@ -32,37 +32,30 @@ Create a new folder named `day_19` in VS Code. Save this example in `demo.py`.
 Run the code below in Python:
 
 ```python
-import sqlite3
-db = sqlite3.connect(":memory:")
-db.executescript("""
-CREATE TABLE customers(id INTEGER PRIMARY KEY, name TEXT);
-CREATE TABLE sales(id INTEGER PRIMARY KEY, customer_id INTEGER, amount INTEGER);
-INSERT INTO customers VALUES (1,'Asha'),(2,'Ravi');
-INSERT INTO sales VALUES (1,1,500),(2,1,300),(3,2,700);
-""")
-rows = db.execute("""
-SELECT c.name, COUNT(s.id) AS orders, SUM(s.amount) AS total
-FROM customers c JOIN sales s ON c.id = s.customer_id
-WHERE s.amount >= ?
-GROUP BY c.id, c.name
-ORDER BY total DESC
-""", (300,)).fetchall()
-print(rows)
-db.close()
+from http.server import BaseHTTPRequestHandler, HTTPServer
+
+class Handler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.send_header("Content-Type", "text/plain; charset=utf-8")
+        self.end_headers()
+        self.wfile.write(b"Hello from the backend")
+
+HTTPServer(("127.0.0.1", 8000), Handler).serve_forever()
 ```
 
-**How to run:** python analyze_sales.py
+**How to run:** python server.py
 
 **Expected result:**
 ```text
-[('Asha', 2, 800), ('Ravi', 1, 700)]
+Open http://127.0.0.1:8000 → Hello from the backend
 ```
 
 **Code walkthrough:**
-- sqlite3.connect opens a local SQLite database (memory-only for this demonstration).\n- SQL statements define tables, change records or query results.\n- execute runs a statement; fetchall/fetchone retrieves query results.\n- Parameter placeholders (?) safely bind values where shown.\n- PostgreSQL is the pathway's production database; SQLite is used here for zero-install practice.
+- Import statements load standard-library functionality.\n- Variables hold the input or intermediate data.\n- The processing statements implement the day's core concept.\n- print or the browser displays observable results.\n- Inspect each result before changing the example.
 
 ## 5. Industry scenario
-A retail manager wants total sales by customer and highest-value orders. The developer should define the expected result, check failures, and communicate the outcome clearly to other team members.
+An online shopping website loads product information from a backend. The developer should define the expected result, check failures, and communicate the outcome clearly to other team members.
 
 ## 6. Common mistakes and troubleshooting
 | Problem | Check |
@@ -73,9 +66,9 @@ A retail manager wants total sales by customer and highest-value orders. The dev
 | Invalid or untrusted input | Validate before processing; never trust client data |
 | Security concern | Use HTTPS for remote communication, parameterized SQL, and no secrets in source control |
 
-## 7. Independent mini-project — Sales Database Analyzer
+## 7. Independent mini-project — Client-Server Communication Simulator
 
-**Goal:** Demonstrate sql filtering, sorting, joins, grouping and aggregate functions with a small, testable application or workflow. **Estimated project time:** 30–75 minutes.
+**Goal:** Demonstrate client-server architecture and how websites work with a small, testable application or workflow. **Estimated project time:** 30–75 minutes.
 
 **Required deliverables:**
 1. Write a short problem statement and input/output specification.
@@ -94,10 +87,9 @@ projects/day_19/
 ```
 
 **Validation checklist:**
-1. Filter orders by amount.
-2. Sort totals descending.
-3. Check customers with multiple sales.
-4. Explain why LEFT JOIN is needed for customers without orders.
+1. Open the local URL and verify the text.
+2. Change the response message and reload.
+3. Stop the server and observe the browser connection error.
 
 **Security and reliability:** Do not commit credentials, personal information or production secrets. Use local test data and handle errors explicitly.
 
@@ -108,29 +100,29 @@ projects/day_19/
 ## 8. AI-assisted learning guide
 | Level | Ask the AI mentor |
 |---|---|
-| Hint | Give one hint for Sales Database Analyzer; don't solve it |
+| Hint | Give one hint for Client-Server Communication Simulator; don't solve it |
 | Plan | Break the project into input, process, output and tests |
-| Example | Explain a tiny example of WHERE |
+| Example | Explain a tiny example of client |
 | Guided implementation | Help me implement only the first step, then wait |
 | Explanation | Explain the demonstration line by line |
 | Debugging | Analyze my exact error message and propose a minimal fix |
 | Review | Check my implementation against the validation checklist |
 
-**Planning prompt:** "Help me plan Sales Database Analyzer with requirements, sample inputs and test cases. Do not write the complete solution."
+**Planning prompt:** "Help me plan Client-Server Communication Simulator with requirements, sample inputs and test cases. Do not write the complete solution."
 
 **Implementation prompt:** "Guide me through one step at a time. Explain each command or line before continuing."
 
 **Debugging/review prompt:** "Review my output, identify the root cause of any failure and explain how to verify the correction."
 
 ## 9. Daily MCQs
-**Q1. Which statement best describes WHERE?**  
-A. WHERE filters rows, ORDER BY sorts, JOIN combines related tables, GROUP BY aggregates categories.  
+**Q1. Which statement best describes client?**  
+A. A client sends a request; a server processes it and returns a response.  
 B. It is only a Python variable  
 C. It always requires Django  
 D. It replaces all validation  
-**Answer: A.** WHERE filters rows, ORDER BY sorts, JOIN combines related tables, GROUP BY aggregates categories. — this is the appropriate choice for the stated scenario.
+**Answer: A.** A client sends a request; a server processes it and returns a response. — this is the appropriate choice for the stated scenario.
 
-**Q2. What is the most useful evidence that Sales Database Analyzer works?**  
+**Q2. What is the most useful evidence that Client-Server Communication Simulator works?**  
 A. A project name  
 B. Observed output matching documented test cases  
 C. A screenshot of the editor alone  
@@ -159,17 +151,17 @@ D. No technical details
 **Answer: A.** Setup, execution and validation instructions — this is the appropriate choice for the stated scenario.
 
 ## 10. Interview practice
-### Q1. What is the difference between WHERE and HAVING?
-**Answer:** WHERE filters rows before grouping; HAVING filters grouped results after aggregation.
+### Q1. What is a client-server architecture?
+**Answer:** The client requests a resource or operation; the server receives, processes and responds. A browser and web backend are common examples.
 
-**Practical example:** A retail manager wants total sales by customer and highest-value orders.
+**Practical example:** An online shopping website loads product information from a backend.
 
 **Follow-up:** How would you verify this behavior in a real backend application?
 
-### Q2. What is the difference between INNER JOIN and LEFT JOIN?
-**Answer:** INNER JOIN returns matching rows; LEFT JOIN retains all rows from the left table, filling unmatched right-side columns with NULL.
+### Q2. What does DNS do?
+**Answer:** DNS resolves a hostname to network address records; it does not itself serve the webpage.
 
-**Practical example:** A retail manager wants total sales by customer and highest-value orders.
+**Practical example:** An online shopping website loads product information from a backend.
 
 **Follow-up:** How would you verify this behavior in a real backend application?
 
@@ -177,9 +169,9 @@ D. No technical details
 - [ ] Explain the core terminology without notes.
 - [ ] Run the demonstration and verify output.
 - [ ] Explain important statements or commands.
-- [ ] Complete Sales Database Analyzer.
+- [ ] Complete Client-Server Communication Simulator.
 - [ ] Validate at least three cases.
 - [ ] Answer five MCQs and two interview questions.
 - [ ] Submit source, README and evidence.
 
-**Next lesson:** Day 20.
+**Next lesson:** Day 14.
