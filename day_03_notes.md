@@ -8,202 +8,252 @@
 **Required tools:** Python 3, VS Code and terminal  
 **Approved mini-project:** Employee Salary Calculator
 
-## 1. Learning objectives
+> **Before you start:** Today you will learn how a program remembers information and performs calculations. Do not try to memorize every term at once. Run each small code example, compare the output and then change the values yourself.
 
-- Explain variables and assignment.
-- Identify common Python built-in data types.
+## 1. What will you learn?
+
+By the end of this lesson, you should be able to:
+- Create variables and assign values.
+- Identify common Python data types.
 - Check a value's type using `type()`.
-- Convert compatible values between types.
-- Use arithmetic, comparison, logical and assignment operators.
-- Apply these concepts to simple business calculations.
+- Convert compatible values using `int()`, `float()` and `str()`.
+- Perform calculations with arithmetic operators.
+- Compare values using comparison operators.
+- Combine conditions using logical operators.
+- Apply these ideas to an employee salary calculation.
 
 ## 2. What is a variable?
 
-A variable is a name that refers to a value. Variables let us store information and reuse it later.
+Imagine that you are calculating an employee's salary. You need to remember the employee's name, basic salary and allowance while the program runs.
+
+A **variable** is a name that refers to a value. It lets you store information and use that information later.
 
 ```python
 employee_name = "Asha"
-employee_age = 25
 monthly_salary = 45000
+department = "IT"
 
 print(employee_name)
-print(employee_age)
 print(monthly_salary)
-```
-
-Expected output:
-
-```text
-Asha
-25
-45000
-```
-
-- `employee_name`, `employee_age` and `monthly_salary` are variable names.
-- `=` is the assignment operator. It binds the name on the left to the value on the right.
-- `print()` displays each value.
-
-Python is dynamically typed: you do not declare a variable's type in advance. The value has a type, and a name can later refer to a value of another type.
-
-```python
-value = 100
-print(type(value))
-
-value = "one hundred"
-print(type(value))
-```
-
-Output:
-
-```text
-<class 'int'>
-<class 'str'>
-```
-
-## 3. Rules for naming variables
-
-Good variable names explain what the value represents.
-
-Valid examples:
-
-```python
-employee_id = 101
-total_amount = 2500
-is_active = True
-customer_name = "Ravi"
-```
-
-Naming rules:
-
-- A name can contain letters, digits and underscores.
-- A name cannot begin with a digit.
-- Names are case-sensitive: `salary` and `Salary` are different.
-- Python keywords such as `if`, `for` and `class` cannot be used as variable names.
-- Use descriptive `snake_case` names for variables and functions.
-
-Avoid unclear names such as `x1`, `a` or `temp` when a descriptive name would make the program easier to understand.
-
-## 4. Common Python data types
-
-A data type describes the kind of value being represented.
-
-| Type | Meaning | Example |
-|---|---|---|
-| `int` | Whole number | `employee_count = 12` |
-| `float` | Decimal number | `salary = 45000.50` |
-| `str` | Text | `name = "Asha"` |
-| `bool` | True or false | `is_active = True` |
-| `NoneType` | Absence of a value | `middle_name = None` |
-
-Check types:
-
-```python
-employee_id = 101
-salary = 45000.75
-name = "Asha"
-is_active = True
-manager_name = None
-
-print(type(employee_id))
-print(type(salary))
-print(type(name))
-print(type(is_active))
-print(type(manager_name))
-```
-
-Output:
-
-```text
-<class 'int'>
-<class 'float'>
-<class 'str'>
-<class 'bool'>
-<class 'NoneType'>
-```
-
-### 4.1 Integer
-
-Use an integer for whole-number quantities such as counts and identifiers.
-
-```python
-number_of_employees = 25
-print(number_of_employees + 5)
-```
-
-Output: `30`
-
-An employee ID may be stored as an integer if it is used numerically. If an identifier can contain leading zeroes or letters, a string may be more appropriate.
-
-### 4.2 Float
-
-Use a float for values that need a fractional part.
-
-```python
-unit_price = 149.50
-quantity = 3
-total = unit_price * quantity
-
-print(total)
-```
-
-Output: `448.5`
-
-Floating-point values use binary representation and may not represent every decimal fraction exactly. For financial systems, Python's `decimal.Decimal` is often more suitable than float for exact decimal arithmetic. That is an advanced topic; the mini-project can use simple values while recognizing this limitation.
-
-### 4.3 String
-
-A string stores text.
-
-```python
-first_name = "Asha"
-department = 'Engineering'
-
-print(first_name)
 print(department)
 ```
 
-Strings can use single or double quotes. The opening and closing quote types must match.
+Output:
 
-### 4.4 Boolean
+```text
+Asha
+45000
+IT
+```
 
-A boolean has one of two values: `True` or `False`.
+Understand each line:
+- `employee_name` is a variable name.
+- `=` is the assignment operator. It assigns the value on the right to the name on the left.
+- `"Asha"` is a text value.
+- `45000` is an integer value.
+- `print()` displays the value.
+
+A useful mental picture is a label attached to a value. The label `employee_name` lets you refer to the value `"Asha"`.
+
+### Changing a variable
 
 ```python
-is_verified = True
-has_access = False
+salary = 30000
+print(salary)
 
-print(is_verified)
-print(has_access)
+salary = 35000
+print(salary)
 ```
 
-Booleans are useful for representing conditions such as whether an account is active or a payment is verified.
+Output:
 
-### 4.5 None
-
-`None` represents the absence of a value.
-
-```middle_name = None
-
-print(middle_name)
-print(type(middle_name))
+```text
+30000
+35000
 ```
 
-Use `None` when a value is currently unavailable or intentionally not set. Do not confuse it with the text `"None"` or the number `0`.
+The name `salary` refers to the new value after the second assignment.
 
-## 5. Type conversion
+## 3. Rules for naming variables
 
-Type conversion changes a value from one type to another when the conversion is valid.
+Good variable names make programs easier to understand.
 
-Common functions:
+Valid examples:
+```python
+student_name = "Ravi"
+age = 21
+monthly_salary = 45000
+total_amount = 2500
+```
 
-| Function | Purpose | Example |
-|---|---|---|
-| `int()` | Convert to integer when possible | `int("25")` |
-| `float()` | Convert to float when possible | `float("25.5")` |
-| `str()` | Convert to text | `str(101)` |
-| `bool()` | Convert to boolean using truth-value rules | `bool(1)` |
+Invalid examples:
+- `2name` — a variable name cannot start with a digit.
+- `student-name` — a hyphen is not allowed in a normal variable name.
+- `class` — this is a reserved Python keyword.
 
-### Example 1 — string to integer
+Recommended naming style is lowercase words separated by underscores. This style is called **snake_case**.
+
+Prefer `employee_salary` over `x` because the first name explains what the value represents.
+
+## 4. What is a data type?
+
+A data type tells Python what kind of value is being represented. Different types support different operations.
+
+Consider these values:
+
+```python
+name = "Asha"
+age = 22
+salary = 45000.50
+is_active = True
+
+print(type(name))
+print(type(age))
+print(type(salary))
+print(type(is_active))
+```
+
+Output:
+
+```text
+<class 'str'>
+<class 'int'>
+<class 'float'>
+<class 'bool'>
+```
+
+Let's understand each type.
+
+### 4.1 String — str
+
+A string stores text. Write text inside single or double quotation marks.
+
+```python
+employee_name = "Asha"
+city = 'Hyderabad'
+
+print(employee_name)
+print(city)
+```
+
+Output:
+```text
+Asha
+Hyderabad
+```
+
+Examples of strings:
+- Names.
+- Email addresses.
+- Department names.
+- Product descriptions.
+- Status values such as `"active"`.
+
+Even if a phone number contains only digits, it is often stored as text because we do not normally add or multiply phone numbers.
+
+### 4.2 Integer — int
+
+An integer is a whole number without a decimal part.
+
+```python
+age = 25
+number_of_employees = 120
+
+print(age)
+print(number_of_employees)
+print(type(age))
+```
+
+Output:
+```text
+25
+120
+<class 'int'>
+```
+
+Examples include age, quantity and the number of completed orders.
+
+### 4.3 Float — float
+
+A float represents a number with a decimal part.
+
+```python
+price = 250.75
+percentage = 12.5
+
+print(price)
+print(percentage)
+print(type(price))
+```
+
+Output:
+```text
+250.75
+12.5
+<class 'float'>
+```
+
+Floats are useful for many measurements and calculations. For financial applications, decimal arithmetic is often preferred over binary floating-point arithmetic because decimal currency values need predictable precision. You will learn more about this when working on real payment logic.
+
+### 4.4 Boolean — bool
+
+A Boolean value has only two possibilities: `True` or `False`.
+
+```python
+is_logged_in = True
+is_blocked = False
+
+print(is_logged_in)
+print(is_blocked)
+print(type(is_logged_in))
+```
+
+Output:
+```text
+True
+False
+<class 'bool'>
+```
+
+Boolean values are useful for questions such as:
+- Is the account active?
+- Is payment completed?
+- Is the user verified?
+
+Remember to write `True` and `False` with capital first letters.
+
+## 5. Check the type using type()
+
+The built-in `type()` function tells you the type of a value.
+
+Syntax:
+```python
+type(value)
+```
+
+Example:
+```python
+price = 500
+print(type(price))
+```
+
+Output:
+```text
+<class 'int'>
+```
+
+Explanation:
+1. Python reads the value stored in `price`.
+2. `type(price)` asks Python for the value's type.
+3. `print()` displays the result.
+
+Use `type()` when you are unsure what type a variable contains. It is especially helpful when debugging input and conversion problems.
+
+## 6. What is type conversion?
+
+Sometimes a value is stored in one type, but your calculation needs another type. **Type conversion** changes a value from one type to another when the conversion is valid.
+
+### 6.1 Convert text to integer using int()
 
 ```python
 age_text = "25"
@@ -214,226 +264,349 @@ print(type(age))
 ```
 
 Output:
-
 ```text
 25
 <class 'int'>
 ```
 
-### Example 2 — string to float
+Explanation:
+- `age_text` contains text, even though it looks like digits.
+- `int(age_text)` converts the text `"25"` into integer `25`.
+- The converted result is stored in `age`.
+
+If the text is `"twenty"`, Python cannot convert it to an integer and raises `ValueError`. Error handling is covered on Day 12.
+
+### 6.2 Convert to float using float()
 
 ```python
-salary_text = "45000.75"
-salary = float(salary_text)
+price_text = "250.75"
+price = float(price_text)
 
-print(salary + 1000)
-```
-
-Output: `46000.75`
-
-### Example 3 — number to string
-
-```python
-employee_id = 101
-message = "Employee ID: " + str(employee_id)
-
-print(message)
-```
-
-Output: `Employee ID: 101`
-
-### Invalid conversion
-
-```python
-quantity = int("five")
-```
-
-This raises `ValueError`, because the text `"five"` is not an integer representation. You will learn to handle this safely with exception handling on Day 12.
-
-## 6. Operators in Python
-
-An operator performs an operation on one or more values.
-
-### 6.1 Arithmetic operators
-
-| Operator | Meaning | Example | Result |
-|---|---|---|---:|
-| `+` | Addition | `10 + 3` | 13 |
-| `-` | Subtraction | `10 - 3` | 7 |
-| `*` | Multiplication | `10 * 3` | 30 |
-| `/` | Division | `10 / 3` | 3.333... |
-| `//` | Floor division | `10 // 3` | 3 |
-| `%` | Remainder | `10 % 3` | 1 |
-| `**` | Exponentiation | `2 ** 3` | 8 |
-
-```python
-price = 200
-quantity = 3
-
-total = price * quantity
-print(total)
-```
-
-Output: `600`
-
-### 6.2 Comparison operators
-
-Comparison operators produce a boolean result.
-
-| Operator | Meaning |
-|---|---|
-| `==` | Equal to |
-| `!=` | Not equal to |
-| `>` | Greater than |
-| `<` | Less than |
-| `>=` | Greater than or equal to |
-| `<=` | Less than or equal to |
-
-```python
-salary = 45000
-
-print(salary >= 30000)
-print(salary == 45000)
-print(salary != 0)
+print(price)
+print(type(price))
 ```
 
 Output:
-
 ```text
-True
-True
-True
+250.75
+<class 'float'>
 ```
 
-Do not confuse `=` (assignment) with `==` (comparison).
+Use `float()` when a decimal number is needed.
 
-### 6.3 Logical operators
-
-Logical operators combine or reverse conditions.
-
-- `and`: true when both conditions are true.
-- `or`: true when at least one condition is true.
-- `not`: reverses a truth value.
+### 6.3 Convert a number to text using str()
 
 ```python
-salary = 45000
-is_active = True
+employee_id = 101
+employee_id_text = str(employee_id)
 
-eligible = salary >= 30000 and is_active
-print(eligible)
+print(employee_id_text)
+print(type(employee_id_text))
 ```
 
-Output: `True`
+Output:
+```text
+101
+<class 'str'>
+```
 
-Python evaluates logical expressions using short-circuit behavior: in an `and` expression, it may stop once the result is known to be false; in an `or` expression, it may stop once the result is known to be true.
+The displayed value looks similar, but its type is now a string. You can combine it with other text more easily.
 
-### 6.4 Assignment operators
+### 6.4 A common conversion mistake
+
+```python
+age = "25"
+# print(age + 5)  # This causes a TypeError
+```
+
+Why? Python cannot add a string and an integer using the `+` operator.
+
+Correct version:
+
+```python
+age = "25"
+age = int(age)
+print(age + 5)
+```
+
+Output:
+```text
+30
+```
+
+## 7. Arithmetic operators
+
+Arithmetic operators perform mathematical calculations.
+
+| Operator | Meaning | Example | Result |
+|---|---|---|---:|
+| `+` | Addition | `10 + 5` | 15 |
+| `-` | Subtraction | `10 - 5` | 5 |
+| `*` | Multiplication | `10 * 5` | 50 |
+| `/` | Division | `10 / 5` | 2.0 |
+| `//` | Floor division | `11 // 5` | 2 |
+| `%` | Remainder | `11 % 5` | 1 |
+| `**` | Power | `2 ** 3` | 8 |
+
+Run this example:
+
+```python
+first_number = 10
+second_number = 3
+
+print(first_number + second_number)
+print(first_number - second_number)
+print(first_number * second_number)
+print(first_number / second_number)
+print(first_number // second_number)
+print(first_number % second_number)
+print(first_number ** second_number)
+```
+
+Output:
+```text
+13
+7
+30
+3.3333333333333335
+3
+1
+1000
+```
+
+Understand the difference between `/` and `//`:
+- `/` performs normal division and returns a float.
+- `//` performs floor division, rounding the result down toward negative infinity.
+
+The remainder operator `%` is useful for checking whether a number is divisible by another number.
+
+## 8. Assignment operators
+
+Assignment operators update a variable.
 
 ```python
 total = 100
 total += 50
-total -= 10
-total *= 2
+print(total)
 
+total -= 20
+print(total)
+
+total *= 2
 print(total)
 ```
 
-Output: `280`
+Output:
+```text
+150
+130
+260
+```
 
-For example, `total += 50` means update total by adding 50.
+What does `total += 50` mean? It is a shorter way of writing `total = total + 50`.
 
-## 7. Operator precedence
+Other operators include `-=`, `*=`, `/=`, `//=` and `%=`.
 
-Python follows precedence rules. Parentheses make the intended order explicit.
+## 9. Comparison operators
 
+Comparison operators compare two values. Their result is Boolean: `True` or `False`.
+
+| Operator | Meaning | Example |
+|---|---|---|
+| `==` | Equal to | `10 == 10` |
+| `!=` | Not equal to | `10 != 5` |
+| `>` | Greater than | `10 > 5` |
+| `<` | Less than | `5 < 10` |
+| `>=` | Greater than or equal to | `10 >= 10` |
+| `<=` | Less than or equal to | `5 <= 10` |
+
+Example:
 ```python
-result = 10 + 5 * 2
-print(result)
+age = 22
 
-result_with_parentheses = (10 + 5) * 2
-print(result_with_parentheses)
+print(age >= 18)
+print(age == 18)
+print(age != 18)
 ```
 
 Output:
-
 ```text
-20
-30
+True
+False
+True
 ```
 
-Multiplication is evaluated before addition. Use parentheses when they improve readability or avoid ambiguity.
+Important difference:
+- `=` assigns a value.
+- `==` compares two values.
 
-## 8. Practical example — calculate employee monthly pay
+This is one of the most common beginner interview and coding mistakes.
+
+## 10. Logical operators
+
+Logical operators combine or reverse Boolean conditions.
+
+### and
+
+Both conditions must be true.
+
+```python
+age = 25
+has_id = True
+
+print(age >= 18 and has_id)
+```
+
+Output: `True`
+
+If either condition is false, the complete `and` expression is false.
+
+### or
+
+At least one condition must be true.
+
+```python
+is_admin = False
+is_manager = True
+
+print(is_admin or is_manager)
+```
+
+Output: `True`
+
+### not
+
+`not` reverses a Boolean value.
+
+```python
+is_blocked = False
+print(not is_blocked)
+```
+
+Output: `True`
+
+You will use these operators with `if` conditions on Day 5.
+
+## 11. Put the concepts together: salary calculation
+
+Suppose an employee has:
+- Basic salary: ₹30,000.
+- House allowance: ₹5,000.
+- Travel allowance: ₹2,000.
 
 ```python
 employee_name = "Asha"
-basic_salary = 40000
-allowance = 5000
-deduction = 2000
+basic_salary = 30000
+house_allowance = 5000
+travel_allowance = 2000
 
-gross_salary = basic_salary + allowance
-net_salary = gross_salary - deduction
+total_salary = basic_salary + house_allowance + travel_allowance
 
 print("Employee:", employee_name)
-print("Gross salary:", gross_salary)
-print("Net salary:", net_salary)
+print("Basic salary:", basic_salary)
+print("Total salary:", total_salary)
 ```
 
 Output:
+```text
+Employee: Asha
+Basic salary: 30000
+Total salary: 37000
+```
+
+The computer adds the three numeric values and stores the result in `total_salary`. The employee name is text, while salary amounts are numeric values.
+
+## 12. Common beginner mistakes
+
+| Mistake | Why it happens | Correction |
+|---|---|---|
+| Using `=` to compare | Assignment and comparison are confused | Use `==` for comparison |
+| Adding text and a number | Input may be a string | Convert the value first |
+| Writing `true` instead of `True` | Boolean capitalization is forgotten | Use `True` and `False` |
+| Naming a variable `2salary` | Variable name starts with a digit | Start with a letter or underscore |
+| Dividing by zero | Denominator is zero | Check the denominator before division |
+| Assuming phone numbers are integers | Digits look numeric | Store identifiers and phone numbers as strings |
+
+## 13. Interview preparation
+
+**Question 1: What is a variable in Python?**
+
+Answer: A variable is a name that refers to a value. It allows us to store information and use it again in a program.
+
+Follow-up: Can a Python variable refer to values of different types at different times?  
+Answer: Yes. Python is dynamically typed, so a name can be assigned a value of another type.
+
+**Question 2: What is the difference between a list of data types and a variable's type?**
+
+Answer: A variable refers to a value, and `type()` tells us the type of the value currently referenced by that variable.
+
+**Question 3: What is the difference between `=` and `==`?**
+
+Answer: `=` assigns a value to a variable. `==` compares two values and returns True or False.
+
+**Question 4: Why do we convert input before calculation?**
+
+Answer: Python's `input()` returns text. If we want to perform numeric calculations, we need to convert compatible input to an integer or float.
+
+## 14. Approved mini-project — Employee Salary Calculator
+
+**Objective:** Create a beginner-level program that calculates an employee's total monthly salary from separate salary components.
+
+### Inputs
+
+- Employee name.
+- Basic salary.
+- House allowance.
+- Travel allowance.
+
+### Requirements
+
+1. Store the employee name in a string variable.
+2. Store salary amounts as numeric values.
+3. Calculate total salary using arithmetic operators.
+4. Display the employee name and each salary component.
+5. Display the final total.
+6. Use meaningful variable names.
+7. Check the data types using `type()` during development.
+
+### Example data
+
+```python
+employee_name = "Asha"
+basic_salary = 30000
+house_allowance = 5000
+travel_allowance = 2000
+```
+
+### Expected result
 
 ```text
 Employee: Asha
-Gross salary: 45000
-Net salary: 43000
+Basic salary: 30000
+House allowance: 5000
+Travel allowance: 2000
+Total salary: 37000
 ```
 
-Interpretation:
+### Test cases
 
-- Gross salary is basic salary plus allowance.
-- Net salary is gross salary minus the deduction.
-- The example is a simplified calculation, not a complete payroll or tax calculation.
+| Basic | House | Travel | Expected total |
+|---:|---:|---:|---:|
+| 30000 | 5000 | 2000 | 37000 |
+| 25000 | 3000 | 1500 | 29500 |
+| 40000 | 6000 | 2500 | 48500 |
 
-## 9. Common mistakes
+For the first version, assign values directly in the Python file. User input and validation are taught on Day 4. Do not add tax or deductions because those rules are outside today's mini-project.
 
-| Mistake | Why it happens | Better approach |
-|---|---|---|
-| Adding a number to numeric text | Input is a string | Convert and validate the input |
-| Using `=` in a comparison | Assignment and equality look similar | Use `==` for comparison |
-| Converting `"12.5"` with `int()` | Decimal text is not a direct integer representation | Use `float()` if a decimal is required |
-| Treating `None` as text | Confusing a value with a string | Compare with `is None` |
-| Using unclear variable names | Names do not describe meaning | Use descriptive snake_case |
-| Assuming float is exact for money | Binary floating-point representation | Learn Decimal for financial precision |
+## 15. Daily practice and completion check
 
-## 10. Industry scenario
+1. Create variables for your name, age, city and whether you are a student.
+2. Print each value and its type.
+3. Convert the text `"250"` into an integer.
+4. Calculate the total of three product prices.
+5. Compare two numbers using `>` and `==`.
+6. Explain the difference between `and` and `or`.
 
-An employee salary calculator receives basic salary, allowance and deductions. The program must distinguish text received from a form from numeric values used in calculations. If a salary arrives as text, it must be converted and validated before arithmetic is performed.
-
-This is a small example of a common backend responsibility: validate incoming data before using it in business logic.
-
-## 11. Connection to the approved mini-project
-
-**Employee Salary Calculator**
-
-The calculator should use descriptive variables for employee name, basic salary, allowance and deductions. It should calculate gross and net salary and display a clear summary.
-
-Use the day's concepts:
-
-- Strings for employee name.
-- Numeric values for salary components.
-- Arithmetic operators for calculations.
-- Comparison operators later when checking allowed ranges.
-- Type conversion when handling numeric text.
-
-Keep the assumptions explicit. Do not present the simplified calculation as a real payroll or tax engine.
-
-## 12. Key takeaways
-
-- Variables give reusable names to values.
-- Python has built-in types such as int, float, str, bool and NoneType.
-- `type()` helps inspect a value's type.
-- Convert input carefully before performing calculations.
-- Arithmetic operators calculate; comparison operators return booleans.
-- Logical operators combine conditions.
-- Use clear variable names and parentheses to make code readable.
+You have completed Day 3 when you can explain variables, identify the four basic data types, convert simple values and perform calculations without copying the examples.
 
 **Next lesson:** Day 4 — Input/output, string formatting and user interaction.
