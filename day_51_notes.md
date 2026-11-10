@@ -22,6 +22,12 @@
 
 A custom user model lets a project define its user identity fields and authentication behavior. Django recommends deciding whether to use a custom user model at the start of a project. Set AUTH_USER_MODEL before the first migrations that create user-related tables. Changing user models after a project has already migrated can require complex data and migration work.
 
+## Important migration timing — read before changing settings
+
+The main pathway project already has Django migrations from earlier lessons. Do **not** casually switch that existing database from Django's default user model to a custom user model at Day 51. Changing AUTH_USER_MODEL after tables and relationships have already been created can require complex schema and data migrations.
+
+For this lesson, create a **separate fresh practice project** named `custom_user_demo`, or use a clean branch and a new empty database. Configure `AUTH_USER_MODEL = "accounts.User"` before running the first migrations in that practice project. Keep the existing Job Portal and main pathway project using the user model it was initialized with.
+
 ## 3. File-by-file implementation
 
 ### accounts/models.py
