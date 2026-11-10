@@ -1,6 +1,6 @@
 # TechPhile.ai — Python Backend Developer Career Pathway (Django)
 
-**Duration:** 90 learning days  
+**Duration:** 96 learning days  
 **Daily commitment:** 2–3 hours  
 **Target audience:** Freshers and candidates with 0–1 year of experience  
 **Primary programming language:** Python  
@@ -80,14 +80,14 @@ The backend is responsible for:
 
 | Phase | Approved days | Module | Expected phase outcome |
 |---|---:|---|---|
-| 1 | 1–12 | Python programming foundations | Write basic Python programs and understand core programming concepts. |
-| 2 | 13–20 | Web fundamentals, SQL and development tools | Understand HTTP, client-server communication, SQL and Git fundamentals. |
-| 3 | 21–35 | Django fundamentals | Build Django projects with applications, URLs, views, templates and models. |
-| 4 | 36–48 | Django ORM, forms and authentication | Build database-driven applications with CRUD, validation, authentication and permissions. |
-| 5 | 49–63 | REST API development with Django REST Framework | Build, validate, document and test REST APIs. |
-| 6 | 64–75 | Advanced backend development | Implement advanced backend workflows, integrations, caching and asynchronous tasks. |
-| 7 | 76–82 | Testing, deployment and production readiness | Test, containerize, deploy and troubleshoot backend applications. |
-| 8 | 83–90 | End-to-end backend capstone | Design and deliver a complete Django backend system. |
+| 1 | 1–18 | Python programming foundations and OOP | Write Python programs and apply object-oriented design with classes, objects, methods and core OOP principles. |
+| 2 | 19–26 | Web fundamentals, SQL and development tools | Understand HTTP, client-server communication, JSON, relational SQL and Git fundamentals. |
+| 3 | 27–41 | Django fundamentals | Build Django projects with applications, URLs, views, templates and models. |
+| 4 | 42–54 | Django ORM, forms and authentication | Build database-driven applications with CRUD, validation, authentication and permissions. |
+| 5 | 55–69 | REST API development with Django REST Framework | Build, validate, document and test REST APIs. |
+| 6 | 70–81 | Advanced backend development | Implement advanced backend workflows, integrations, caching and asynchronous tasks. |
+| 7 | 82–88 | Testing, deployment and production readiness | Test, containerize, deploy and troubleshoot backend applications. |
+| 8 | 89–96 | End-to-end backend capstone | Design and deliver a complete Django backend system. |
 
 # 3. Daily Learning Schedule
 
@@ -103,7 +103,7 @@ The backend is responsible for:
 
 # 4. Approved Day-Wise Syllabus and Independent Mini-Projects
 
-## Phase 1 — Python Programming Foundations
+## Phase 1 — Python Programming Foundations and OOP
 
 **Days 1–12**
 
@@ -132,14 +132,14 @@ The backend is responsible for:
 
 | Day | Approved learning topic | Approved independent mini-project |
 |---:|---|---|
-| 13 | Client-server architecture and how websites work. | Client-Server Communication Simulator |
-| 14 | HTTP, HTTPS, requests, responses and HTTP methods. | HTTP Request Explorer |
-| 15 | HTTP status codes, headers, request body and response body. | HTTP Response Analyzer |
-| 16 | JSON, XML basics and data exchange between applications. | JSON Data Exchange Tool |
-| 17 | Relational database concepts, tables, primary keys and foreign keys. | Student Database Designer |
-| 18 | SQL fundamentals: CREATE, INSERT, SELECT, UPDATE and DELETE. | Employee Database Manager |
-| 19 | SQL filtering, sorting, joins, grouping and aggregate functions. | Sales Database Analyzer |
-| 20 | Git, GitHub, repositories, commits, branches and merge basics. | Version-Controlled Python Project |
+| 19 | Client-server architecture and how websites work. | Client-Server Communication Simulator |
+| 20 | HTTP, HTTPS, requests, responses and HTTP methods. | HTTP Request Explorer |
+| 21 | HTTP status codes, headers, request body and response body. | HTTP Response Analyzer |
+| 22 | JSON, XML basics and data exchange between applications. | JSON Data Exchange Tool |
+| 23 | Relational database concepts, tables, primary keys and foreign keys. | Student Database Designer |
+| 24 | SQL fundamentals: CREATE, INSERT, SELECT, UPDATE and DELETE. | Employee Database Manager |
+| 25 | SQL filtering, sorting, joins, grouping and aggregate functions. | Sales Database Analyzer |
+| 26 | Git, GitHub, repositories, commits, branches and merge basics. | Version-Controlled Python Project |
 
 ## Phase 3 — Django Fundamentals
 
@@ -149,21 +149,21 @@ The backend is responsible for:
 
 | Day | Approved learning topic | Approved independent mini-project |
 |---:|---|---|
-| 21 | Introduction to Django, features, architecture and installation. | Django Environment Setup |
-| 22 | Creating Django projects and applications. Project structure and manage.py. | Personal Profile Django Project |
-| 23 | Django development server, settings.py and installed applications. | Django Configuration Explorer |
-| 24 | URL routing, path converters and URL patterns. | Multi-Page Routing Application |
-| 25 | Django views: function-based views and request-response cycle. | Dynamic Welcome Application |
-| 26 | Django templates, template variables and template tags. | Dynamic Employee Profile Website |
-| 27 | Template inheritance, reusable components and static files. | Reusable Website Layout |
-| 28 | Django models and database field types. | Employee Management Model |
-| 29 | Django migrations: makemigrations and migrate. | Database Migration Practice |
-| 30 | Django Admin Panel and model registration. | Admin-Based Inventory Manager |
-| 31 | Django ORM fundamentals and querying records. | Product Query Explorer |
-| 32 | Model relationships: One-to-One, One-to-Many and Many-to-Many. | College Relationship Manager |
-| 33 | Django forms and ModelForms. | Student Registration Form |
-| 34 | Form validation, CSRF protection and error messages. | Secure Form Validation Application |
-| 35 | Django application integration and complete request-response flow. | Django Student Management Website |
+| 27 | Introduction to Django, features, architecture and installation. | Django Environment Setup |
+| 28 | Creating Django projects and applications. Project structure and manage.py. | Personal Profile Django Project |
+| 29 | Django development server, settings.py and installed applications. | Django Configuration Explorer |
+| 30 | URL routing, path converters and URL patterns. | Multi-Page Routing Application |
+| 31 | Django views: function-based views and request-response cycle. | Dynamic Welcome Application |
+| 32 | Django templates, template variables and template tags. | Dynamic Employee Profile Website |
+| 33 | Template inheritance, reusable components and static files. | Reusable Website Layout |
+| 34 | Django models and database field types. | Employee Management Model |
+| 35 | Django migrations: makemigrations and migrate. | Database Migration Practice |
+| 36 | Django Admin Panel and model registration. | Admin-Based Inventory Manager |
+| 37 | Django ORM fundamentals and querying records. | Product Query Explorer |
+| 38 | Model relationships: One-to-One, One-to-Many and Many-to-Many. | College Relationship Manager |
+| 39 | Django forms and ModelForms. | Student Registration Form |
+| 40 | Form validation, CSRF protection and error messages. | Secure Form Validation Application |
+| 41 | Django application integration and complete request-response flow. | Django Student Management Website |
 
 ## Phase 4 — Django ORM, Forms and Authentication
 
@@ -173,19 +173,19 @@ The backend is responsible for:
 
 | Day | Approved learning topic | Approved independent mini-project |
 |---:|---|---|
-| 36 | CRUD operations: Create, Read, Update and Delete. | Employee CRUD Application |
-| 37 | Advanced Django ORM: filter, exclude, get, order_by and values. | Advanced Product Search |
-| 38 | Query optimization basics: select_related and prefetch_related. | Optimized Order Management System |
-| 39 | Database constraints, field validation and model validation. | Data Integrity Management System |
-| 40 | Django authentication system and user model. | User Account Management |
-| 41 | User registration, login and logout. | User Authentication Application |
-| 42 | Password management, password reset and secure password storage. | Password Recovery System |
-| 43 | Django sessions, cookies and session management. | Session-Based Shopping Cart |
-| 44 | Authorization, permissions and role-based access. | Role-Based Employee Portal |
-| 45 | Custom user models and user profile management. | Custom User Profile System |
-| 46 | Django messages framework and application feedback. | User Notification Application |
-| 47 | Pagination, search and filtering in Django applications. | Paginated Product Catalog |
-| 48 | Complete Django application integration and validation. | Job Portal Web Application |
+| 42 | CRUD operations: Create, Read, Update and Delete. | Employee CRUD Application |
+| 43 | Advanced Django ORM: filter, exclude, get, order_by and values. | Advanced Product Search |
+| 44 | Query optimization basics: select_related and prefetch_related. | Optimized Order Management System |
+| 45 | Database constraints, field validation and model validation. | Data Integrity Management System |
+| 46 | Django authentication system and user model. | User Account Management |
+| 47 | User registration, login and logout. | User Authentication Application |
+| 48 | Password management, password reset and secure password storage. | Password Recovery System |
+| 49 | Django sessions, cookies and session management. | Session-Based Shopping Cart |
+| 50 | Authorization, permissions and role-based access. | Role-Based Employee Portal |
+| 51 | Custom user models and user profile management. | Custom User Profile System |
+| 52 | Django messages framework and application feedback. | User Notification Application |
+| 53 | Pagination, search and filtering in Django applications. | Paginated Product Catalog |
+| 54 | Complete Django application integration and validation. | Job Portal Web Application |
 
 ## Phase 5 — REST API Development with Django REST Framework
 
@@ -195,21 +195,21 @@ The backend is responsible for:
 
 | Day | Approved learning topic | Approved independent mini-project |
 |---:|---|---|
-| 49 | Introduction to REST APIs and Django REST Framework installation. | REST API Environment Setup |
-| 50 | Serializers and converting Django models into JSON. | Employee Data Serializer |
-| 51 | Serializer fields, validation and custom validation methods. | Product Validation API |
-| 52 | Function-based API views and APIView. | Employee REST API |
-| 53 | GET and POST requests using Django REST Framework. | Student Registration API |
-| 54 | PUT, PATCH and DELETE operations. | Complete CRUD REST API |
-| 55 | Generic views and mixins. | Generic Product Management API |
-| 56 | ViewSets and routers. | Inventory Management API |
-| 57 | API authentication and permission classes. | Protected Employee API |
-| 58 | Token authentication and JWT authentication concepts. | JWT Authentication API |
-| 59 | Role-based API permissions and object-level permissions. | Role-Based Access API |
-| 60 | API filtering, searching, ordering and pagination. | Product Search and Filtering API |
-| 61 | API error handling, status codes and response structure. | Standardized API Response System |
-| 62 | API documentation using Swagger and OpenAPI. | Documented REST API |
-| 63 | API testing using Postman and automated test basics. | Tested Student Management API |
+| 55 | Introduction to REST APIs and Django REST Framework installation. | REST API Environment Setup |
+| 56 | Serializers and converting Django models into JSON. | Employee Data Serializer |
+| 57 | Serializer fields, validation and custom validation methods. | Product Validation API |
+| 58 | Function-based API views and APIView. | Employee REST API |
+| 59 | GET and POST requests using Django REST Framework. | Student Registration API |
+| 60 | PUT, PATCH and DELETE operations. | Complete CRUD REST API |
+| 61 | Generic views and mixins. | Generic Product Management API |
+| 62 | ViewSets and routers. | Inventory Management API |
+| 63 | API authentication and permission classes. | Protected Employee API |
+| 64 | Token authentication and JWT authentication concepts. | JWT Authentication API |
+| 65 | Role-based API permissions and object-level permissions. | Role-Based Access API |
+| 66 | API filtering, searching, ordering and pagination. | Product Search and Filtering API |
+| 67 | API error handling, status codes and response structure. | Standardized API Response System |
+| 68 | API documentation using Swagger and OpenAPI. | Documented REST API |
+| 69 | API testing using Postman and automated test basics. | Tested Student Management API |
 
 ## Phase 6 — Advanced Backend Development
 
@@ -219,18 +219,18 @@ The backend is responsible for:
 
 | Day | Approved learning topic | Approved independent mini-project |
 |---:|---|---|
-| 64 | File uploads, media files and image handling in Django. | Document Upload Management System |
-| 65 | Email integration and sending application notifications. | Email Notification Service |
-| 66 | Third-party API integration and consuming external APIs. | Weather Information Backend |
-| 67 | Payment gateway integration concepts and secure payment workflows. | Payment Workflow Simulator |
-| 68 | Background tasks and asynchronous processing concepts. | Background Report Generator |
-| 69 | Celery and Redis fundamentals for background jobs. | Asynchronous Email Task System |
-| 70 | Caching concepts and Django cache framework. | Cached Product Catalog API |
-| 71 | Database transactions and atomic operations. | Bank Transfer Transaction Simulator |
-| 72 | Django middleware and request-response processing. | Request Monitoring Middleware |
-| 73 | Backend security: SQL injection, XSS, CSRF and secure configuration. | Backend Security Assessment |
-| 74 | Application performance, database query analysis and optimization. | Backend Performance Analyzer |
-| 75 | Backend architecture, reusable components and clean code organization. | Modular Business Management Backend |
+| 70 | File uploads, media files and image handling in Django. | Document Upload Management System |
+| 71 | Email integration and sending application notifications. | Email Notification Service |
+| 72 | Third-party API integration and consuming external APIs. | Weather Information Backend |
+| 73 | Payment gateway integration concepts and secure payment workflows. | Payment Workflow Simulator |
+| 74 | Background tasks and asynchronous processing concepts. | Background Report Generator |
+| 75 | Celery and Redis fundamentals for background jobs. | Asynchronous Email Task System |
+| 76 | Caching concepts and Django cache framework. | Cached Product Catalog API |
+| 77 | Database transactions and atomic operations. | Bank Transfer Transaction Simulator |
+| 78 | Django middleware and request-response processing. | Request Monitoring Middleware |
+| 79 | Backend security: SQL injection, XSS, CSRF and secure configuration. | Backend Security Assessment |
+| 80 | Application performance, database query analysis and optimization. | Backend Performance Analyzer |
+| 81 | Backend architecture, reusable components and clean code organization. | Modular Business Management Backend |
 
 ## Phase 7 — Testing, Deployment and Production Readiness
 
@@ -240,13 +240,13 @@ The backend is responsible for:
 
 | Day | Approved learning topic | Approved independent mini-project |
 |---:|---|---|
-| 76 | Unit testing, integration testing and Django TestCase. | Django Application Test Suite |
-| 77 | pytest fundamentals, fixtures and API testing. | Automated API Test Suite |
-| 78 | Environment variables, .env files and production settings. | Environment Configuration Manager |
-| 79 | Linux fundamentals, terminal commands and server basics. | Linux Backend Deployment Preparation |
-| 80 | Gunicorn, Nginx and production Django configuration. | Production Server Configuration |
-| 81 | Docker fundamentals and Dockerizing Django applications. | Dockerized Django Backend |
-| 82 | Cloud deployment, database configuration, logs and deployment verification. | Deployed Django REST API |
+| 82 | Unit testing, integration testing and Django TestCase. | Django Application Test Suite |
+| 83 | pytest fundamentals, fixtures and API testing. | Automated API Test Suite |
+| 84 | Environment variables, .env files and production settings. | Environment Configuration Manager |
+| 85 | Linux fundamentals, terminal commands and server basics. | Linux Backend Deployment Preparation |
+| 86 | Gunicorn, Nginx and production Django configuration. | Production Server Configuration |
+| 87 | Docker fundamentals and Dockerizing Django applications. | Dockerized Django Backend |
+| 88 | Cloud deployment, database configuration, logs and deployment verification. | Deployed Django REST API |
 
 ## Phase 8 — End-to-End Backend Capstone
 
@@ -256,14 +256,14 @@ The backend is responsible for:
 
 | Day | Approved learning topic | Approved independent mini-project / deliverable |
 |---:|---|---|
-| 83 | Capstone: business problem, requirements and system design. | Backend Project Requirements |
-| 84 | Capstone: database design, relationships and Django models. | Database and Model Design |
-| 85 | Capstone: application development and business logic. | Core Backend Application |
-| 86 | Capstone: REST API development and validation. | Complete REST API |
-| 87 | Capstone: authentication, authorization and security. | Secure Backend System |
-| 88 | Capstone: testing, optimization and error handling. | Backend Testing and Optimization Report |
-| 89 | Capstone: Docker, deployment and documentation. | Deployed Backend Application |
-| 90 | Capstone: final demonstration, technical explanation and portfolio presentation. | End-to-End Django Backend Portfolio Project |
+| 89 | Capstone: business problem, requirements and system design. | Backend Project Requirements |
+| 90 | Capstone: database design, relationships and Django models. | Database and Model Design |
+| 91 | Capstone: application development and business logic. | Core Backend Application |
+| 92 | Capstone: REST API development and validation. | Complete REST API |
+| 93 | Capstone: authentication, authorization and security. | Secure Backend System |
+| 94 | Capstone: testing, optimization and error handling. | Backend Testing and Optimization Report |
+| 95 | Capstone: Docker, deployment and documentation. | Deployed Backend Application |
+| 96 | Capstone: final demonstration, technical explanation and portfolio presentation. | End-to-End Django Backend Portfolio Project |
 
 ---
 
@@ -645,15 +645,15 @@ A portfolio submission should include:
 
 | Validation item | Requirement |
 |---|---|
-| Pathway duration | 90 learning days |
-| Day entries | 90 |
+| Pathway duration | 96 learning days |
+| Day entries | 96 |
 | Phase entries | 8 |
-| Day numbering | 1–90, sequential |
+| Day numbering | 1–96, sequential |
 | Programming language | Python |
 | Primary framework | Django |
 | API framework | Django REST Framework |
 | Database | PostgreSQL |
-| Daily mini-projects | 90 |
+| Daily mini-projects | 96 |
 | Daily lesson structure | Included |
 | AI mentor assistance | Seven progressive levels included |
 | Daily quiz requirement | Five unique MCQs per day |
