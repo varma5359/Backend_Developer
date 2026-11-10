@@ -4,282 +4,249 @@
 **Phase:** 1 — Python Programming Foundations  
 **Estimated time:** 2–3 hours  
 **Difficulty:** Beginner  
-**Prerequisites:** Days 1–8; variables, conditions, loops and collections  
-**Required tools:** Python 3, VS Code, terminal  
+**Prerequisites:** Days 1–8 — variables, conditions, loops and collections  
+**Required tools:** Python 3, VS Code and terminal  
 **Approved mini-project:** Reusable Calculation Toolkit
 
 ## 1. Learning objectives
+
 - Explain why functions are used.
 - Define and call a function using `def`.
-- Distinguish parameters and arguments.
-- Return a value from a function.
+- Distinguish parameters from arguments.
+- Return values from functions.
 - Use positional, keyword and default arguments.
-- Organize repeated calculations into reusable functions.
+- Break a small problem into reusable operations.
 
 ## 2. What is a function?
-A function is a named, reusable block of code that performs a task. Instead of repeating the same calculation in different places, define it once and call it whenever required.
 
-**Flow:** Define function → call function → provide arguments → execute function body → receive result (if returned).
+A function is a named, reusable block of code that performs a task. Functions reduce repetition and help organize a program into understandable pieces.
 
-## 3. Create and call a function
+For example, a billing program may need to calculate totals in several places. Instead of repeating the calculation, define it once and call it whenever required.
+
+## 3. Define and call a function
+
 ```python
 def greet():
-    print("Welcome to Python Backend Development")
+    print("Welcome to the backend course")
 
 greet()
 ```
 
-Expected output:
+Output:
+
 ```text
-Welcome to Python Backend Development
+Welcome to the backend course
 ```
 
 Explanation:
+
 - `def` starts a function definition.
 - `greet` is the function name.
-- Parentheses hold parameters when needed.
-- The indented statement is the function body.
+- Parentheses contain parameters, if any.
+- The indented block is the function body.
 - `greet()` calls the function.
 
-The function body does not run merely because the function is defined.
+Defining a function does not execute its body. The body runs when the function is called.
 
 ## 4. Parameters and arguments
-A **parameter** is a variable named in a function definition. An **argument** is the value supplied when the function is called.
+
+A **parameter** is a name in the function definition. An **argument** is the value supplied when the function is called.
 
 ```python
-def greet_employee(name):  # name is a parameter
+def greet_employee(name):
     print(f"Welcome, {name}")
 
-greet_employee("Asha")     # "Asha" is an argument
+greet_employee("Asha")
 ```
 
-Output: `Welcome, Asha`.
+- `name` is the parameter.
+- `"Asha"` is the argument.
 
-## 5. Multiple parameters
+## 5. Functions with multiple parameters
+
 ```python
 def calculate_total(price, quantity):
     total = price * quantity
-    print("Total:", total)
+    print(total)
 
 calculate_total(250, 3)
 ```
 
-Output: `Total: 750`.
+Output: `750`
 
-The first argument is assigned to price and the second to quantity when positional arguments are used.
+The first argument is assigned to `price`, and the second to `quantity`.
 
-## 6. Return values
-`return` sends a result back to the caller.
+## 6. return versus print
+
+`print()` displays a value. `return` sends a value back to the code that called the function.
 
 ```python
 def calculate_total(price, quantity):
     return price * quantity
 
-amount = calculate_total(250, 3)
-print(amount)
+total_amount = calculate_total(250, 3)
+print(total_amount)
 ```
 
-Output: `750`.
+Output: `750`
 
-Difference:
-- `print()` displays a value.
-- `return` gives a value back so other code can use it.
+Returning a value makes it possible to reuse the result in another calculation:
+
+```python
+def calculate_total(price, quantity):
+    return price * quantity
+
+subtotal = calculate_total(200, 2)
+tax = subtotal * 0.05
+grand_total = subtotal + tax
+
+print(grand_total)
+```
+
+Output: `420.0`
 
 A function without an explicit return statement returns `None`.
 
 ## 7. Positional and keyword arguments
 
-Positional:
+### Positional arguments
+
+Values are assigned according to their position.
+
 ```python
 def employee_details(name, department):
     print(name, department)
 
-employee_details("Asha", "IT")
+employee_details("Asha", "Engineering")
 ```
 
-Keyword:
+### Keyword arguments
+
+Values are assigned by parameter name.
+
 ```python
-employee_details(department="HR", name="Ravi")
+employee_details(department="Finance", name="Ravi")
 ```
 
-Keyword arguments name the parameter, making calls clearer and allowing a different order.
+Keyword arguments make calls clearer when a function has several parameters.
 
-## 8. Default arguments
-A default value is used when the caller does not provide that argument.
+## 8. Default parameters
+
+A default parameter value is used when the caller does not supply that argument.
 
 ```python
-def calculate_discount(amount, rate=0.10):
-    return amount * rate
+def calculate_discount(amount, rate=10):
+    return amount * rate / 100
 
 print(calculate_discount(1000))
-print(calculate_discount(1000, 0.20))
+print(calculate_discount(1000, 15))
 ```
 
 Output:
+
 ```text
 100.0
-200.0
+150.0
 ```
 
-Default arguments are useful for optional settings. Avoid mutable default values such as empty lists for state that should be created separately on each call.
+Parameters with default values should follow parameters without defaults in a normal function definition.
 
-## 9. Scope: local variables
+## 9. Local variables and scope
+
 A variable created inside a function is normally local to that function.
 
 ```python
-def show_salary():
-    salary = 45000
-    print(salary)
+def calculate_salary():
+    basic = 40000
+    allowance = 5000
+    return basic + allowance
 
-show_salary()
+print(calculate_salary())
 ```
 
-The variable salary is created inside the function. Code outside the function cannot normally refer to that local variable.
+The names `basic` and `allowance` are local variables. Code outside the function cannot directly refer to them.
 
-Prefer passing required values as arguments and returning results instead of relying on global variables.
+Prefer passing required values as parameters and returning results instead of relying on many global variables.
 
-## 10. Practical validation inside a function
+## 10. A function can call another function
+
 ```python
-def calculate_net_salary(gross_salary, deductions):
-    if gross_salary < 0 or deductions < 0:
-        return None
+def calculate_subtotal(price, quantity):
+    return price * quantity
 
-    if deductions > gross_salary:
-        return None
+def calculate_tax(subtotal, tax_rate):
+    return subtotal * tax_rate / 100
 
-    return gross_salary - deductions
+subtotal = calculate_subtotal(500, 2)
+tax = calculate_tax(subtotal, 5)
 
-print(calculate_net_salary(40000, 2500))
+print("Subtotal:", subtotal)
+print("Tax:", tax)
+print("Total:", subtotal + tax)
 ```
 
-Output: `37500`.
+Output:
 
-This example returns None for invalid combinations. In later work, you will use exceptions to communicate invalid input more explicitly.
+```text
+Subtotal: 1000
+Tax: 50.0
+Total: 1050.0
+```
 
-## 11. Functions and backend development
-Backend code uses functions to separate responsibilities:
-- Validate request data.
-- Calculate totals.
-- Format a response.
-- Apply a business rule.
-- Reuse a query or transformation.
+Each function has one clear responsibility, making the code easier to test and maintain.
 
-A Django view is a callable function or class-based handler that participates in processing a web request. You will meet Django views later in the pathway.
+## 11. Common mistakes
 
-## 12. Common beginner mistakes
-| Mistake | Explanation / correction |
-|---|---|
-| Defining but never calling | The body will not execute until called |
-| Forgetting parentheses | Use function_name() to call |
-| Printing instead of returning | Printed text cannot be assigned as the return result |
-| Argument count mismatch | Provide required arguments or define defaults |
-| Incorrect order | Use keyword arguments for clarity |
-| Relying on global state | Pass values in and return results |
+| Mistake | Why it happens | Correction |
+|---|---|---|
+| Function does not run | It was defined but never called | Call it using parentheses |
+| Missing argument | Required parameter was not supplied | Pass the required value |
+| Confusing parameter and argument | Names are used interchangeably | Parameter is in definition; argument is in call |
+| Returning nothing | Function only prints | Use `return` when caller needs the result |
+| Code after return does not run | return exits the function | Put required statements before return |
+| Too many global variables | Function depends on hidden state | Pass values as parameters |
+| Unclear function name | Purpose is difficult to identify | Use descriptive verb-based names |
+
+## 12. Industry scenario
+
+An order management application needs to calculate item totals, discounts and taxes. Separate functions can perform each calculation. The order workflow can call those functions and combine their returned values.
+
+This makes each calculation easier to test and reuse. In real payment workflows, monetary precision and approved business rules must also be considered.
 
 ## 13. Approved mini-project — Reusable Calculation Toolkit
 
-**Objective:** Build a small Python module containing reusable business calculation functions.
+**Objective:** Create a Python file containing reusable calculation functions.
 
 ### Requirements
+
 Create functions for:
-1. Calculating the total price from unit price and quantity.
-2. Calculating a percentage discount.
-3. Calculating the final amount after discount.
-4. Calculating simple interest.
-5. Returning a formatted summary for a calculation.
 
-Use parameters and return values. Do not place all calculations directly at the top level of the file.
+1. Adding two numbers.
+2. Calculating the total price from unit price and quantity.
+3. Calculating a percentage discount.
+4. Calculating the final amount after discount.
+5. Returning results rather than printing inside every calculation function.
+6. Calling the functions with both positional and keyword arguments.
+7. Displaying a small summary using the returned values.
 
-**Suggested structure**
+### Suggested structure
+
 ```text
 reusable_calculation_toolkit/
 └── calculations.py
 ```
 
-**Sample checks**
-- Unit price 250 × quantity 3 → total 750.
-- Amount 1000 with 10% discount → discount 100.
-- Amount 1000 after a 10% discount → final amount 900.
-- Principal 5000, rate 5%, time 2 years → simple interest 500.
-
 ### Validation
-- Test zero quantity and zero discount.
-- Test a non-default discount rate using a keyword argument.
-- Confirm each calculation function returns a value.
-- Confirm the summary function does not perform unrelated calculations.
 
-## 14. AI-assisted implementation guide
-| Level | Prompt |
-|---|---|
-| 1 — Hint | "Give me one hint for deciding what should become a reusable function." |
-| 2 — Plan | "Break Reusable Calculation Toolkit into small functions and test cases." |
-| 3 — Example | "Show a tiny function that accepts two values and returns their product." |
-| 4 — Guided implementation | "Guide me to write calculate_total first; wait for my test output." |
-| 5 — Explanation | "Explain parameters, arguments, return and local scope using my code." |
-| 6 — Debugging | "Help me diagnose why my function returns None." |
-| 7 — Review | "Review my functions for clear names, single responsibilities and correct return values." |
+Try more than one input for each function. Confirm that returned values can be reused in another calculation. State the assumptions for negative values and invalid rates; validation can be added as an extension.
 
-**Planning prompt:** "Help me identify the inputs, outputs and responsibility of each function. Do not write the complete toolkit."
+## 14. Key takeaways
 
-**Implementation prompt:** "Guide me to implement one function at a time and ask me to test it before moving on."
-
-**Debugging/review prompt:** "Inspect my function calls and return values. Explain any mismatch without replacing the entire file."
-
-## 15. Daily quiz
-
-**Q1. Which keyword defines a Python function?**  
-A. function  
-B. def  
-C. return  
-D. import  
-**Correct: B.** The def keyword begins a function definition.
-
-**Q2. In `def add(a, b)`, what are a and b?**  
-A. Arguments  
-B. Parameters  
-C. Modules  
-D. Return values  
-**Correct: B.** They are parameters named in the function definition.
-
-**Q3. What does return do?**  
-A. Displays a value only  
-B. Sends a result back to the caller  
-C. Defines a loop  
-D. Imports a package  
-**Correct: B.** The caller can store or use the returned result.
-
-**Q4. What does a function return when it has no explicit return statement?**  
-A. 0  
-B. False  
-C. None  
-D. Empty string  
-**Correct: C.** Python functions return None by default when no value is returned explicitly.
-
-**Q5. Which call uses a keyword argument?**  
-A. `calculate(100, 2)`  
-B. `calculate(amount=100, rate=2)`  
-C. `calculate()`  
-D. `calculate[100]`  
-**Correct: B.** The argument is associated with a parameter name.
-
-## 16. Interview preparation
-
-### Q1. What is the difference between a parameter and an argument?
-**Answer:** A parameter is the variable named in a function definition. An argument is the actual value supplied when the function is called. For example, in `def greet(name)`, name is a parameter; in `greet("Asha")`, "Asha" is the argument.
-
-**Follow-up:** What happens if a required parameter is not supplied?
-
-### Q2. What is the difference between print and return?
-**Answer:** print displays information to the output stream. return passes a value back to the caller and ends the function execution. Returned values can be stored, tested or used in further calculations.
-
-**Follow-up:** What value is returned if a function reaches its end without return?
-
-## 17. Completion checklist
-- [ ] Define and call functions.
-- [ ] Use positional and keyword arguments.
-- [ ] Use default arguments.
-- [ ] Return results and explain None.
-- [ ] Complete Reusable Calculation Toolkit.
-- [ ] Test normal and boundary inputs.
+- Functions group reusable instructions under a name.
+- Parameters appear in the function definition; arguments are supplied at the call.
+- `return` sends a result to the caller; `print` displays output.
+- Positional, keyword and default arguments support different calling styles.
+- Local variables belong to the function scope.
+- Small functions with clear responsibilities improve readability and testing.
 
 **Next lesson:** Day 10 — Modules, packages and Python imports.
