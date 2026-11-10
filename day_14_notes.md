@@ -1,177 +1,351 @@
-# Day 14: HTTP, HTTPS, requests, responses and HTTP methods
+# Day 14: Constructors, __init__, self and Instance Variables
 
 **Pathway:** Python Backend Developer Career Pathway (Django)  
-**Phase:** 2 — Web Fundamentals, SQL and Development Tools  
-**Time:** 2–3 hours | **Level:** Beginner  
-**Prerequisites:** Python foundations (Days 1–12), Day 13  
-**Tools:** Python 3, VS Code, terminal  
-**Approved mini-project:** HTTP Request Explorer
+**Phase:** 1 — Python Programming Foundations and OOP  
+**Estimated time:** 2–3 hours  
+**Difficulty:** Beginner  
+**Prerequisites:** Day 13 — previous OOP lesson  
+**Tools:** Python 3, VS Code and terminal  
+**Approved mini-project:** Employee Profile System
+
+> **Trainer approach:** First understand the problem, then run the smallest example, inspect the output and only then extend the code. Do not memorize a definition without being able to explain the example.
 
 ## 1. Learning objectives
-1. Define the central terms of http, https, requests, responses and http methods.
-2. Explain how this concept supports backend applications.
-3. Run and interpret a working example.
-4. Diagnose a common mistake or failure.
-5. Apply the concept in **HTTP Request Explorer**.
 
-## 2. Concept and motivation
-HTTP defines request/response messages. HTTPS is HTTP protected in transit by TLS. GET reads; POST submits; PUT replaces; PATCH partially updates; DELETE removes a resource according to API semantics.
+By the end of this lesson, you should be able to:
+1. Explain Constructors, __init__, self and Instance Variables in simple language.
+2. Identify the problem this OOP concept solves.
+3. Write and run a small Python example.
+4. Explain the important statements and predict the output.
+5. Apply the concept in Employee Profile System.
+6. Describe one relevant backend development use case.
 
-**Why it matters:** Backend developers must reason about communication, data, and reproducible software changes. A correct implementation should produce observable evidence rather than rely on assumptions.
+## 2. Why this concept matters
 
-**Key vocabulary:** `HTTP`, `HTTPS`, `TLS`, `GET`, `POST`, `PUT`, `PATCH`, `DELETE`.
+Creating an employee and then remembering to assign every required attribute is error-prone. An initializer gives each new object a consistent starting state.
 
-## 3. How it works
-Input or request → validation/processing → result → inspection and verification.
+A backend developer should be able to read code written by other developers and understand why the code is divided into classes and methods. OOP gives a vocabulary for discussing responsibilities, reusable behavior and object state.
 
-**Use it when:** You need the relevant behavior in a web or data workflow. **Avoid:** Treating a successful example as proof that production concerns (authentication, error handling, scalability or concurrent use) are solved.
+## 3. Key terms
 
-## 4. Step-by-step practical demonstration
-Create a new folder named `day_14` in VS Code. Save this example in `demo.py`.
+Parameter = value received by a method; instance attribute = value stored on the current object using self; initializer = setup logic that runs during object creation.
 
-Run the code below in Python:
+| Term | Meaning |
+|---|---|
+| Class | A definition describing the structure and behavior of objects |
+| Object | One instance created from a class |
+| Attribute | Data associated with an object or class |
+| Method | A function defined inside a class |
+| Instance | A particular object created from a class |
+| Responsibility | The work that a class or method is expected to perform |
+
+## 4. Start with the problem before the syntax
+
+Ask these questions before writing code:
+1. What real-world concept are we representing?
+2. What information must be stored?
+3. What actions must be supported?
+4. Which information belongs to one object?
+5. Which behavior can be reused?
+6. What invalid situations must be prevented?
+7. How will we prove the result is correct?
+
+This small analysis prevents you from creating classes without a clear purpose.
+
+## 5. Main worked example
+
+Save this code in `day_14/main.py` and run `python main.py`.
 
 ```python
-import urllib.request
+class Employee:
+    def __init__(self, employee_id, name, department):
+        self.employee_id = employee_id
+        self.name = name
+        self.department = department
 
-request = urllib.request.Request(
-    "https://httpbin.org/get",
-    method="GET",
-    headers={"Accept": "application/json"}
-)
-with urllib.request.urlopen(request, timeout=10) as response:
-    print("Status:", response.status)
-    print("Type:", response.headers.get("Content-Type"))
+    def display(self):
+        print(self.employee_id, self.name, self.department)
+
+employee1 = Employee(101, "Asha", "Engineering")
+employee2 = Employee(102, "Ravi", "Finance")
+
+employee1.display()
+employee2.display()
 ```
 
-**How to run:** python explore_http.py (requires internet access)
+### Expected output
 
-**Expected result:**
 ```text
-Status: 200; Type: application/json (when service is available)
+101 Asha Engineering\n102 Ravi Finance
 ```
 
-**Code walkthrough:**
-- urllib.request.Request defines the URL, HTTP method and headers.\n- urlopen sends the request and waits for a response.\n- response.status is the HTTP status; headers carry response metadata.\n- A network or service failure can raise an exception.
+### Read the code step by step
 
-## 5. Industry scenario
-A frontend fetches products and submits a new order through an API. The developer should define the expected result, check failures, and communicate the outcome clearly to other team members.
+1. __init__ is a special initializer that Python calls when a new object is initialized.
+2. self refers to the current instance. It is a convention, not a reserved keyword.
+3. employee_id, name and department are parameters receiving the values passed in the constructor call.
+4. self.name = name stores the parameter value as an instance attribute on this particular object.
+5. Each Employee(...) call initializes a separate object with its own attribute values.
 
-## 6. Common mistakes and troubleshooting
-| Problem | Check |
+### Run it yourself
+
+1. Create the file in VS Code.
+2. Type the code rather than blindly copying it.
+3. Save the file.
+4. Open the integrated terminal.
+5. Run `python main.py`.
+6. Compare your output with the expected output.
+7. Change one value and run it again.
+8. Explain what changed and why.
+
+## 6. Understand the flow
+
+```text
+Requirement
+    ↓
+Identify the objects and responsibilities
+    ↓
+Define the class or classes
+    ↓
+Create objects
+    ↓
+Call methods / exchange objects
+    ↓
+Inspect output and validate behavior
+```
+
+The flow is a thinking guide, not a Python command sequence. A small exercise may use only one class. A larger application may use multiple cooperating objects.
+
+## 7. How to read and debug OOP code
+
+When an example does not behave as expected:
+1. Check the class name and spelling.
+2. Check indentation inside the class.
+3. Check that the object was created.
+4. Check the values passed to the initializer or method.
+5. Print the relevant attribute values.
+6. Check whether a method changes the intended object.
+7. Re-run the smallest reproducible example.
+
+| Symptom | Likely area to inspect |
 |---|---|
-| Command or script fails | Verify interpreter/tool installation and current folder |
-| Output differs | Inspect inputs, spelling, syntax and assumptions |
-| Operation succeeds unexpectedly | Verify status, affected rows or actual saved state |
-| Invalid or untrusted input | Validate before processing; never trust client data |
-| Security concern | Use HTTPS for remote communication, parameterized SQL, and no secrets in source control |
+| AttributeError | Attribute or method name, object initialization |
+| TypeError | Number or order of arguments |
+| NameError | Variable or class name is not defined in the current scope |
+| Wrong object's value changes | Object reference passed to the method |
+| Method does not override | Method name or inheritance declaration |
+| Abstract class cannot be instantiated | Required abstract method is not implemented |
 
-## 7. Independent mini-project — HTTP Request Explorer
+Do not fix several unrelated lines at once. Identify the exact failing statement first.
 
-**Goal:** Demonstrate http, https, requests, responses and http methods with a small, testable application or workflow. **Estimated project time:** 30–75 minutes.
+## 8. Industry scenario
 
-**Required deliverables:**
-1. Write a short problem statement and input/output specification.
-2. Create the project in `projects/day_14/`.
-3. Implement the day's main concept using the demonstration as a reference, not a copied full project.
-4. Include at least three realistic sample inputs or actions.
-5. Capture terminal/browser/database evidence.
-6. Write a short README with setup, run commands and limitations.
+Creating an employee and then remembering to assign every required attribute is error-prone. An initializer gives each new object a consistent starting state.
 
-**Suggested structure:**
+A professional implementation would also consider input validation, access control, error handling, tests, database persistence and concurrent requests. The class examples in this lesson are learning exercises, not production-ready services.
+
+## 9. When to use the concept and when to avoid overengineering
+
+- Use a class when related state and behavior need a clear reusable structure.
+- Keep a simple value as a variable when a class adds no meaningful behavior.
+- Give each class a focused responsibility.
+- Avoid a class hierarchy just to save a few lines.
+- Prefer composition when one object contains or manages another object.
+- Add abstractions when they clarify a real variation or contract, not merely to make the code look advanced.
+
+## 10. Common beginner mistakes
+
+| Mistake | Why it causes trouble | Better approach |
+|---|---|---|
+| Memorizing OOP terms without running code | Definitions are hard to apply | Trace a real example |
+| Creating one huge class | Responsibilities become mixed | Split meaningful responsibilities |
+| Duplicating common behavior | Updates must be repeated | Reuse a parent class when an is-a relationship exists |
+| Using inheritance for every relationship | Creates confusing hierarchies | Use composition for has-a relationships |
+| Ignoring object state | Methods may update the wrong instance | Inspect attributes before and after a call |
+| Assuming Python underscore names are secure | Naming conventions are not access-control security | Use application-level authorization and safe design |
+| Writing a method without a clear purpose | Class becomes difficult to understand | Name methods after meaningful actions |
+
+## 11. Guided practice
+
+Complete each exercise in a separate small file or notebook cell.
+
+### Exercise A — identify the design
+
+Write down:
+- The class or classes you need.
+- The data each class should store.
+- The methods each class should expose.
+- One invalid input or state to test.
+
+### Exercise B — modify the example
+
+Change one attribute, method or class responsibility. Run the code again and record the changed output.
+
+### Exercise C — explain it aloud
+
+Explain the code as if you are teaching a fresher:
+1. What problem does it solve?
+2. What does each class represent?
+3. Which object is being used?
+4. Which method is called?
+5. What output proves it worked?
+
+## 12. Approved mini-project — Employee Profile System
+
+**Objective:** Build a small, understandable Python application using the day's OOP concept.
+
+### Functional requirements
+
+1. Create Employee with employee_id, name, department and salary.
+2. Initialize all four values through __init__.
+3. Create at least three employee objects.
+4. Add display_profile() to show each profile.
+5. Add update_department() and test it on only one employee.
+6. Reject a negative salary using ValueError.
+
+### Suggested project structure
+
 ```text
 projects/day_14/
 ├── README.md
 ├── main.py
-└── evidence/
+├── models.py
+└── tests/
+    └── manual_test_cases.md
 ```
 
-**Validation checklist:**
-1. Inspect GET request and response.
-2. Compare HTTP and HTTPS URL schemes.
-3. Explain which method suits creating a record.
+For the first attempt, you may keep the code in one file. Split it into modules only after the working version is understood.
 
-**Security and reliability:** Do not commit credentials, personal information or production secrets. Use local test data and handle errors explicitly.
+### Implementation milestones
 
-**Optional extension:** Add one additional edge case and document how the implementation responds.
+| Milestone | Work | Evidence |
+|---|---|---|
+| 1 | Read the requirement and list the classes | Short design notes |
+| 2 | Implement the smallest class or object | First successful run |
+| 3 | Add required attributes and methods | Updated terminal output |
+| 4 | Implement the main workflow | Demonstration run |
+| 5 | Test normal and invalid cases | Test-case table |
+| 6 | Explain the design | README and short walkthrough |
 
-**Submission:** Source code or command transcript, README, sample outputs, test results and a short explanation of the result.
+### Validation checklist
 
-## 8. AI-assisted learning guide
-| Level | Ask the AI mentor |
+- [ ] Every employee has all required attributes.
+- [ ] Each object prints its own values.
+- [ ] Updating one employee leaves the others unchanged.
+- [ ] A negative salary is rejected.
+
+### Submission requirements
+
+- Source code.
+- README with problem statement and run instructions.
+- At least three test cases.
+- Expected and actual output.
+- Short explanation of each class and method.
+- Limitations and one possible future improvement.
+
+### Optional extension
+
+Add one additional requirement only after all core requirements pass. Explain why the extension belongs in the existing class or requires a new responsibility.
+
+## 13. AI-assisted learning guide
+
+Use AI as a mentor, not as a replacement for your own implementation.
+
+| Assistance level | Prompt |
 |---|---|
-| Hint | Give one hint for HTTP Request Explorer; don't solve it |
-| Plan | Break the project into input, process, output and tests |
-| Example | Explain a tiny example of HTTP |
-| Guided implementation | Help me implement only the first step, then wait |
-| Explanation | Explain the demonstration line by line |
-| Debugging | Analyze my exact error message and propose a minimal fix |
-| Review | Check my implementation against the validation checklist |
+| Hint | Give one small hint for Employee Profile System; do not give the solution |
+| Plan | Break the project into small implementation steps |
+| Example | Show a tiny example of the specific concept only |
+| Guided implementation | Help with one method, then wait for my output |
+| Explanation | Explain each statement and object state |
+| Debugging | Inspect my exact error and identify the root cause |
+| Review | Compare my implementation with the requirements and tests |
 
-**Planning prompt:** "Help me plan HTTP Request Explorer with requirements, sample inputs and test cases. Do not write the complete solution."
+**Planning prompt**
 
-**Implementation prompt:** "Guide me through one step at a time. Explain each command or line before continuing."
+"Help me plan Employee Profile System. List the classes, responsibilities, attributes, methods, test cases and implementation order. Do not write the complete solution."
 
-**Debugging/review prompt:** "Review my output, identify the root cause of any failure and explain how to verify the correction."
+**Implementation prompt**
 
-## 9. Daily MCQs
-**Q1. Which statement best describes HTTP?**  
-A. HTTP defines request/response messages.  
-B. It is only a Python variable  
-C. It always requires Django  
-D. It replaces all validation  
-**Answer: A.** HTTP defines request/response messages. — this is the appropriate choice for the stated scenario.
+"Guide me through the first step only. Explain the code and wait until I run it before moving to the next step."
 
-**Q2. What is the most useful evidence that HTTP Request Explorer works?**  
-A. A project name  
-B. Observed output matching documented test cases  
-C. A screenshot of the editor alone  
-D. A file with no executable code  
-**Answer: B.** Observed output matching documented test cases — this is the appropriate choice for the stated scenario.
+**Debugging prompt**
 
-**Q3. What should you do when the demonstration produces unexpected output?**  
-A. Ignore it  
-B. Copy another project  
-C. Inspect inputs, errors and assumptions  
-D. Delete the repository  
-**Answer: C.** Inspect inputs, errors and assumptions — this is the appropriate choice for the stated scenario.
+"Here is my code, input and exact error. Identify the failing statement, explain the cause and suggest the smallest correction. Do not rewrite the whole project."
 
-**Q4. Which practice is safest for backend development?**  
-A. Trust all client input  
-B. Store secrets in Git  
-C. Skip validation  
-D. Validate input and avoid exposing secrets  
-**Answer: D.** Validate input and avoid exposing secrets — this is the appropriate choice for the stated scenario.
+**Review prompt**
 
-**Q5. What should the project README contain?**  
-A. Setup, execution and validation instructions  
-B. Only the student's name  
-C. Only a picture  
-D. No technical details  
-**Answer: A.** Setup, execution and validation instructions — this is the appropriate choice for the stated scenario.
+"Review my implementation against the approved requirements. Identify missing behavior, edge cases and design problems. Explain each finding before suggesting a change."
 
-## 10. Interview practice
-### Q1. How does HTTPS differ from HTTP?
-**Answer:** HTTPS uses TLS to protect HTTP communication in transit, including confidentiality and integrity.
+## 14. Daily quiz — multiple-choice questions
 
-**Practical example:** A frontend fetches products and submits a new order through an API.
+### Q1. Which statement best describes today's main concept?
+A. It is a Python feature used to organize related data and behavior.  
+B. It removes the need for testing.  
+C. It automatically saves every object to PostgreSQL.  
+D. It replaces all functions in Python.
 
-**Follow-up:** How would you verify this behavior in a real backend application?
+**Correct answer: A.** The concept helps organize related state and behavior. It does not automatically provide database persistence or remove the need for tests.
 
-### Q2. How do PUT and PATCH differ?
-**Answer:** PUT generally replaces the target resource representation; PATCH applies a partial modification. Actual behavior is defined by the API.
+### Q2. What should you inspect when the output is incorrect?
+A. Only the filename.  
+B. Object creation, values, method calls and state changes.  
+C. Delete the class.  
+D. Ignore the output.
 
-**Practical example:** A frontend fetches products and submits a new order through an API.
+**Correct answer: B.** OOP behavior depends on the object, its data and the method being called.
 
-**Follow-up:** How would you verify this behavior in a real backend application?
+### Q3. Which is the best project practice?
+A. Put all behavior into one giant method.  
+B. Avoid all validation.  
+C. Give each class a clear responsibility and test normal and invalid cases.  
+D. Store secrets in the source code.
 
-## 11. Completion checklist
-- [ ] Explain the core terminology without notes.
-- [ ] Run the demonstration and verify output.
-- [ ] Explain important statements or commands.
-- [ ] Complete HTTP Request Explorer.
-- [ ] Validate at least three cases.
-- [ ] Answer five MCQs and two interview questions.
-- [ ] Submit source, README and evidence.
+**Correct answer: C.** Clear responsibilities and validation make the project easier to understand and maintain.
 
-**Next lesson:** Day 15.
+### Q4. Why should you not treat the example as production-ready?
+A. Python cannot run classes.  
+B. A classroom example does not include all production concerns such as persistence, security, concurrency and monitoring.  
+C. Methods cannot be tested.  
+D. Objects cannot store data.
+
+**Correct answer: B.** The demonstration teaches one concept; production systems need additional engineering controls.
+
+### Q5. What is the strongest evidence that your mini-project is complete?
+A. A project folder exists.  
+B. You watched a video.  
+C. The code is long.  
+D. Required scenarios pass, output is recorded and you can explain the implementation.
+
+**Correct answer: D.** Completion requires working behavior and the ability to explain and verify it.
+
+## 15. Interview preparation
+
+**Q1. Explain constructors, __init__, self and instance variables in your own words.**  
+**Answer:** Parameter = value received by a method; instance attribute = value stored on the current object using self; initializer = setup logic that runs during object creation.
+
+**Practical follow-up:** Explain the main worked example and identify the class, object, method and state involved.
+
+**Q2. Where can this concept help a backend developer?**  
+**Answer:** It helps structure reusable application code and model business responsibilities. Django uses Python classes extensively, so a strong OOP foundation makes framework code easier to understand.
+
+**Q3. What is one mistake a beginner should avoid?**  
+**Answer:** Do not add complexity without a clear requirement. Keep responsibilities understandable, validate inputs and test the behavior.
+
+**Follow-up:** What would you add before using this learning example in a production service?  
+**Answer:** Tests, error handling, authorization where needed, safe data persistence, configuration management, logging and operational monitoring.
+
+## 16. Day completion checklist
+
+- [ ] Read the lesson and explain the key terms.
+- [ ] Run the worked example successfully.
+- [ ] Explain the important statements.
+- [ ] Complete the guided exercises.
+- [ ] Build Employee Profile System.
+- [ ] Validate normal and invalid scenarios.
+- [ ] Complete all five MCQs.
+- [ ] Answer the interview questions without copying.
+- [ ] Submit source code, README and evidence.
+
+**Next lesson:** Day 15 — Instance Methods, Class Methods and Static Methods.
+
