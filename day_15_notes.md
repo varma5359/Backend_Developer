@@ -1,361 +1,684 @@
 # Day 15: Instance Methods, Class Methods and Static Methods
 
 **Pathway:** Python Backend Developer Career Pathway (Django)  
-**Phase:** 1 — Python Programming Foundations and OOP  
-**Estimated time:** 2–3 hours  
-**Difficulty:** Beginner  
-**Prerequisites:** Day 14 — previous OOP lesson  
-**Tools:** Python 3, VS Code and terminal  
+**Phase:** 1B — Object-Oriented Programming  
+**Time:** 2–3 hours | **Level:** Beginner to Intermediate  
+**Prerequisites:** Days 13–14 — Classes, Objects and Initialization  
+**Tools:** Python 3.10+, VS Code and terminal  
 **Approved mini-project:** Employee Utility Manager
 
-> **Trainer approach:** First understand the problem, then run the smallest example, inspect the output and only then extend the code. Do not memorize a definition without being able to explain the example.
+---
 
 ## 1. Learning objectives
 
-By the end of this lesson, you should be able to:
-1. Explain Instance Methods, Class Methods and Static Methods in simple language.
-2. Identify the problem this OOP concept solves.
-3. Write and run a small Python example.
-4. Explain the important statements and predict the output.
-5. Apply the concept in Employee Utility Manager.
-6. Describe one relevant backend development use case.
+By the end of this lesson, you can:
+1. Explain why classes contain different method types.
+2. Define and call instance methods.
+3. Explain self.
+4. Define class methods with `@classmethod`.
+5. Explain cls.
+6. Define static methods with `@staticmethod`.
+7. Compare all three method types.
+8. Choose a method type based on the data an operation needs.
+9. Build an Employee Utility Manager using all three.
 
-## 2. Why this concept matters
+## 2. A real-world requirement
 
-An employee profile action works with one employee. A company-wide setting belongs to the class. A general validation helper may not need either the object or class state. Python supports different method types for these responsibilities.
+Imagine an organization has hundreds of employees.
 
-A backend developer should be able to read code written by other developers and understand why the code is divided into classes and methods. OOP gives a vocabulary for discussing responsibilities, reusable behavior and object state.
+Each employee has personal data:
+- Employee ID.
+- Name.
+- Department.
+- Monthly salary.
 
-## 3. Key terms
+The organization also has shared data:
+- Company name.
+- Default work location.
+- Company-wide configuration.
 
-Use instance methods for object-specific work, class methods for class-level operations or alternative constructors, and static methods for related utilities that need neither instance nor class state.
+The application needs operations:
+- Display one employee's profile.
+- Calculate one employee's annual salary.
+- Change the company's name.
+- Validate whether a salary is non-negative.
 
-| Term | Meaning |
-|---|---|
-| Class | A definition describing the structure and behavior of objects |
-| Object | One instance created from a class |
-| Attribute | Data associated with an object or class |
-| Method | A function defined inside a class |
-| Instance | A particular object created from a class |
-| Responsibility | The work that a class or method is expected to perform |
+Not every operation needs the same kind of information. This is why Python provides instance, class and static methods.
 
-## 4. Start with the problem before the syntax
+## 3. Compare the three method types
 
-Ask these questions before writing code:
-1. What real-world concept are we representing?
-2. What information must be stored?
-3. What actions must be supported?
-4. Which information belongs to one object?
-5. Which behavior can be reused?
-6. What invalid situations must be prevented?
-7. How will we prove the result is correct?
+| Method type | First parameter supplied automatically | Decorator | Typical responsibility |
+|---|---|---|---|
+| Instance method | `self` | None | Work with one object's state |
+| Class method | `cls` | `@classmethod` | Work with class-level state or create instances |
+| Static method | None | `@staticmethod` | Utility logic needing neither instance nor class state |
 
-This small analysis prevents you from creating classes without a clear purpose.
+The key question is: what information does the operation need?
 
-## 5. Main worked example
+## 4. Instance methods
 
-Save this code in `day_15/main.py` and run `python main.py`.
+An instance method works with a particular object. It receives that object through `self`.
+
+### 4.1 Basic example
+
+```python
+class Employee:
+    def __init__(self, name, department):
+        self.name = name
+        self.department = department
+
+    def display_details(self):
+        print("Name:", self.name)
+        print("Department:", self.department)
+
+employee1 = Employee("Anil", "IT")
+employee2 = Employee("Priya", "HR")
+
+employee1.display_details()
+employee2.display_details()
+```
+
+Output:
+
+```text
+Name: Anil
+Department: IT
+Name: Priya
+Department: HR
+```
+
+The method is defined once. When called on employee1, self refers to employee1. When called on employee2, self refers to employee2.
+
+### 4.2 Instance method changes object state
+
+```python
+class Employee:
+    def __init__(self, name, department):
+        self.name = name
+        self.department = department
+
+    def change_department(self, new_department):
+        self.department = new_department
+
+employee = Employee("Anil", "IT")
+print(employee.department)
+
+employee.change_department("Engineering")
+print(employee.department)
+```
+
+Output:
+
+```text
+IT
+Engineering
+```
+
+The method changes the object that called it.
+
+### 4.3 Instance method returns a calculation
+
+```python
+class Employee:
+    def __init__(self, name, monthly_salary):
+        self.name = name
+        self.monthly_salary = monthly_salary
+
+    def annual_salary(self):
+        return self.monthly_salary * 12
+
+employee = Employee("Anil", 40000)
+print(employee.annual_salary())
+```
+
+Output: `480000`.
+
+The method uses salary already stored on the employee object.
+
+## 5. Class attributes
+
+A class attribute is defined directly in the class body.
 
 ```python
 class Employee:
     company_name = "TechPhile"
 
-    def __init__(self, name, salary):
+    def __init__(self, name):
         self.name = name
-        self.salary = salary
 
-    def display(self):
-        return f"{self.name}: {self.salary}"
+employee1 = Employee("Anil")
+employee2 = Employee("Priya")
+
+print(Employee.company_name)
+print(employee1.company_name)
+print(employee2.company_name)
+```
+
+Output:
+
+```text
+TechPhile
+TechPhile
+TechPhile
+```
+
+Both objects can read the class attribute. It is useful for information shared by instances, but avoid storing per-employee values as class attributes.
+
+Try this:
+
+```python
+employee1.company_name = "City Services"
+
+print(employee1.company_name)
+print(employee2.company_name)
+print(Employee.company_name)
+```
+
+Output:
+
+```text
+City Services
+TechPhile
+TechPhile
+```
+
+The assignment created an instance attribute for employee1. It did not change the class attribute.
+
+## 6. Class methods
+
+A class method receives the class as its first argument. The conventional parameter name is `cls`.
+
+Use `@classmethod`.
+
+### 6.1 Basic syntax
+
+```python
+class Employee:
+    company_name = "TechPhile"
 
     @classmethod
-    def change_company(cls, new_name):
+    def show_company(cls):
+        print("Company:", cls.company_name)
+
+Employee.show_company()
+```
+
+Output: `Company: TechPhile`.
+
+Step by step:
+1. `@classmethod` marks the method as a class method.
+2. Python supplies the class as the first argument.
+3. `cls` refers to the class.
+4. `cls.company_name` reads the class attribute.
+5. The method is called through Employee.
+
+### 6.2 Update class-level data
+
+```python
+class Employee:
+    company_name = "TechPhile"
+
+    @classmethod
+    def change_company_name(cls, new_name):
         cls.company_name = new_name
 
-    @staticmethod
-    def is_valid_salary(value):
-        return value >= 0
-
-employee = Employee("Asha", 45000)
-print(employee.display())
-Employee.change_company("TechPhile Labs")
+Employee.change_company_name("TechPhile Technologies")
 print(Employee.company_name)
-print(Employee.is_valid_salary(45000))
 ```
 
-### Expected output
+Output: `TechPhile Technologies`.
 
-```text
-Asha: 45000\nTechPhile Labs\nTrue
+This changes the class attribute. Instances that have not created their own attribute with the same name will see the updated value.
+
+### 6.3 Why cls instead of self?
+
+- self refers to one instance.
+- cls refers to the class itself.
+
+A class method can be called through an instance too, but the first argument remains the class. Calling through the class is generally clearer for class-wide operations.
+
+## 7. Class methods as alternate constructors
+
+A class method can create an object using an alternate input format.
+
+Suppose a simple training file provides a row like:
+
+`101,Anil,IT,45000`
+
+We want to turn it into an Employee object.
+
+```python
+class Employee:
+    def __init__(self, employee_id, name, department, salary):
+        self.employee_id = employee_id
+        self.name = name
+        self.department = department
+        self.salary = salary
+
+    @classmethod
+    def from_row(cls, row):
+        employee_id, name, department, salary = row.split(",")
+        return cls(int(employee_id), name, department, float(salary))
+
+employee = Employee.from_row("101,Anil,IT,45000")
+
+print(employee.employee_id)
+print(employee.name)
+print(employee.department)
+print(employee.salary)
 ```
 
-### Read the code step by step
-
-1. An instance method receives the current object as self and can read or update its instance attributes.
-2. A class attribute such as company_name is defined in the class body and is associated with the class.
-3. @classmethod marks a method that receives the class as cls.
-4. A class method can update class-level state or create an object using cls(...).
-5. @staticmethod defines a related utility that receives no automatic self or cls argument.
-
-### Run it yourself
-
-1. Create the file in VS Code.
-2. Type the code rather than blindly copying it.
-3. Save the file.
-4. Open the integrated terminal.
-5. Run `python main.py`.
-6. Compare your output with the expected output.
-7. Change one value and run it again.
-8. Explain what changed and why.
-
-## 6. Understand the flow
+Output:
 
 ```text
-Requirement
-    ↓
-Identify the objects and responsibilities
-    ↓
-Define the class or classes
-    ↓
-Create objects
-    ↓
-Call methods / exchange objects
-    ↓
-Inspect output and validate behavior
+101
+Anil
+IT
+45000.0
 ```
 
-The flow is a thinking guide, not a Python command sequence. A small exercise may use only one class. A larger application may use multiple cooperating objects.
+Explanation:
+- `from_row` receives the class through cls.
+- `split(",")` separates the text.
+- int converts the ID.
+- float converts the salary.
+- `cls(...)` creates an instance of the class.
+- return sends the created object to the caller.
 
-## 7. How to read and debug OOP code
+This teaching example assumes simple comma-separated fields. For real CSV files, use Python's csv module because quoted values can contain commas.
 
-When an example does not behave as expected:
-1. Check the class name and spelling.
-2. Check indentation inside the class.
-3. Check that the object was created.
-4. Check the values passed to the initializer or method.
-5. Print the relevant attribute values.
-6. Check whether a method changes the intended object.
-7. Re-run the smallest reproducible example.
+## 8. Static methods
 
-| Symptom | Likely area to inspect |
-|---|---|
-| AttributeError | Attribute or method name, object initialization |
-| TypeError | Number or order of arguments |
-| NameError | Variable or class name is not defined in the current scope |
-| Wrong object's value changes | Object reference passed to the method |
-| Method does not override | Method name or inheritance declaration |
-| Abstract class cannot be instantiated | Required abstract method is not implemented |
+A static method is a function grouped inside a class because it is related to that class, but it does not automatically receive self or cls.
 
-Do not fix several unrelated lines at once. Identify the exact failing statement first.
+Use `@staticmethod`.
 
-## 8. Industry scenario
+### 8.1 Basic example
 
-An employee profile action works with one employee. A company-wide setting belongs to the class. A general validation helper may not need either the object or class state. Python supports different method types for these responsibilities.
+```python
+class Employee:
+    @staticmethod
+    def is_valid_salary(salary):
+        return salary >= 0
 
-A professional implementation would also consider input validation, access control, error handling, tests, database persistence and concurrent requests. The class examples in this lesson are learning exercises, not production-ready services.
+print(Employee.is_valid_salary(40000))
+print(Employee.is_valid_salary(-100))
+```
 
-## 9. When to use the concept and when to avoid overengineering
-
-- Use a class when related state and behavior need a clear reusable structure.
-- Keep a simple value as a variable when a class adds no meaningful behavior.
-- Give each class a focused responsibility.
-- Avoid a class hierarchy just to save a few lines.
-- Prefer composition when one object contains or manages another object.
-- Add abstractions when they clarify a real variation or contract, not merely to make the code look advanced.
-
-## 10. Common beginner mistakes
-
-| Mistake | Why it causes trouble | Better approach |
-|---|---|---|
-| Memorizing OOP terms without running code | Definitions are hard to apply | Trace a real example |
-| Creating one huge class | Responsibilities become mixed | Split meaningful responsibilities |
-| Duplicating common behavior | Updates must be repeated | Reuse a parent class when an is-a relationship exists |
-| Using inheritance for every relationship | Creates confusing hierarchies | Use composition for has-a relationships |
-| Ignoring object state | Methods may update the wrong instance | Inspect attributes before and after a call |
-| Assuming Python underscore names are secure | Naming conventions are not access-control security | Use application-level authorization and safe design |
-| Writing a method without a clear purpose | Class becomes difficult to understand | Name methods after meaningful actions |
-
-## 11. Guided practice
-
-Complete each exercise in a separate small file or notebook cell.
-
-### Exercise A — identify the design
-
-Write down:
-- The class or classes you need.
-- The data each class should store.
-- The methods each class should expose.
-- One invalid input or state to test.
-
-### Exercise B — modify the example
-
-Change one attribute, method or class responsibility. Run the code again and record the changed output.
-
-### Exercise C — explain it aloud
-
-Explain the code as if you are teaching a fresher:
-1. What problem does it solve?
-2. What does each class represent?
-3. Which object is being used?
-4. Which method is called?
-5. What output proves it worked?
-
-## 12. Approved mini-project — Employee Utility Manager
-
-**Objective:** Build a small, understandable Python application using the day's OOP concept.
-
-### Functional requirements
-
-1. Create Employee with name, department and salary.
-2. Add display_profile() as an instance method.
-3. Add increase_salary() as an instance method.
-4. Add company_name as a class attribute.
-5. Add a class method to update the company name.
-6. Add a static method to validate a non-negative salary.
-7. Demonstrate each method type with output.
-
-### Suggested project structure
+Output:
 
 ```text
-projects/day_15/
-├── README.md
+True
+False
+```
+
+The method only needs the supplied salary value. It does not need an employee object or class attribute.
+
+### 8.2 Basic email-format helper
+
+```python
+class Employee:
+    @staticmethod
+    def has_basic_email_format(email):
+        return "@" in email and "." in email.split("@")[-1]
+
+print(Employee.has_basic_email_format("anil@example.com"))
+print(Employee.has_basic_email_format("anil-example"))
+```
+
+Output:
+
+```text
+True
+False
+```
+
+This is only a beginner demonstration. It is not complete email validation. Real applications should use suitable validators and may require email confirmation.
+
+### 8.3 Calling a static method
+
+A static method can be called through the class:
+
+```python
+Employee.is_valid_salary(25000)
+```
+
+It can also be called through an instance, but the class call makes its utility nature clearer.
+
+## 9. All three method types in one class
+
+```python
+class Employee:
+    company_name = "TechPhile"
+
+    def __init__(self, name, monthly_salary):
+        self.name = name
+        self.monthly_salary = monthly_salary
+
+    # Instance method: reads one employee's data.
+    def annual_salary(self):
+        return self.monthly_salary * 12
+
+    # Class method: reads class-level data.
+    @classmethod
+    def show_company(cls):
+        return cls.company_name
+
+    # Static method: checks an argument only.
+    @staticmethod
+    def is_valid_salary(amount):
+        return amount >= 0
+
+
+employee = Employee("Anil", 40000)
+
+print(employee.annual_salary())
+print(Employee.show_company())
+print(Employee.is_valid_salary(40000))
+```
+
+Output:
+
+```text
+480000
+TechPhile
+True
+```
+
+Decision guide:
+- Needs current employee state? Instance method.
+- Needs class state or creates an instance through the class? Class method.
+- Needs only supplied arguments? Static method may fit.
+- Not meaningfully related to the class? Consider a module-level function instead.
+
+## 10. Common mistakes
+
+### Mistake A — static method tries to use self
+
+Incorrect:
+
+```python
+class Employee:
+    def __init__(self, salary):
+        self.salary = salary
+
+    @staticmethod
+    def annual_salary():
+        return self.salary * 12
+```
+
+This fails because static methods do not receive self automatically.
+
+Correct:
+
+```python
+class Employee:
+    def __init__(self, salary):
+        self.salary = salary
+
+    def annual_salary(self):
+        return self.salary * 12
+```
+
+### Mistake B — class method uses self
+
+Use cls as the first parameter of a class method. It represents the class, not one employee object.
+
+### Mistake C — missing decorator
+
+Without `@classmethod`, Python does not bind the class as cls. Check the decorator and method signature together.
+
+### Mistake D — every helper becomes a static method
+
+A function does not need to be placed inside a class just because it is reusable. Keep unrelated logic in a module-level function.
+
+## 11. Complete mini-project — Employee Utility Manager
+
+### 11.1 Requirements
+
+Build a command-line program that:
+1. Creates employee objects.
+2. Displays employee details.
+3. Calculates annual salary.
+4. Maintains a shared company name.
+5. Changes the company name through a class method.
+6. Validates salary through a static method.
+7. Creates an employee from a simple row of text.
+
+### 11.2 Folder structure
+
+```text
+day_15_employee_utility_manager/
 ├── main.py
-├── models.py
-└── tests/
-    └── manual_test_cases.md
+└── README.md
 ```
 
-For the first attempt, you may keep the code in one file. Split it into modules only after the working version is understood.
+### 11.3 Complete runnable code
 
-### Implementation milestones
+```python
+class Employee:
+    company_name = "TechPhile"
 
-| Milestone | Work | Evidence |
+    def __init__(self, employee_id, name, department, monthly_salary):
+        if employee_id <= 0:
+            raise ValueError("Employee ID must be positive")
+        if not name.strip():
+            raise ValueError("Name cannot be empty")
+        if not self.is_valid_salary(monthly_salary):
+            raise ValueError("Salary cannot be negative")
+
+        self.employee_id = employee_id
+        self.name = name.strip()
+        self.department = department.strip()
+        self.monthly_salary = monthly_salary
+
+    # Instance method
+    def display_details(self):
+        print("ID:", self.employee_id)
+        print("Name:", self.name)
+        print("Department:", self.department)
+        print("Monthly salary:", self.monthly_salary)
+        print("Company:", self.company_name)
+
+    # Instance method
+    def annual_salary(self):
+        return self.monthly_salary * 12
+
+    # Class method
+    @classmethod
+    def change_company_name(cls, new_name):
+        if not new_name.strip():
+            raise ValueError("Company name cannot be empty")
+        cls.company_name = new_name.strip()
+
+    # Alternate constructor
+    @classmethod
+    def from_row(cls, row):
+        parts = [part.strip() for part in row.split(",")]
+        if len(parts) != 4:
+            raise ValueError("Expected four comma-separated values")
+
+        employee_id, name, department, salary = parts
+        return cls(int(employee_id), name, department, float(salary))
+
+    # Static method
+    @staticmethod
+    def is_valid_salary(salary):
+        return isinstance(salary, (int, float)) and salary >= 0
+
+
+employees = [
+    Employee(101, "Anil Kumar", "IT", 45000),
+    Employee(102, "Priya Sharma", "HR", 42000),
+]
+
+employees.append(
+    Employee.from_row("103,Meera Rao,Finance,50000")
+)
+
+print("EMPLOYEE REPORT")
+print("===============")
+
+for employee in employees:
+    employee.display_details()
+    print("Annual salary:", employee.annual_salary())
+    print("----------------")
+
+print("SALARY VALIDATION")
+print(Employee.is_valid_salary(25000))
+print(Employee.is_valid_salary(-500))
+
+print("COMPANY UPDATE")
+Employee.change_company_name("TechPhile Technologies")
+
+for employee in employees:
+    print(employee.name, "works at", employee.company_name)
+```
+
+### 11.4 Run the program
+
+```powershell
+python main.py
+```
+
+Verify the following:
+- Three employees appear.
+- Annual salary is monthly salary multiplied by 12.
+- The salary validator returns True for 25000 and False for -500.
+- The company name changes for instances that do not shadow the class attribute.
+- The alternate constructor creates the third employee.
+
+### 11.5 Test cases
+
+| Test | Action | Expected |
 |---|---|---|
-| 1 | Read the requirement and list the classes | Short design notes |
-| 2 | Implement the smallest class or object | First successful run |
-| 3 | Add required attributes and methods | Updated terminal output |
-| 4 | Implement the main workflow | Demonstration run |
-| 5 | Test normal and invalid cases | Test-case table |
-| 6 | Explain the design | README and short walkthrough |
+| 1 | Create employee with valid values | Object created |
+| 2 | Calculate annual salary | Monthly × 12 |
+| 3 | Check positive salary | True |
+| 4 | Check negative salary | False |
+| 5 | Change company name | Class attribute changes |
+| 6 | Create from valid row | Employee object returned |
+| 7 | Create from three-field row | ValueError |
+| 8 | Create with blank name | ValueError |
 
-### Validation checklist
+## 12. How to select the right method
 
-- [ ] The instance method uses one employee's values.
-- [ ] The class method changes the class-level value.
-- [ ] The static method returns True/False without accessing object state.
-- [ ] The learner explains self, cls and decorators.
+Ask these questions:
+1. Does the operation need one object's attributes? Use an instance method.
+2. Does it need class-level state or need to construct an object using the class? Consider a class method.
+3. Does it need neither the instance nor the class? Consider a static method.
+4. Is the operation unrelated to the class? A module-level function may be clearer.
 
-### Submission requirements
+Decorators define how Python binds the method. They are not added just to make the code look advanced.
 
-- Source code.
-- README with problem statement and run instructions.
-- At least three test cases.
-- Expected and actual output.
-- Short explanation of each class and method.
-- Limitations and one possible future improvement.
+## 13. Troubleshooting
 
-### Optional extension
+| Symptom | Likely cause | Fix |
+|---|---|---|
+| NameError for self | Static method refers to self | Make it an instance method or pass the value |
+| Missing cls argument | Class method decorator/signature mismatch | Check @classmethod and first parameter |
+| Unexpected object argument | Method type and signature do not match | Decide whether self, cls or neither is required |
+| AttributeError | Attribute not initialized or misspelled | Inspect initializer and object |
+| Invalid row | Wrong number/type of fields | Validate before conversion |
+| Company name appears unchanged | Instance attribute shadows class attribute | Inspect both class and instance values |
 
-Add one additional requirement only after all core requirements pass. Explain why the extension belongs in the existing class or requires a new responsibility.
+## 14. Practice exercises
 
-## 13. AI-assisted learning guide
+1. Create a Student instance method that returns a grade summary.
+2. Add class attribute `college_name`.
+3. Add a class method that changes the college name.
+4. Add a static method that checks whether a mark is between 0 and 100.
+5. Add an alternate constructor that creates a Student from a dictionary.
+6. Explain why annual_salary is an instance method.
+7. Explain why a salary validation helper can be static.
+8. Move a helper outside the class and decide which version is clearer.
 
-Use AI as a mentor, not as a replacement for your own implementation.
+## 15. Interview questions
 
-| Assistance level | Prompt |
-|---|---|
-| Hint | Give one small hint for Employee Utility Manager; do not give the solution |
-| Plan | Break the project into small implementation steps |
-| Example | Show a tiny example of the specific concept only |
-| Guided implementation | Help with one method, then wait for my output |
-| Explanation | Explain each statement and object state |
-| Debugging | Inspect my exact error and identify the root cause |
-| Review | Compare my implementation with the requirements and tests |
+**1. What is an instance method?**  
+A method that receives the current instance as its first argument, conventionally named self.
 
-**Planning prompt**
+**2. What is a class method?**  
+A method decorated with `@classmethod` that receives the class as its first argument, conventionally named cls.
 
-"Help me plan Employee Utility Manager. List the classes, responsibilities, attributes, methods, test cases and implementation order. Do not write the complete solution."
+**3. What is a static method?**  
+A method decorated with `@staticmethod` that does not receive self or cls automatically.
 
-**Implementation prompt**
+**4. Difference between self and cls?**  
+self refers to an instance; cls refers to the class.
 
-"Guide me through the first step only. Explain the code and wait until I run it before moving to the next step."
+**5. Can a class method create an object?**  
+Yes. It can call `cls(...)` and return the new instance.
 
-**Debugging prompt**
+**6. Can a static method access instance variables directly?**  
+No. It receives no instance automatically. Required values must be passed as arguments.
 
-"Here is my code, input and exact error. Identify the failing statement, explain the cause and suggest the smallest correction. Do not rewrite the whole project."
+**7. When should you use a static method?**  
+When helper logic is related to the class but does not need instance or class state.
 
-**Review prompt**
+**8. Can a class method be called through an instance?**  
+Yes, but calling through the class is often clearer.
 
-"Review my implementation against the approved requirements. Identify missing behavior, edge cases and design problems. Explain each finding before suggesting a change."
+**9. Can an instance method change class attributes?**  
+It can access the class, but a class method communicates class-wide operations more clearly.
 
-## 14. Daily quiz — multiple-choice questions
+**10. Is every reusable function a static method?**  
+No. A module-level function is often clearer when the behavior is not tied to the class.
 
-### Q1. Which statement best describes today's main concept?
-A. It is a Python feature used to organize related data and behavior.  
-B. It removes the need for testing.  
-C. It automatically saves every object to PostgreSQL.  
-D. It replaces all functions in Python.
+## 16. MCQs
 
-**Correct answer: A.** The concept helps organize related state and behavior. It does not automatically provide database persistence or remove the need for tests.
+**Q1. Which decorator defines a class method?**  
+A. `@staticmethod`  
+B. `@classmethod`  
+C. `@property`  
+D. `@abstractmethod`  
+**Answer: B.** A class method receives the class as its first argument.
 
-### Q2. What should you inspect when the output is incorrect?
-A. Only the filename.  
-B. Object creation, values, method calls and state changes.  
-C. Delete the class.  
-D. Ignore the output.
+**Q2. What is the conventional first parameter of an instance method?**  
+A. cls  
+B. self  
+C. this  
+D. object  
+**Answer: B.** self refers to the current instance.
 
-**Correct answer: B.** OOP behavior depends on the object, its data and the method being called.
+**Q3. Which method type receives no automatic first argument?**  
+A. Instance method  
+B. Class method  
+C. Static method  
+D. Constructor  
+**Answer: C.** Static methods receive only explicitly supplied arguments.
 
-### Q3. Which is the best project practice?
-A. Put all behavior into one giant method.  
-B. Avoid all validation.  
-C. Give each class a clear responsibility and test normal and invalid cases.  
-D. Store secrets in the source code.
+**Q4. Which method suits calculating one employee's salary from stored monthly salary?**  
+A. Instance method  
+B. Static method with no arguments  
+C. Class method only  
+D. Import statement  
+**Answer: A.** It needs the current employee's state.
 
-**Correct answer: C.** Clear responsibilities and validation make the project easier to understand and maintain.
+**Q5. What does cls refer to?**  
+A. Current instance  
+B. Class  
+C. Current function  
+D. Database table  
+**Answer: B.** cls is the class passed to a class method.
 
-### Q4. Why should you not treat the example as production-ready?
-A. Python cannot run classes.  
-B. A classroom example does not include all production concerns such as persistence, security, concurrency and monitoring.  
-C. Methods cannot be tested.  
-D. Objects cannot store data.
+**Q6. Which method is commonly used for an alternate constructor?**  
+A. Class method  
+B. Static method  
+C. Loop method  
+D. Import method  
+**Answer: A.** It can call cls(...) and return an instance.
 
-**Correct answer: B.** The demonstration teaches one concept; production systems need additional engineering controls.
+## 17. Daily completion checklist
 
-### Q5. What is the strongest evidence that your mini-project is complete?
-A. A project folder exists.  
-B. You watched a video.  
-C. The code is long.  
-D. Required scenarios pass, output is recorded and you can explain the implementation.
-
-**Correct answer: D.** Completion requires working behavior and the ability to explain and verify it.
-
-## 15. Interview preparation
-
-**Q1. Explain instance methods, class methods and static methods in your own words.**  
-**Answer:** Use instance methods for object-specific work, class methods for class-level operations or alternative constructors, and static methods for related utilities that need neither instance nor class state.
-
-**Practical follow-up:** Explain the main worked example and identify the class, object, method and state involved.
-
-**Q2. Where can this concept help a backend developer?**  
-**Answer:** It helps structure reusable application code and model business responsibilities. Django uses Python classes extensively, so a strong OOP foundation makes framework code easier to understand.
-
-**Q3. What is one mistake a beginner should avoid?**  
-**Answer:** Do not add complexity without a clear requirement. Keep responsibilities understandable, validate inputs and test the behavior.
-
-**Follow-up:** What would you add before using this learning example in a production service?  
-**Answer:** Tests, error handling, authorization where needed, safe data persistence, configuration management, logging and operational monitoring.
-
-## 16. Day completion checklist
-
-- [ ] Read the lesson and explain the key terms.
-- [ ] Run the worked example successfully.
-- [ ] Explain the important statements.
-- [ ] Complete the guided exercises.
-- [ ] Build Employee Utility Manager.
-- [ ] Validate normal and invalid scenarios.
-- [ ] Complete all five MCQs.
-- [ ] Answer the interview questions without copying.
-- [ ] Submit source code, README and evidence.
+- [ ] I can define an instance method.
+- [ ] I can explain self.
+- [ ] I can define a class method.
+- [ ] I can explain cls.
+- [ ] I can define a static method.
+- [ ] I can compare the three method types.
+- [ ] I can select a method type based on required data.
+- [ ] I completed Employee Utility Manager.
+- [ ] I tested validation and the alternate constructor.
 
 **Next lesson:** Day 16 — Inheritance and Method Overriding.
-
