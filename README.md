@@ -58,7 +58,7 @@ This index tracks the detailed trainer manuscripts and interview guides. The syl
 
 | Phase | Days | Module | Authoring status |
 |---|---:|---|---|
-| 3 | 27–41 | Django fundamentals | Not yet authored |
+| 3 | 27–41 | Django fundamentals | Class notes and interview guides completed |
 | 4 | 42–54 | Django ORM, forms and authentication | Not yet authored |
 | 5 | 55–69 | REST API development with Django REST Framework | Not yet authored |
 | 6 | 70–81 | Advanced backend development | Not yet authored |
