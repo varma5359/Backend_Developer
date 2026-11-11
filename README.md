@@ -80,7 +80,7 @@ Phase 3 (Days 27–41) is undergoing a self-learning quality revision. The initi
 
 | Phase | Days | Module | Authoring status |
 |---|---:|---|---|
-| 3 | 27–41 | Django fundamentals | Revised — class notes, interview guides and cumulative assessment |
+| 3 | 27–41 | Django fundamentals | Revision in progress — runtime verification pending |
 | 4 | 42–54 | Django ORM, forms and authentication | Existing files; quality review and revision pending |
 | 5 | 55–69 | REST API development with Django REST Framework | Existing files; quality review and revision pending |
 | 6 | 70–81 | Advanced backend development | Existing files; quality review and revision pending |
