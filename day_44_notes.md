@@ -614,7 +614,7 @@ from orders.models import Order
 
 class OrderQueryTests(TestCase):
     def test_order_list_prefetches_related_data(self):
-        with self.assertNumQueries(2):
+        with self.assertNumQueries(3):
             orders = list(
                 Order.objects.prefetch_related("items__product")
             )
@@ -623,7 +623,7 @@ class OrderQueryTests(TestCase):
                     _ = item.product.name
 ~~~
 
-The exact count assumes this simple two-query relationship and that the test setup has created the relevant records. If your query changes, inspect the SQL and adjust the test only after understanding the new behavior.
+The three-query expectation assumes this exact items__product prefetch path and that the test setup has created the relevant records. If your query changes, inspect the SQL and adjust the test only after understanding the new behavior.
 
 ## 15. Run and verify the application
 
