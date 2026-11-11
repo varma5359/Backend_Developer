@@ -520,3 +520,347 @@ Do not mark the day complete just because code exists. Complete every check your
 5. Diagnose and fix one controlled mistake, such as a misspelled URL, setting or file path.
 
 **Next lesson:** Day 29 — Django Development Server, settings.py and Installed Applications
+
+---
+
+# Extended Beginner Lab — Project Structure and manage.py
+
+## 19. Understand the command-line entry point
+
+The manage.py file is generated when you create a Django project.
+
+It is a Python file that:
+- Sets the default settings module.
+- Calls Django's management command system.
+- Lets you run project-specific commands from the project root.
+
+You normally do not need to edit manage.py.
+
+## 20. Why does manage.py need project settings?
+
+A management command needs to know:
+- Which installed apps exist.
+- Which database is configured.
+- Which settings module to load.
+- Which models and migrations belong to the project.
+- Which middleware and template settings are configured.
+
+The command reads project settings before performing its work.
+
+## 21. Inspect manage.py
+
+Open the generated file and find the line that sets DJANGO_SETTINGS_MODULE.
+
+It normally points to config.settings. The exact package name depends on the name you selected when running startproject.
+
+Do not copy a manage.py file from another project because its settings module may be different.
+
+## 22. Management command: check
+
+Run:
+
+~~~powershell
+python manage.py check
+~~~
+
+This runs Django's system checks.
+
+It can detect configuration problems such as:
+- Invalid model field configuration.
+- Missing app configuration.
+- Certain URL configuration problems.
+- Incorrect middleware settings.
+
+It does not prove that every page works.
+
+## 23. Management command: help
+
+Run:
+
+~~~powershell
+python manage.py help
+~~~
+
+This lists available commands.
+
+To inspect one command:
+
+~~~powershell
+python manage.py help startapp
+~~~
+
+Read the command purpose, required arguments, optional flags and default behavior.
+
+The help command is useful when you forget syntax. Do not guess a command's arguments.
+
+## 24. Management command: runserver
+
+Run:
+
+~~~powershell
+python manage.py runserver
+~~~
+
+Django starts the local development server.
+
+The terminal displays a local URL such as:
+
+~~~text
+http://127.0.0.1:8000/
+~~~
+
+The server runs until you stop it. Press Ctrl+C in the terminal.
+
+The development server is not intended for production deployment.
+
+## 25. Management command: shell
+
+Run:
+
+~~~powershell
+python manage.py shell
+~~~
+
+This opens a Python shell with the Django project configured.
+
+You can import project models and experiment with ORM operations after the relevant models have been created.
+
+Example:
+
+~~~python
+from django.conf import settings
+settings.INSTALLED_APPS
+~~~
+
+Exit with:
+
+~~~python
+exit()
+~~~
+
+## 26. Management command: showmigrations
+
+Run:
+
+~~~powershell
+python manage.py showmigrations
+~~~
+
+This lists installed apps and their migrations. A checked migration is marked with [X].
+
+You will use this command when learning models and migrations.
+
+## 27. Management command: makemigrations
+
+This command creates migration files based on model changes.
+
+You will use it after creating or changing models in later lessons.
+
+Do not run it now just to create an empty migration. A migration should represent an actual model change.
+
+## 28. Management command: migrate
+
+This command applies pending migration operations to the configured database.
+
+Do not confuse:
+- makemigrations: create migration files.
+- migrate: apply migration files.
+
+## 29. Understand project package versus app package
+
+A project package contains site-wide configuration. An app package contains a feature or domain area.
+
+~~~text
+student_portal/
+├── manage.py
+├── config/
+│   ├── settings.py
+│   ├── urls.py
+│   ├── asgi.py
+│   └── wsgi.py
+├── profiles/
+│   ├── apps.py
+│   ├── models.py
+│   ├── views.py
+│   └── admin.py
+└── courses/
+    ├── apps.py
+    ├── models.py
+    ├── views.py
+    └── admin.py
+~~~
+
+config is the project package. profiles and courses are apps.
+
+## 30. Why use multiple apps?
+
+Suppose a college portal has student profiles, course catalog, attendance, fees and notifications.
+
+These features can be organized into separate apps as the project grows.
+
+Benefits:
+- Related code stays together.
+- Teams can work on different areas.
+- Tests can be grouped by feature.
+- Reusable features can be moved to another project more easily.
+
+Do not create an app for every single Python function. An app should represent a coherent feature area.
+
+## 31. Understand apps.py
+
+An app configuration class describes the app to Django.
+
+~~~python
+from django.apps import AppConfig
+
+
+class ProfilesConfig(AppConfig):
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "profiles"
+~~~
+
+- AppConfig is Django's application configuration class.
+- default_auto_field defines the default primary-key field type for models that do not define one.
+- name identifies the Python package.
+
+The name value must match the app package.
+
+## 32. Understand __init__.py
+
+Python uses package structure to organize importable modules.
+
+The __init__.py file marks a package in the conventional Python package layout.
+
+Django creates it in generated project and app packages.
+
+Do not delete generated package files without understanding their purpose.
+
+## 33. Understand migrations folder
+
+The migrations folder contains versioned schema changes for the app.
+
+Django creates an initial migration after models are added and makemigrations is run.
+
+An app can have an empty migrations folder before its first model migration.
+
+Do not place normal business logic in migration files.
+
+## 34. Create a second app as a practice exercise
+
+Do not do this in the main lesson project if the approved roadmap expects only profiles at this stage. Use a temporary practice copy or wait until the relevant lesson introduces the next app.
+
+Command:
+
+~~~powershell
+python manage.py startapp courses
+~~~
+
+Django creates a new package. Before using it, register it in INSTALLED_APPS.
+
+## 35. Common command mistakes
+
+| Mistake | Why it fails | Correct action |
+|---|---|---|
+| Run startapp outside project root | manage.py cannot be found | Change to folder containing manage.py |
+| Use wrong project package name | Settings module cannot be imported | Check DJANGO_SETTINGS_MODULE |
+| Forget to register an app | Django may not discover its models | Add its AppConfig path to INSTALLED_APPS |
+| Create duplicate app folder | Imports may become ambiguous | Inspect the project tree first |
+| Edit manage.py unnecessarily | Project command setup can break | Keep the generated file |
+| Use global Python by mistake | Django may not be installed there | Activate .venv and inspect sys.executable |
+
+## 36. Diagnose wrong directory
+
+Run:
+
+~~~powershell
+Get-Location
+Get-ChildItem manage.py
+~~~
+
+If Get-ChildItem cannot find manage.py, you are not in the project root.
+
+Use Set-Location to move to the correct folder.
+
+## 37. Diagnose wrong interpreter
+
+Run:
+
+~~~powershell
+python -c "import sys; print(sys.executable)"
+python -m django --version
+~~~
+
+Compare the path with the .venv folder.
+
+If the path points to a global Python installation, activate the project environment.
+
+## 38. Diagnose app import problems
+
+If Django reports that it cannot import an app:
+1. Check the app folder name.
+2. Check apps.py.
+3. Check the AppConfig class name.
+4. Check INSTALLED_APPS.
+5. Check spelling and capitalization.
+6. Confirm the app folder is importable from the project.
+
+## 39. Guided exercise — Project Structure Explorer
+
+Complete without copying the whole answer:
+1. Identify the project root.
+2. Locate manage.py.
+3. Locate config/settings.py.
+4. Locate config/urls.py.
+5. Locate profiles/apps.py.
+6. Locate profiles/models.py.
+7. Explain the responsibility of each file.
+8. Run manage.py help.
+9. Run manage.py check.
+10. Explain why an app must be registered.
+
+## 40. Self-check questions
+
+1. What does manage.py do?
+2. What is the difference between a project and an app?
+3. Which file contains INSTALLED_APPS?
+4. What does startapp create?
+5. Why is an app registered?
+6. What is the role of apps.py?
+7. What does check validate?
+8. What is the difference between makemigrations and migrate?
+9. Why should the virtual environment be activated?
+10. Why should manage.py not be rewritten casually?
+
+## 41. Answers
+
+1. It runs Django management commands using project settings.
+2. A project contains site-wide configuration and apps; an app is a feature module.
+3. config/settings.py.
+4. A package with standard app files and a migrations directory.
+5. So Django can load the app and discover its functionality.
+6. It contains the app configuration class.
+7. It runs system checks for configuration issues.
+8. One creates migration files; the other applies them.
+9. It ensures the correct project dependencies and Django version are used.
+10. It contains project-specific command setup.
+
+## 42. Independent challenge — Institute Portal Layout
+
+Draw a folder structure for an institute portal with config, profiles, courses, attendance and fees.
+
+For each app, list:
+- One responsibility.
+- One possible model.
+- One possible view.
+- One possible URL.
+
+Do not create all these apps in the main pathway project yet. This is an architecture exercise.
+
+## 43. Completion evidence
+
+Submit:
+- A screenshot of the project tree.
+- Terminal output from python manage.py check.
+- A short explanation of manage.py.
+- A short explanation of project versus app.
+- A list of commands used and the folder from which each command was run.
