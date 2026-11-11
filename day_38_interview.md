@@ -3,77 +3,71 @@
 **Pathway:** Python Backend Developer Career Pathway (Django)  
 **Phase:** 3 — Django Fundamentals  
 **Related class notes:** [Day 38 notes](day_38_notes.md)  
-**Approved mini-project:** College Relationship Manager
+**Mini-project:** College Relationship Manager
 
-## 1. Core questions
+## 1. Technical questions with model answers
 
-### Q1. Explain today's topic.
-**Answer:** Real applications connect records. A student belongs to a department, a student may have one profile, and students can enroll in multiple courses while each course can have many students. Django models these patterns with ForeignKey, OneToOneField and ManyToManyField. Relationship design protects data integrity and makes ORM navigation possible.
+### Q1. Where should a ForeignKey be placed for one department and many students?
 
-**Follow-up:** Give one example from the Student Portal.
+**Model answer:** On Student, the many side. Each student row stores the department reference.
 
-### Q2. Which files or commands are involved?
-**Answer:** `profiles/models.py`, `profiles/migrations/`. Explain what each does and how the components connect.
+### Q2. How does OneToOneField differ from ForeignKey?
 
-**Follow-up:** What would you inspect if the feature is missing or fails?
+**Model answer:** OneToOneField enforces that each referenced object can be linked to at most one row through that relation. It is implemented like a foreign key with a uniqueness constraint.
 
-### Q3. What does Django do automatically?
-**Answer:** Django supplies the framework mechanisms, ORM/admin integration and command behavior. Developers still define business rules, choose field relationships, configure the app and verify results.
+### Q3. How does ManyToManyField work in the database?
 
-### Q4. How do you verify the feature?
-**Answer:** Run `python manage.py check`, execute the relevant commands and inspect the real admin/database/shell result. Test an edge case.
+**Model answer:** Django uses an intermediary join table that stores pairs of related primary keys. A student can link to many courses and a course to many students.
 
-## 2. Scenario-based questions
+### Q4. What does related_name provide?
 
-### Q5. The command succeeds but the expected record or behavior is missing. What do you inspect?
-**Suggested answer:** Confirm the correct project and database, inspect the model/registration/query, check migration state, review constraints and reproduce the operation in shell or browser.
+**Model answer:** It defines the reverse accessor used from the related model, such as department.students or course.students.
 
-### Q6. Why is it risky to change or delete migration files without a plan?
-**Suggested answer:** Migration files are shared schema history. Other developers and deployed databases may already have applied them. Deleting or rewriting history can make database state inconsistent.
+### Q5. What is the difference between CASCADE and PROTECT?
 
-### Q7. A user requests access to an admin function they do not need. What should the developer do?
-**Suggested answer:** Apply least privilege. Grant only the permissions needed for the user's role; do not make every staff user a superuser.
+**Model answer:** CASCADE deletes dependent objects when the referenced object is deleted. PROTECT blocks deletion while protected references exist.
 
-## 3. Practical coding discussion
+### Q6. What happens when student.profile is accessed but no profile exists?
 
-Be ready to:
-- Identify the correct file.
-- Explain the important field/query/admin setting.
-- Run the management command.
-- Demonstrate the actual result.
-- Explain a constraint or exception.
-- Test a missing/duplicate/invalid case.
-- Explain a safe correction.
+**Model answer:** The reverse OneToOne accessor raises StudentProfile.DoesNotExist/RelatedObjectDoesNotExist. Check with hasattr or catch the specific related-object exception.
+
+## 2. Scenario-based interview question
+
+**Scenario:** A student can enroll in multiple courses and each course can contain many students. Which field do you use and where is the data stored?
+
+**Model answer:** Use ManyToManyField on one of the models, for example Student.courses. Django creates an intermediary table containing student and course IDs. Query from either direction using the related manager.
+
+**What the interviewer is checking:** Whether you can connect the concept to a real project, identify the relevant file or command, verify the result and explain the reason for your debugging steps.
+
+## 3. Practical demonstration
+
+Explain the schema, migrate it, create sample records, run forward and reverse queries for all three relationship types, and test a student without a profile.
+
+Before the interview, be able to:
+- Explain the feature without reading the notes.
+- Identify the exact file or command involved.
+- Demonstrate the behavior in a terminal or browser.
+- Predict one result before running the code.
+- Explain one common failure and how to fix it.
 
 ## 4. Mini-project viva — College Relationship Manager
 
-1. What problem does it solve?
-2. What is the data requirement?
-3. Which models or admin classes are involved?
-4. Which commands or queries did you execute?
-5. What output did you verify?
-6. What happens for invalid or duplicate data?
-7. Which test cases did you perform?
-8. What error did you encounter?
-9. How did you fix it?
-10. What would you improve?
+1. What user or business problem does this project solve?
+2. What did you build and what did you deliberately leave out?
+3. Which files and commands were required?
+4. Explain the execution flow from input to output.
+5. What result did you verify?
+6. What was the most useful debugging check?
+7. What would you improve if this became a production feature?
 
-## 5. Rapid revision
+**Model viva answer structure:** State the requirement → explain the design → identify the files → describe the implementation → show the observed result → explain one limitation or improvement. Use your own project evidence; do not invent results.
 
-- Explain the topic in simple language.
-- Identify the model, command or query.
-- Explain the database effect.
-- Demonstrate the project.
-- Test one edge case.
-- Explain a common exception or integrity concern.
+## 5. Self-check
 
-## 6. Interview readiness
+- [ ] I can answer all six technical questions without memorizing paragraphs.
+- [ ] I can explain the scenario and justify each debugging step.
+- [ ] I can demonstrate the feature from a fresh terminal/browser session.
+- [ ] I can explain one alternative design and why I did not choose it.
+- [ ] I can present College Relationship Manager with real evidence.
 
-- [ ] I can define the concept.
-- [ ] I can explain the file and code.
-- [ ] I can run the commands.
-- [ ] I can show real database behavior.
-- [ ] I can explain an edge case.
-- [ ] I can present College Relationship Manager.
-
-**Self-practice:** Ask yourself to predict the database result before executing a query or changing a relationship. Use the actual query result to check your reasoning rather than memorizing syntax.
+**Readiness rule:** If you cannot reproduce the demonstration, return to the corresponding class notes, repeat the steps and record the output.
