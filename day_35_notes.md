@@ -986,3 +986,7 @@ Ask another learner to inspect your migration plan. They must identify the model
 ## 61. Final readiness statement
 
 Do not mark a migration complete until you can explain its schema effect, inspect its SQL, identify its dependencies, validate existing data and describe how you would recover from a failed deployment.
+
+## 62. Evidence to retain
+
+Keep the migration file, showmigrations output, sqlmigrate output, makemigrations check result and a note describing the database used for testing. Never include database passwords or private production data in the evidence.
