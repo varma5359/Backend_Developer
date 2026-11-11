@@ -976,3 +976,16 @@ Test the following:
 
 Write a short explanation of the difference between source static folders and STATIC_ROOT.
 
+
+## 55. Static-file deployment questions
+
+Explain:
+1. Why does production not normally use runserver to serve static assets?
+2. What does collectstatic collect?
+3. Where are collected files written?
+4. Who serves those files in production?
+5. Why should uploaded media be handled separately?
+6. Why should a browser cache be checked before changing file paths?
+
+Write a short deployment handover that identifies the static source folders and the collection destination without exposing secrets.
+
