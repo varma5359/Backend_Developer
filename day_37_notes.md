@@ -3,12 +3,12 @@
 **Pathway:** Python Backend Developer Career Pathway (Django)  
 **Phase:** 3 — Django Fundamentals  
 **Duration:** 2–3 hours | **Level:** Beginner to Intermediate  
-**Prerequisites:** Days 27–37 as relevant; Django project, models, migrations and ORM basics  
+**Prerequisites:** Days 27–36 — Django setup, models, migrations and the admin demonstration  
 **Environment:** Windows, VS Code, PowerShell, Python virtual environment, Django 5.2.19  
 **Continuous project:** `student_portal` / `config` / `profiles`  
-**Approved mini-project:** Product Query Explorer
+**Approved mini-project:** Employee Query Explorer
 
-> **Trainer standard:** Explain the database/business requirement first. Show the exact file. Type one component at a time. Run checks and migrations. Verify actual records. Do not ask students to memorize ORM syntax without understanding the relationship or query.
+> **Self-paced method:** Read the query requirement, run one ORM operation at a time in the Django shell, inspect the returned value and compare it with the expected result. Use the troubleshooting section whenever the output differs.
 
 ## 1. Learning objectives
 
@@ -18,6 +18,8 @@
 4. Update and delete records carefully.
 
 ## 2. Start from the business requirement
+
+The Employee model created on Day 34 is the data source for today's ORM practice. The approved mini-project is Employee Query Explorer. Day 38 introduces the separate Student, Department, Course and StudentProfile relationship schema.
 
 The Django ORM lets a developer work with database records through Python models and QuerySets rather than writing SQL for every operation. A QuerySet represents a database query. Many QuerySets are lazy: Django builds the query first and sends it to the database when results are needed. The ORM does not remove the need to understand SQL, indexes or query performance.
 
