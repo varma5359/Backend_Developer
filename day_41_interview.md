@@ -79,4 +79,4 @@ Be ready to:
 - [ ] I can explain the Post/Redirect/Get pattern.
 - [ ] I can present Django Student Management Website independently.
 
-**Self-practice:** Ask yourself to trace an actual browser request and locate the exact file for each step. Do not accept a vague answer such as "Django handles it" without explaining which component does what.
+**Self-practice:** Trace an actual browser request and locate the exact file for each step. Do not accept a vague answer such as "Django handles it" without explaining which component does what.
