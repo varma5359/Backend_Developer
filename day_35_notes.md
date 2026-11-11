@@ -978,3 +978,7 @@ Without reading the notes, explain:
 ## 59. Submission reflection
 
 Write a safe migration plan for adding a required field to an existing table. Include the initial optional schema change, legacy data population, validation of existing rows, final required-field migration, test database run, backup and deployment rollback consideration. Explain why a default should represent a real business value.
+
+## 60. Final reviewer prompt
+
+Ask another learner to inspect your migration plan. They must identify the model change, SQL effect, dependency, existing-data impact and rollback concern. Do not apply the migration to important data until the review is complete.
