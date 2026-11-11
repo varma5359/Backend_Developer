@@ -989,3 +989,17 @@ Explain:
 
 Write a short deployment handover that identifies the static source folders and the collection destination without exposing secrets.
 
+
+## 56. Explain-back assessment
+
+Without reading the notes, explain:
+1. Why template inheritance reduces duplication.
+2. How a child overrides a block.
+3. Why block names must match.
+4. When include is appropriate.
+5. What belongs in a static directory.
+6. How the static tag builds a URL.
+7. How findstatic helps debugging.
+8. What STATIC_ROOT is used for.
+9. What collectstatic does.
+10. Why production static serving is separate from runserver.
