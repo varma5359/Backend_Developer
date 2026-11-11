@@ -98,7 +98,7 @@ The following revisions have been applied on `phase-3-self-learning-audit` after
 
 | Area | Revision made | Remaining verification |
 |---|---|---|
-| Day 27 class notes | Changed the lesson to self-paced setup, replaced trainer demonstration/checkpoint language with learner self-checks, and retained exact environment verification steps. | Check the complete setup in a clean Windows environment. |
+| Day 27 class notes | Changed the lesson to self-paced setup, replaced trainer demonstration/checkpoint language with learner self-checks, retained exact environment verification steps, and corrected escaped Markdown code formatting so code examples render as code blocks. | Check the complete setup in a clean Windows environment. |
 | Day 36 class notes and interview guide | Corrected prerequisite range and aligned the mini-project with the Employee model used in the lesson. Replaced trainer-directed teaching instructions with a self-paced method. | Verify admin registration and permissions against the actual project state. |
 | Day 37 class notes and interview guide | Corrected prerequisite range and aligned the project title to Employee Query Explorer, matching the Employee model used in the ORM examples. | Verify all ORM commands and sample output against the actual database. |
 | Day 38 class notes | Rebuilt the lesson as a detailed beginner walkthrough covering schema reasoning, relationship placement, on_delete, migration steps, repeatable sample data, forward/reverse queries, expected results, troubleshooting and an independent challenge. | Execute the migrations and shell examples in the real project. |
