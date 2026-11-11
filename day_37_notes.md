@@ -28,7 +28,7 @@ A junior developer must understand both the Python code and the underlying relat
 ## 3. Mental model
 
 ```text
-Student Portal requirement
+Employee Portal requirement
         |
         v
 Django model / admin / ORM
@@ -233,6 +233,33 @@ System check identified no issues (0 silenced).
 
 A system check does not prove every query or relationship is correct. Run the shell/admin exercises above.
 
+
+## 10A. Expected shell results
+
+The following output assumes a fresh database or that the two sample employees are the only matching records. If you already have records, your totals will be different; use the filtered query to inspect the sample records.
+
+After creating Asha and Rahul, run:
+
+```python
+print(list(Employee.objects.order_by("employee_code").values_list("employee_code", "full_name")))
+print(Employee.objects.filter(is_active=True).count())
+print(list(Employee.objects.filter(full_name__icontains="asha").values_list("full_name", flat=True)))
+```
+
+Expected:
+
+```python
+[('EMP1001', 'Asha Rao'), ('EMP1002', 'Rahul Kumar')]
+1
+['Asha Rao']
+```
+
+The first query orders by employee code so the output order is predictable. The second counts active employees; Asha is active by default and Rahul is created as inactive. The third searches for the text asha without case sensitivity.
+
+When you update Asha to inactive, re-run the active count. It should now be 0 for these two sample records. Do not assume an update worked just because save() returned without an error; query the record again.
+
+If you repeat the create example, choose new unique employee codes and emails or use get_or_create after inspecting existing records. Employee code and email are unique fields.
+
 ## 11. Troubleshooting
 
 | Symptom | Likely reason | What to inspect |
@@ -248,14 +275,13 @@ A system check does not prove every query or relationship is correct. Run the sh
 
 ## 12. Industry scenario
 
-A college portal stores students, departments, courses and student-specific profiles. The institute needs reliable links between records. A relationship design error can allow orphaned records, duplicate data or invalid associations.
+An HR team needs to answer questions about employee records: how many employees are active, who joined most recently, and whether a particular employee code exists. ORM queries let the backend answer these questions without manually writing SQL for every operation.
 
 Discuss:
-- Which record owns the foreign key?
-- Can one student belong to multiple departments?
-- Can a course contain many students?
-- What should happen if a department is deleted?
-- What constraints should the database enforce?
+- Which query should return zero or more rows?
+- When is get() safer than filter()?
+- Why should a query be ordered before displaying it?
+- Why should a developer inspect the database after an update?
 
 ## 13. Approved mini-project — Employee Query Explorer
 
