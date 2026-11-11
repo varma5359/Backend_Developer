@@ -995,3 +995,7 @@ Without reading the notes, explain:
 10. How static generates an asset URL.
 11. Why autoescaping matters.
 12. Why safe must not be used on untrusted input.
+
+## 58. Submission reflection
+
+Write one example where a template variable was missing, explain how you found the missing context key, and show the corrected view/template pair. Include the expected rendered result.
