@@ -3,85 +3,71 @@
 **Pathway:** Python Backend Developer Career Pathway (Django)  
 **Phase:** 3 — Django Fundamentals  
 **Related class notes:** [Day 34 notes](day_34_notes.md)  
-**Approved mini-project:** Employee Management Model
+**Mini-project:** Employee Management Model
 
-## 1. Core technical questions
+## 1. Technical questions with model answers
 
-### Q1. Explain today's concept.
-**Answer:** A model is a Python class that describes the data Django stores. Each model normally maps to a database table; each model instance represents one row; and model fields describe columns. Django's ORM uses model definitions to create queries. Writing a model does not immediately change the database: migrations are required and applied in the next lesson.
+### Q1. What is a Django model?
 
-**Follow-up:** Explain how this concept appears in the Student Portal.
+**Model answer:** A model is a Python class that subclasses models.Model. Django uses its fields and metadata to map Python objects to database tables and columns.
 
-### Q2. Which files or commands are involved?
-**Answer:** `profiles/models.py`, `profiles/migrations/ (generated in next lesson)`. Explain what each one is responsible for and how they connect.
+### Q2. What is the difference between a model instance and a database row?
 
-**Follow-up:** What error might occur if a file is missing or incorrectly configured?
+**Model answer:** A model instance is a Python object representing a record. Saving it persists its field values as a database row.
 
-### Q3. What does Django do automatically, and what must the developer write?
-**Answer:** Django supplies framework mechanisms and conventions. The developer defines the application's requirements, configuration, business rules, correct file connections and tests.
+### Q3. What is a primary key?
 
-### Q4. How do you verify your work?
-**Answer:** Run `python manage.py check`, execute the relevant commands, inspect the output and test the actual browser/database behavior. Include an edge case.
+**Model answer:** A primary key uniquely identifies a row. Django normally adds an automatic primary-key field when one is not declared.
 
-## 2. Scenario-based questions
+### Q4. When should you use DecimalField rather than FloatField for money?
 
-### Q5. The feature does not work even though the code is present. What do you inspect?
-**Suggested answer:**
-1. Reproduce the problem.
-2. Read the complete error.
-3. Check the current folder and Python environment.
-4. Inspect the named file and nearby lines.
-5. Check imports, app registration, URL patterns and file paths.
-6. Run Django checks.
-7. Repeat the actual test.
+**Model answer:** DecimalField stores fixed-precision decimal values using max_digits and decimal_places. Binary floating point can introduce representation rounding, so it is generally unsuitable for exact monetary values.
 
-### Q6. A learner says the command succeeded, so the task is complete. Is that enough?
-**Suggested answer:** No. A command may create a file or run a server without proving the expected feature works. Demonstrate the result, test an edge case and explain the implementation.
+### Q5. What is the difference between null and blank?
 
-### Q7. How would you explain this work to a teammate?
-**Suggested answer:** Describe the requirement, relevant files, command sequence, execution flow, expected output, tests and one error/fix.
+**Model answer:** null controls whether the database column may store NULL. blank controls whether Django validation/forms allow an empty value. They affect different layers.
 
-## 3. Practical discussion
+### Q6. What does unique=True do?
 
-Be prepared to:
-- Identify the exact file path.
-- Explain important code statements.
-- Demonstrate the required commands.
-- Explain the observed result.
-- Modify one small part and predict the effect.
-- Test a normal and edge case.
-- Describe a safe debugging method.
+**Model answer:** It asks the database to enforce that no two rows share the same value for that field. Form validation may also surface the constraint before save, but the database remains the final integrity boundary.
+
+## 2. Scenario-based interview question
+
+**Scenario:** An HR system stores salary in a FloatField and sometimes sees rounding differences. What model change would you recommend?
+
+**Model answer:** Use DecimalField with a deliberate max_digits and decimal_places appropriate to the business domain, create a migration and inspect how existing values will be converted. Do not silently change a production schema without a backup and migration plan.
+
+**What the interviewer is checking:** Whether you can connect the concept to a real project, identify the relevant file or command, verify the result and explain the reason for your debugging steps.
+
+## 3. Practical demonstration
+
+Define Employee fields with appropriate types and constraints, explain every field choice, run check, inspect the model and predict which invalid values should be rejected.
+
+Before the interview, be able to:
+- Explain the feature without reading the notes.
+- Identify the exact file or command involved.
+- Demonstrate the behavior in a terminal or browser.
+- Predict one result before running the code.
+- Explain one common failure and how to fix it.
 
 ## 4. Mini-project viva — Employee Management Model
 
-1. What problem does the project solve?
-2. What are the functional requirements?
-3. Which files did you create or update?
-4. Which commands did you run?
-5. What does the important code do?
-6. How did you verify the normal case?
-7. Which edge case did you test?
-8. What error did you encounter?
-9. How did you fix it?
-10. What would you improve next?
+1. What user or business problem does this project solve?
+2. What did you build and what did you deliberately leave out?
+3. Which files and commands were required?
+4. Explain the execution flow from input to output.
+5. What result did you verify?
+6. What was the most useful debugging check?
+7. What would you improve if this became a production feature?
 
-## 5. Rapid revision
+**Model viva answer structure:** State the requirement → explain the design → identify the files → describe the implementation → show the observed result → explain one limitation or improvement. Use your own project evidence; do not invent results.
 
-- Define the concept.
-- Name the important files.
-- Explain the execution flow.
-- Demonstrate the project.
-- Run checks.
-- Explain one failure and its fix.
+## 5. Self-check
 
-## 6. Readiness checklist
+- [ ] I can answer all six technical questions without memorizing paragraphs.
+- [ ] I can explain the scenario and justify each debugging step.
+- [ ] I can demonstrate the feature from a fresh terminal/browser session.
+- [ ] I can explain one alternative design and why I did not choose it.
+- [ ] I can present Employee Management Model with real evidence.
 
-- [ ] I can explain the concept clearly.
-- [ ] I can identify the relevant files.
-- [ ] I can reproduce the example.
-- [ ] I can explain the important code.
-- [ ] I can verify the result.
-- [ ] I can answer a scenario question.
-- [ ] I can present Employee Management Model independently.
-
-**Self-practice:** Explain why a step is needed and predict what changes when one value or setting is modified.
+**Readiness rule:** If you cannot reproduce the demonstration, return to the corresponding class notes, repeat the steps and record the output.
