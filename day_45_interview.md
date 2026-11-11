@@ -1,59 +1,74 @@
-# Day 45: Interview Questions — Database Constraints, Field Validation and Model Validation
+# Day 45: Interview Guide — Database Constraints, Field Validation and Model Validation
 
-**Pathway:** Python Backend Developer Career Pathway (Django)  
-**Phase:** 4 — Django ORM, Forms and Authentication  
-**Related notes:** [Day 45 class notes](day_45_notes.md)  
-**Approved mini-project:** Data Integrity Management System
+**Related class notes:** [Day 45 notes](day_45_notes.md)  
+**Approved mini-project:** Data Integrity Management System  
+**Level:** Intermediate
 
-## Core technical questions
+## 1. Core questions
 
-### Q1. Explain database constraints, field validation and model validation.
-**Answer:** Database constraints protect data integrity at the database level. Field validators and model clean() provide application-level validation. UniqueConstraint and CheckConstraint express rules that should remain true for stored rows. Django does not automatically call full_clean() every time model.save() is used, so validation strategy must be deliberate.
+### Q1. What is data integrity?
+**Answer:** Data integrity means stored data remains accurate, consistent and valid according to the application's business rules.
 
-### Q2. Which Django APIs or files are involved?
-**Answer:** profiles/models.py, Validation example. Explain the role of each API and how the feature is verified.
+### Q2. What is the difference between validation and a database constraint?
+**Answer:** Validation checks input in application code and can provide useful error messages. A database constraint protects stored data at the database level, including writes that bypass a form.
 
-### Q3. What is a common mistake?
-**Answer:** Duplicate SKU is rejected. Test the behavior rather than assuming the code is correct.
+### Q3. What is a field validator?
+**Answer:** A callable that checks a field value and raises ValidationError when the value does not satisfy a rule.
 
-### Q4. How do you verify the implementation?
-**Answer:** Use local test data and accounts, exercise valid and invalid cases, inspect the database/session and verify access restrictions.
+### Q4. What does model clean() do?
+**Answer:** It provides model-level validation for rules involving one or more model fields. It is not automatically called by every save() operation.
 
-### Q5. What security concern should you explain?
-**Answer:** Protect credentials, validate data, enforce permissions and avoid exposing private information.
+### Q5. What does full_clean() do?
+**Answer:** It runs model field validation, model clean(), uniqueness validation and constraint validation where applicable. Developers must call it deliberately when needed; model.save() does not automatically call full_clean().
 
-## Scenario-based questions
+### Q6. What is UniqueConstraint?
+**Answer:** It enforces uniqueness across one or more fields at the database level.
 
-### Q6. A user can log in but should not be able to modify another employee's record. What is missing?
-**Suggested answer:** Authorization. The application must check permissions for the requested operation and object, not merely check that the user is authenticated.
+### Q7. What is CheckConstraint?
+**Answer:** It enforces a database condition that each stored row must satisfy, such as price greater than zero or minimum salary less than or equal to maximum salary.
 
-### Q7. Invalid data is being stored. What do you inspect?
-**Suggested answer:** Field validation, model validation, database constraints and the exact save path. Remember that model.save() does not automatically call full_clean().
+### Q8. Why use both form validation and constraints?
+**Answer:** Forms provide friendly feedback before saving. Constraints protect the database against invalid writes from other code paths or concurrent requests.
 
-## Project viva — Data Integrity Management System
+### Q9. What is ValidationError?
+**Answer:** It is Django's structured exception for validation failures. Forms and model validation can capture it and display useful errors.
 
-1. What problem does it solve?
-2. Which validation or authentication APIs are used?
-3. How are invalid values rejected?
-4. How are credentials handled safely?
-5. How are access restrictions verified?
-6. What test cases did you run?
-7. What would you improve for production?
+### Q10. What is a race condition in uniqueness checks?
+**Answer:** Two requests can check that a value is unused at nearly the same time and both attempt to insert it. A database unique constraint is the final protection.
 
-## Rapid revision
+## 2. Debugging and scenario questions
 
-- **1.** Identify the business rules that must always hold.
-- **2.** Add field validators for individual field values.
-- **3.** Add a UniqueConstraint for unique business identifiers.
-- **4.** Add a CheckConstraint for a database-level condition.
-- **5.** Override clean() for model-wide business validation where appropriate.
-- **6.** Call full_clean() explicitly in the demonstration before save.
-- **7.** Test duplicate and invalid values.
-- **8.** Explain why database constraints are still important.
+### Q11. save() stores invalid model data even though clean() exists.
+**Answer:** save() does not automatically call full_clean(). Call validation deliberately in the appropriate application workflow and enforce critical invariants with database constraints.
 
-## Readiness checklist
-- [ ] Explain the concept.
-- [ ] Explain the security implications.
-- [ ] Demonstrate valid and invalid workflows.
-- [ ] Explain authentication versus authorization.
-- [ ] Present Data Integrity Management System without exposing secrets.
+### Q12. Form rejects duplicate SKU but shell insert succeeds.
+**Answer:** The uniqueness rule may exist only in the form. Add a database UniqueConstraint or unique field so all write paths are protected.
+
+### Q13. CheckConstraint fails during migration.
+**Answer:** Inspect existing data for rows that violate the new rule, confirm the condition and database support, then plan a safe data cleanup/migration before applying the constraint.
+
+### Q14. Two users submit the same unique value simultaneously.
+**Answer:** Keep the database uniqueness constraint and handle IntegrityError safely. Application-level validation alone cannot guarantee uniqueness under concurrency.
+
+## 3. Practical demonstration
+
+Be prepared to:
+1. Add a field validator.
+2. Add a form clean method.
+3. Add model clean().
+4. Call full_clean() deliberately.
+5. Add UniqueConstraint.
+6. Add CheckConstraint.
+7. Test valid and invalid data.
+8. Explain why the database remains the final integrity boundary.
+
+## 4. Readiness checklist
+
+- [ ] I can distinguish validation and constraints.
+- [ ] I can explain clean() and full_clean().
+- [ ] I can use UniqueConstraint and CheckConstraint.
+- [ ] I understand that save() does not automatically call full_clean().
+- [ ] I can explain race conditions and IntegrityError.
+- [ ] I can demonstrate Data Integrity Management System.
+
+**Related notes:** [Day 45 class notes](day_45_notes.md)
