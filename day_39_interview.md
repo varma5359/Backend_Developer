@@ -71,3 +71,29 @@ Before the interview, be able to:
 - [ ] I can present Student Registration Form with real evidence.
 
 **Readiness rule:** If you cannot reproduce the demonstration, return to the corresponding class notes, repeat the steps and record the output.
+## Additional technical and scenario questions
+
+### Q5. What is a bound form?
+**Answer:** A form with submitted data attached, such as StudentForm(request.POST), which can be validated.
+
+### Q6. What does cleaned_data contain?
+**Answer:** Validated Python values after form.is_valid() succeeds.
+
+### Q7. What is a widget?
+**Answer:** It controls how a form field is rendered in HTML, such as a text input or select.
+
+### Q8. What is the difference between clean_fieldname() and clean()?
+**Answer:** clean_fieldname validates one field. clean() validates rules involving multiple fields.
+
+### Q9. Why explicitly list ModelForm fields?
+**Answer:** It ensures only approved fields are exposed and prevents newly added model fields from becoming editable automatically.
+
+### Q10. What does save(commit=False) do?
+**Answer:** It returns an unsaved model instance so the view can assign server-controlled values before saving.
+
+### Q11. Scenario: update creates a duplicate record.
+**Answer:** Pass the existing model object using instance=existing_object when constructing the ModelForm.
+
+### Q12. Scenario: invalid form errors disappear.
+**Answer:** The view probably created a new unbound form. Render the same bound form instance after validation fails.
+
