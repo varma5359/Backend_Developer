@@ -336,7 +336,7 @@ Build a small practical demonstration of today's topic inside the Student Portal
 7. Test an invalid or unexpected case.
 8. Fix any error.
 9. Record evidence.
-10. Explain the code and result to the trainer.
+10. Write a short explanation of the code and result in your own words. Compare it with the expected behavior in this lesson.
 
 ### Acceptance criteria
 
@@ -361,7 +361,7 @@ Change one small behavior and predict the result before running it. Do not intro
 
 ## 14. AI-assisted implementation guide
 
-Use the AI mentor as a teaching assistant, not as a code generator that hides the learning.
+First attempt each step using the lesson. If you are still stuck, an optional AI learning assistant can give hints; it must not replace your own implementation and verification.
 
 | Level | What to ask | What the learner must do |
 |---|---|---|
@@ -492,13 +492,13 @@ What does an unmatched URL normally produce?
 - [ ] I submitted source files and evidence.
 - [ ] I answered the interview questions and reviewed the MCQs.
 
-## 18. Trainer validation
+## 18. Independent completion test
 
-Do not mark the day complete just because code exists. Ask the student to:
-1. Demonstrate the feature.
-2. Explain the flow.
+Do not mark the day complete just because code exists. Complete every check yourself:
+1. Demonstrate the feature in the browser or terminal.
+2. Explain the request or execution flow without reading the notes.
 3. Change one small part independently.
-4. Predict the result before running.
-5. Diagnose one controlled mistake.
+4. Predict the result before running the change, then compare your prediction.
+5. Diagnose and fix one controlled mistake, such as a misspelled URL, setting or file path.
 
 **Next lesson:** Day 31 — Django Views: Function-Based Views and Request-Response Cycle
