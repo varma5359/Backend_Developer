@@ -973,3 +973,18 @@ For one POST endpoint, demonstrate that a valid CSRF token does not permit an un
 
 The endpoint must still enforce its own authentication, permission and validation rules.
 
+
+## 54. Security review questions
+
+For each state-changing view, verify:
+- The HTTP method is restricted.
+- CSRF middleware remains enabled.
+- The template includes a token.
+- Authentication is required when appropriate.
+- Authorization is checked on the server.
+- Object ownership is verified.
+- Submitted values are validated.
+- Database constraints protect critical rules.
+- User-facing errors are safe.
+- Automated tests cover denied requests.
+
