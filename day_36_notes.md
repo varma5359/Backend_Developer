@@ -980,3 +980,7 @@ Write a short admin access policy for HR Staff. List the exact model permissions
 ## 62. Final reviewer prompt
 
 Ask another learner to sign in with the HR Staff test account and attempt one allowed action and one denied action. Record the result and confirm that the backend permission—not only a hidden button—controls access.
+
+## 63. Final readiness statement
+
+Do not mark admin configuration complete until an ordinary staff account has been tested, restricted permissions have been verified and sensitive fields are not exposed in the admin interface.
