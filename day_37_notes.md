@@ -367,7 +367,7 @@ D. Only in templates
 ### Q1. Explain today's concept.
 **Answer:** The Django ORM lets a developer work with database records through Python models and QuerySets rather than writing SQL for every operation. A QuerySet represents a database query. Many QuerySets are lazy: Django builds the query first and sends it to the database when results are needed. The ORM does not remove the need to understand SQL, indexes or query performance.
 
-**Follow-up:** Explain it using the Student Portal example.
+**Follow-up:** Explain it using the Employee model example from Day 34.
 
 ### Q2. Which model, field, command or query is important?
 **Answer:** `profiles/models.py`, `Django shell via manage.py`. Describe the responsibility and the data behavior.
