@@ -76,12 +76,25 @@ Phase 3 (Days 27–41) has received a first complete documentation revision pass
 
 **Readiness status:** Documentation and reference-project runtime checks passed in GitHub Actions. The reference project is in [phase3_reference/](phase3_reference/). A real beginner usability test on a learner's Windows setup is still required before Phase 3 can be certified as fully mentor-free. Use the [Phase 3 Beginner Usability Pilot Checklist](PHASE_3_BEGINNER_PILOT_CHECKLIST.md) to run that test. See [PHASE_3_SELF_LEARNING_AUDIT.md](PHASE_3_SELF_LEARNING_AUDIT.md) for the day-by-day findings and validation limits.
 
+## Django Phase 4 self-learning revision
+
+Days 42–45 have received a self-learning documentation revision. The work is on the `phase-4-self-learning-revision` branch. See [PHASE_4_SELF_LEARNING_AUDIT.md](PHASE_4_SELF_LEARNING_AUDIT.md) for the day-by-day scope, continuity decisions and validation limitations.
+
+| Day | Topic | Class notes | Interview guide |
+|---:|---|---|---|
+| 42 | CRUD operations | [Notes](day_42_notes.md) | [Interview](day_42_interview.md) |
+| 43 | Advanced Django ORM | [Notes](day_43_notes.md) | [Interview](day_43_interview.md) |
+| 44 | Query optimization | [Notes](day_44_notes.md) | [Interview](day_44_interview.md) |
+| 45 | Database constraints and validation | [Notes](day_45_notes.md) | [Interview](day_45_interview.md) |
+
+**Readiness status:** Days 42–45 documentation is revised. Static Markdown checks are being added to CI. The new Day 43–45 Django code has not yet been executed as an integrated application in a clean Windows learner environment. A beginner usability pilot is also pending. This is not a mentor-free certification.
+
 ## Remaining phases
 
 | Phase | Days | Module | Authoring status |
 |---|---:|---|---|
 | 3 | 27–41 | Django fundamentals | Documentation and reference runtime passed; beginner usability test pending |
-| 4 | 42–54 | Django ORM, forms and authentication | Existing files; quality review and revision pending |
+| 4 | 42–54 | Django ORM, forms and authentication | Days 42–45 documentation revised; Days 46–54 pending; runtime and beginner validation pending |
 | 5 | 55–69 | REST API development with Django REST Framework | Existing files; quality review and revision pending |
 | 6 | 70–81 | Advanced backend development | Existing files; quality review and revision pending |
 | 7 | 82–88 | Testing, deployment and production readiness | Existing files; quality review and revision pending |
