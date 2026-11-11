@@ -965,3 +965,19 @@ A reviewer should be able to answer:
 
 Revise any field whose purpose cannot be explained.
 
+
+## 56. Explain-back assessment
+
+Without reading the notes, explain:
+1. What a model class represents.
+2. What a model instance represents.
+3. How to select CharField versus TextField.
+4. Why money uses DecimalField.
+5. Why phone numbers are text.
+6. How null differs from blank.
+7. How default works.
+8. How unique is enforced.
+9. What choices provide.
+10. What a ForeignKey represents.
+11. What a primary key does.
+12. Why __str__ is useful.
