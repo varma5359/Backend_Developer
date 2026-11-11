@@ -72,9 +72,9 @@ The initial Phase 3 audit and revision log are maintained in [PHASE_3_SELF_LEARN
 
 ## Django Phase 3 quality revision
 
-Phase 3 (Days 27–41) class notes and interview guides have been revised as a connected beginner-first sequence. The approved daily topics and mini-project titles are preserved. The sequence builds one Student Portal across project setup, settings, routing, views, templates, models, migrations, admin, ORM, relationships, forms, validation and final integration. Day 41 includes the cumulative Django Student Management Website assessment and a 100-mark rubric.
+Phase 3 (Days 27–41) is undergoing a self-learning quality revision. The initial audit found trainer-dependent wording, inconsistent project examples, weak coverage in Day 38 and code-formatting issues in the forms lessons. Revisions are being applied on the `phase-3-self-learning-audit` branch. Day 38 has been substantially rewritten; Days 27–41 have had self-practice language and targeted continuity fixes applied. The existing Employee model exercises (Days 34–37) and the Student / Department / Course relationship workflow (Days 38–41) are being made explicit within the same `profiles` app.
 
-**Scope note:** This status applies to Phase 3 only. It does not mean later phases have been quality-reviewed or completed.
+**Readiness status:** Not yet approved for a mentor-free claim. The integrated project still requires clean-environment runtime verification and a beginner usability test. See [PHASE_3_SELF_LEARNING_AUDIT.md](PHASE_3_SELF_LEARNING_AUDIT.md) for the day-by-day findings and revision log.
 
 ## Remaining phases
 
