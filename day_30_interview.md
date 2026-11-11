@@ -71,3 +71,29 @@ Before the interview, be able to:
 - [ ] I can present Multi-Page Routing Application with real evidence.
 
 **Readiness rule:** If you cannot reproduce the demonstration, return to the corresponding section in [Day 30 class notes](day_30_notes.md), repeat the steps and record the output.
+## Additional technical and scenario questions
+
+### Q5. What is URL dispatching?
+**Answer:** Django checks URL patterns in order and selects the view associated with the first matching route.
+
+### Q6. What does include() do?
+**Answer:** It delegates part of URL matching to another URL configuration, commonly an app-level urls.py.
+
+### Q7. What is the difference between str and path converters?
+**Answer:** str matches a non-empty path segment without slash characters. path can capture a path containing slashes.
+
+### Q8. What is reverse URL lookup?
+**Answer:** It generates a URL from a named route and its required arguments, avoiding hard-coded path strings.
+
+### Q9. What is a URL namespace?
+**Answer:** A namespace separates route names from different apps and prevents name collisions.
+
+### Q10. Scenario: NoReverseMatch appears.
+**Answer:** Check the route name, namespace, required arguments and whether the app URL configuration is included.
+
+### Q11. Scenario: /students/abc/ returns 404.
+**Answer:** If the route uses an int converter, abc does not match. The converter rejects the path segment and another route must match or a 404 is returned.
+
+### Q12. Scenario: query parameter is missing in the view.
+**Answer:** Read query-string values from request.GET, not request.POST.
+
