@@ -28,7 +28,7 @@ A junior developer must understand both the Python code and the underlying relat
 ## 3. Mental model
 
 ```text
-Student Portal requirement
+Employee Portal requirement
         |
         v
 Django model / admin / ORM
@@ -191,6 +191,24 @@ System check identified no issues (0 silenced).
 
 A system check does not prove every query or relationship is correct. Run the shell/admin exercises above.
 
+
+## 10A. Expected browser and terminal result
+
+After createsuperuser, Django asks for a username, email address and password. When the prompts complete successfully, the terminal reports that the superuser was created. The password is not displayed.
+
+After runserver, the terminal reports that the development server is running at http://127.0.0.1:8000/. Open http://127.0.0.1:8000/admin/ and sign in with the superuser you just created.
+
+Expected browser observations:
+
+1. The admin home page loads after sign-in.
+2. The Profiles app section contains the Employee model.
+3. Opening Employee shows the columns configured in list_display: employee code, full name, email, salary and active status.
+4. Search finds an employee when you search for a known code, name or email fragment.
+5. The active-status filter narrows the list when both active and inactive records exist.
+6. The Add Employee form allows a new record to be entered and saved.
+
+If there are no Employee rows yet, the list is empty; that is not an admin registration failure. Add a sample record to verify the list.
+
 ## 11. Troubleshooting
 
 | Symptom | Likely reason | What to inspect |
@@ -206,14 +224,14 @@ A system check does not prove every query or relationship is correct. Run the sh
 
 ## 12. Industry scenario
 
-A college portal stores students, departments, courses and student-specific profiles. The institute needs reliable links between records. A relationship design error can allow orphaned records, duplicate data or invalid associations.
+An HR team maintains employee records. Authorized HR staff must search employees, filter active and inactive employees, and update records without granting every staff member unrestricted access.
 
 Discuss:
-- Which record owns the foreign key?
-- Can one student belong to multiple departments?
-- Can a course contain many students?
-- What should happen if a department is deleted?
-- What constraints should the database enforce?
+- Which employee fields should appear in the list?
+- Which fields are useful for search?
+- Which fields are useful for filters?
+- Why should an HR assistant not automatically become a superuser?
+- What should happen when a required field or unique email is invalid?
 
 ## 13. Approved mini-project — Employee Admin Manager
 
