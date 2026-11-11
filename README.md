@@ -5,7 +5,7 @@
 **Duration:** 96 learning days  
 **Audience:** Freshers and candidates with 0–1 year of experience
 
-This index tracks the detailed trainer manuscripts and interview guides. The syllabus file is the authority for the approved topics, projects and phase order.
+This index tracks the self-paced class notes and interview practice guides. The syllabus file is the authority for the approved topics, projects and phase order.
 
 ## Phase 1 — Python Programming Foundations (Days 1–12)
 
@@ -65,6 +65,10 @@ The class-note manuscripts for Days 13–25 have been rewritten as detailed, beg
 | 23–25 | Relational database design and SQL | Revised |
 
 **Important:** This status refers to the class-note manuscripts. The separate interview-guide files have not been quality-rewritten as part of this class-notes revision.
+
+## Django Phase 3 self-learning quality audit
+
+The initial Phase 3 audit and revision log are maintained in [PHASE_3_SELF_LEARNING_AUDIT.md](PHASE_3_SELF_LEARNING_AUDIT.md). The current revision work is on the `phase-3-self-learning-audit` branch. It is not a claim of final mentor-free readiness or runtime validation.
 
 ## Django Phase 3 quality revision
 
