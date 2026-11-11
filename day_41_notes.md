@@ -971,3 +971,19 @@ Choose one workflow and write a report with:
 - Known limitations.
 
 The report must be understandable to a developer who has not seen your code before.
+
+## 42. Final integration handover
+
+Write a handover note for another developer.
+
+Include:
+- How to create the environment.
+- Which settings must be checked.
+- How to run migrations.
+- How to start the server.
+- Which URL demonstrates the feature.
+- How to run tests.
+- Which known limitations remain.
+
+A feature is not ready for handover if another developer must guess the setup or expected behavior.
+
