@@ -76,4 +76,4 @@ Be ready to:
 - [ ] I can explain an edge case.
 - [ ] I can present Product Query Explorer.
 
-**Trainer note:** Ask the learner to predict the database result before executing a query or changing a relationship. The aim is to assess reasoning, not syntax memorization.
+**Self-practice:** Ask yourself to predict the database result before executing a query or changing a relationship. Use the actual query result to check your reasoning rather than memorizing syntax.
