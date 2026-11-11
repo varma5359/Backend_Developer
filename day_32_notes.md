@@ -960,3 +960,22 @@ For each case, record the visible result and the file that needs correction.
 
 Do not solve a template error by moving complex database logic into HTML.
 
+
+## 56. Template review rubric
+
+Rate the page against these checks:
+- Correct base template.
+- Correct child block names.
+- Correct context variable names.
+- Correct empty-state behavior.
+- Correct route names.
+- Correct static paths.
+- Safe rendering of user text.
+- Useful heading structure.
+- Accessible form labels.
+- Clear error presentation.
+- No passwords or tokens in the HTML.
+- No complex database queries in the template.
+
+Fix every failed check before submission.
+
