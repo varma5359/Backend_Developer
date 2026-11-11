@@ -744,7 +744,7 @@ path(
     "password/reset/",
     auth_views.PasswordResetView.as_view(
         template_name="profiles/password_reset.html",
-        email_template_name="profiles/password_reset_email.html",
+        email_template_name="profiles/password_reset_email.txt",
         subject_template_name="profiles/password_reset_subject.txt",
         success_url="/password/reset/done/",
     ),
@@ -863,11 +863,11 @@ Password reset for your Student Portal account
 
 Keep the subject concise.
 
-## 46. Create the email body template
+## 46. Create the plain-text email body template
 
 Create:
 
-profiles/templates/profiles/password_reset_email.html
+profiles/templates/profiles/password_reset_email.txt
 
 ~~~text
 Hello,
@@ -968,7 +968,7 @@ profiles/
         ├── password_change_done.html
         ├── password_reset.html
         ├── password_reset_done.html
-        ├── password_reset_email.html
+        ├── password_reset_email.txt
         ├── password_reset_subject.txt
         ├── password_reset_confirm.html
         └── password_reset_complete.html
@@ -1369,7 +1369,7 @@ Students sometimes forget their portal password. The application needs a secure 
 | profiles/templates/profiles/password_change_done.html | Change confirmation |
 | profiles/templates/profiles/password_reset.html | Reset request form |
 | profiles/templates/profiles/password_reset_done.html | Neutral request confirmation |
-| profiles/templates/profiles/password_reset_email.html | Reset email body |
+| profiles/templates/profiles/password_reset_email.txt | Reset email body |
 | profiles/templates/profiles/password_reset_subject.txt | Email subject |
 | profiles/templates/profiles/password_reset_confirm.html | New password form |
 | profiles/templates/profiles/password_reset_complete.html | Completion page |
