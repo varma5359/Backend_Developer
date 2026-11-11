@@ -864,3 +864,174 @@ Submit:
 - Output of python manage.py check.
 - Your settings review table.
 - A short explanation of why secrets should not be committed.
+
+---
+
+# Practice Workbook — Settings and Middleware
+
+## 44. Configuration map
+
+Create a table with these columns:
+- Setting name.
+- Current value type.
+- What it controls.
+- Which lesson uses it.
+- Security or deployment consideration.
+
+Include:
+- DEBUG.
+- SECRET_KEY.
+- ALLOWED_HOSTS.
+- INSTALLED_APPS.
+- MIDDLEWARE.
+- TEMPLATES.
+- DATABASES.
+- LANGUAGE_CODE.
+- TIME_ZONE.
+- USE_TZ.
+- STATIC_URL.
+- DEFAULT_AUTO_FIELD.
+
+Do not copy secret values into the worksheet.
+
+## 45. Debug versus production scenario
+
+A developer deploys the website publicly and leaves DEBUG=True.
+
+Explain the risk.
+
+Expected answer:
+- Detailed error pages may reveal internal implementation information.
+- Debug pages are not appropriate for public users.
+- Production should use DEBUG=False and safe error handling.
+- The real deployment host names must be configured in ALLOWED_HOSTS.
+
+## 46. Middleware order exercise
+
+Place these components in a sensible generated-project order:
+- SessionMiddleware.
+- AuthenticationMiddleware.
+- MessageMiddleware.
+- CsrfViewMiddleware.
+
+Then inspect the actual generated settings.py.
+
+The goal is not to memorize a random list. Understand dependencies:
+- Authentication needs session state.
+- Messages commonly use session support.
+- CSRF protection must be enabled for unsafe browser requests.
+
+## 47. App registration exercise
+
+For each item, decide whether it belongs in INSTALLED_APPS or MIDDLEWARE.
+
+| Item | Expected location |
+|---|---|
+| django.contrib.auth | INSTALLED_APPS |
+| AuthenticationMiddleware | MIDDLEWARE |
+| django.contrib.sessions | INSTALLED_APPS |
+| SessionMiddleware | MIDDLEWARE |
+| profiles.apps.ProfilesConfig | INSTALLED_APPS |
+| MessageMiddleware | MIDDLEWARE |
+
+## 48. Template configuration exercise
+
+Explain each item:
+- BACKEND.
+- DIRS.
+- APP_DIRS.
+- context_processors.
+
+Expected understanding:
+- BACKEND selects the template engine.
+- DIRS lists project-level template directories.
+- APP_DIRS enables app-level template discovery.
+- context_processors add common values to template context.
+
+## 49. Secret management scenario
+
+A developer commits settings.py containing SECRET_KEY and database password.
+
+What should happen?
+
+Expected response:
+1. Remove secrets from the repository.
+2. Treat exposed secrets as compromised.
+3. Rotate the secret and database credential.
+4. Load future values from protected environment configuration or a secret manager.
+5. Review repository history and access.
+6. Do not assume deleting the latest line removes the value from Git history.
+
+## 50. Static file scenario
+
+CSS works on the developer's machine but not after deployment.
+
+Check:
+1. Static URL.
+2. Static source folders.
+3. App registration.
+4. Static file discovery.
+5. collectstatic process.
+6. Production web server or static storage configuration.
+7. Browser network response.
+
+Do not assume runserver behavior proves production configuration.
+
+## 51. Database configuration scenario
+
+The application works locally but connects to the wrong database in another environment.
+
+Check:
+- Active settings module.
+- DATABASES value.
+- Environment variables.
+- Current working directory.
+- Which process started the server.
+- Which database the migration command used.
+
+Never run a migration until you know which database is configured.
+
+## 52. Middleware troubleshooting drill
+
+Temporarily remove one middleware entry in a local practice copy.
+
+Observe the relevant feature failure, then restore the setting.
+
+Do not perform this experiment on a public or production system.
+
+For each middleware, write:
+- What feature depends on it.
+- What symptom appears if it is missing.
+- Where it appears in MIDDLEWARE.
+
+## 53. Self-check questions
+
+1. Which setting controls debug details?
+2. Which setting controls accepted hosts?
+3. Why is SECRET_KEY private?
+4. What is the difference between app registration and middleware?
+5. Why does AuthenticationMiddleware depend on sessions?
+6. What does APP_DIRS do?
+7. What does STATIC_URL control?
+8. Why should production settings be tested separately?
+
+## 54. Answers
+
+1. DEBUG.
+2. ALLOWED_HOSTS.
+3. It is used for cryptographic signing.
+4. Apps register project functionality; middleware wraps request/response processing.
+5. Session state helps identify the authenticated user.
+6. It enables app-level template discovery.
+7. It defines the URL prefix for static assets.
+8. Local development behavior can differ from deployment configuration.
+
+## 55. Final workbook submission
+
+Submit:
+- Configuration map.
+- Middleware ordering explanation.
+- App versus middleware classification.
+- Secret-handling scenario answer.
+- Static-file troubleshooting checklist.
+- Database environment verification checklist.
