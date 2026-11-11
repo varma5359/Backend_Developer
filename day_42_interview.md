@@ -1,60 +1,71 @@
-# Day 42: Interview Questions — CRUD Operations: Create, Read, Update and Delete
+# Day 42: Interview Guide — CRUD Operations: Create, Read, Update and Delete
 
-**Pathway:** Python Backend Developer Career Pathway (Django)  
-**Phase:** 4 — Django ORM, Forms and Authentication  
-**Related notes:** [Day 42 class notes](day_42_notes.md)  
-**Approved mini-project:** Employee CRUD Application
+**Related class notes:** [Day 42 notes](day_42_notes.md)  
+**Approved mini-project:** Employee CRUD Application  
+**Level:** Beginner to Intermediate
 
-## Core technical questions
+## 1. Core questions
 
-### Q1. Explain crud operations: create, read, update and delete.
-**Answer:** CRUD describes the four basic operations performed on stored records. Django views and forms can create a record, retrieve records, update an existing record and delete a record. A record should be identified using a stable primary key, and delete operations should be protected by authentication and authorization.
+### Q1. What does CRUD mean?
+**Answer:** CRUD means Create, Read, Update and Delete. These are the four basic operations used to manage records in a database-backed application.
 
-### Q2. Which methods or files are involved?
-**Answer:** profiles/views.py, profiles/urls.py. Explain the responsibility of each.
+### Q2. How does Django create a record?
+**Answer:** A view receives a request, validates submitted data through a form, and saves a model instance. A ModelForm can use form.save() after is_valid() returns True.
 
-### Q3. What is one common mistake?
-**Answer:** Create adds one record. Check the actual database state and request behavior rather than assuming a command worked.
+### Q3. What is the difference between GET and POST in a CRUD workflow?
+**Answer:** GET normally reads or displays data. POST submits data that changes server state, such as creating, updating or deleting a record.
 
-### Q4. How do you verify the implementation?
-**Answer:** Use sample records, execute the relevant view or query, inspect the database and test missing or invalid cases.
+### Q4. Why use get_object_or_404()?
+**Answer:** It retrieves an object matching the lookup or returns an HTTP 404 response if no matching object exists. It avoids an unhandled DoesNotExist exception in the view.
 
-### Q5. What should be considered before production?
-**Answer:** Authentication, authorization, data integrity, safe handling of destructive actions, query performance and test coverage.
+### Q5. Why should delete use POST and a confirmation page?
+**Answer:** Deletion changes data and should not be triggered by a safe GET request. A confirmation page helps prevent accidental deletion; the POST endpoint must still validate authorization and CSRF.
 
-## Scenario questions
+### Q6. What does ModelForm.save(commit=False) do?
+**Answer:** It creates an unsaved model instance so the view can assign server-controlled fields before calling save().
 
-### Q6. A user reports an incorrect record or slow page. How do you investigate?
-**Suggested answer:** Reproduce with known data, inspect the ORM query and related-object access, check affected records, measure query count and verify the result after a focused correction.
+### Q7. Why should the view not trust a primary key alone?
+**Answer:** A user may change the ID in the URL. The view must check that the user is allowed to access or modify that specific record.
 
-### Q7. How would you explain your implementation to another developer?
-**Suggested answer:** State the requirement, identify the view/model/query, explain the data change or query behavior, show test evidence and mention limitations.
+### Q8. What is the Post/Redirect/Get pattern?
+**Answer:** After a valid POST, the view redirects to a GET page. This reduces accidental duplicate submissions when a user refreshes the result page.
 
-## Project viva — Employee CRUD Application
+## 2. Debugging and scenario questions
 
-1. What does the project do?
-2. Which model and ORM methods are used?
-3. How are invalid inputs handled?
-4. How do you verify the database result?
-5. What security or performance risk did you consider?
-6. What tests did you run?
-7. What would you improve?
+### Q9. Update view returns 404.
+**Answer:** Check the URL converter, view parameter name, record primary key and database. Confirm the record exists in the active database.
 
-## Rapid revision
+### Q10. A form saves invalid data.
+**Answer:** Check that the view calls is_valid() before save(), and that field and form-wide validation rules are implemented.
 
-- **1.** Create a list view that retrieves employee records.
-- **2.** Create a form view for adding an employee.
-- **3.** Use get_object_or_404() to retrieve a record for editing.
-- **4.** Pass instance=employee to ModelForm so it updates the existing record.
-- **5.** Create a delete confirmation page and use POST for deletion.
-- **6.** Add URL patterns with an integer primary-key converter.
-- **7.** Test create, read, update and delete operations.
-- **8.** Verify database state after every operation.
+### Q11. A user can delete another employee by changing the URL ID.
+**Answer:** Add authentication, permission and object ownership checks in the delete view. Hiding a delete button is not enough.
 
-## Readiness checklist
-- [ ] Explain the concept.
-- [ ] Explain the important methods.
-- [ ] Demonstrate the project.
-- [ ] Verify the database behavior.
-- [ ] Explain one failure case.
-- [ ] Present evidence.
+### Q12. Refreshing the page creates duplicate records.
+**Answer:** The view may render a success page directly after POST. Redirect after a successful save and use an idempotency/uniqueness rule where the business operation requires it.
+
+### Q13. A delete link removes a record through GET.
+**Answer:** Replace it with a POST form containing a CSRF token and restrict the delete view to POST.
+
+## 3. Practical demonstration
+
+Be prepared to demonstrate:
+1. Create an employee.
+2. List employees.
+3. Open one employee detail.
+4. Update an employee.
+5. Submit invalid form data.
+6. Request a missing primary key.
+7. Confirm deletion.
+8. Prove that unauthorized deletion is blocked.
+
+## 4. Readiness checklist
+
+- [ ] I can explain each CRUD operation.
+- [ ] I can explain ModelForm validation and save.
+- [ ] I can explain GET versus POST.
+- [ ] I can explain safe deletion.
+- [ ] I can explain object ownership.
+- [ ] I can demonstrate Employee CRUD Application.
+
+**Related notes:** [Day 42 class notes](day_42_notes.md)
