@@ -66,6 +66,10 @@ The class-note manuscripts for Days 13–25 have been rewritten as detailed, beg
 
 **Important:** This status refers to the class-note manuscripts. The separate interview-guide files have not been quality-rewritten as part of this class-notes revision.
 
+## Django beginner-quality revision — in progress
+
+The new branch `django-beginner-quality-revision` contains expanded self-learning notes for Days 42–45. The audit, explanation order, release criteria and remaining work are tracked in [DJANGO_BEGINNER_QUALITY_REVISION.md](DJANGO_BEGINNER_QUALITY_REVISION.md). Days 27–41 are being clarity-audited; Days 46–54 still require full beginner-first revision. This branch is not yet a completed release and has not been merged into `main`.
+
 ## Django Phase 3 self-learning quality audit
 
 The initial Phase 3 audit and revision log are maintained in [PHASE_3_SELF_LEARNING_AUDIT.md](PHASE_3_SELF_LEARNING_AUDIT.md). The current revision work is on the `phase-3-self-learning-audit` branch. It is not a claim of final mentor-free readiness or runtime validation.
@@ -81,7 +85,7 @@ Phase 3 (Days 27–41) has received a first complete documentation revision pass
 | Phase | Days | Module | Authoring status |
 |---|---:|---|---|
 | 3 | 27–41 | Django fundamentals | Documentation and reference runtime passed; beginner usability test pending |
-| 4 | 42–54 | Django ORM, forms and authentication | Existing files; quality review and revision pending |
+| 4 | 42–54 | Django ORM, forms and authentication | Days 42–45 revised on `django-beginner-quality-revision`; Days 46–54 pending |
 | 5 | 55–69 | REST API development with Django REST Framework | Existing files; quality review and revision pending |
 | 6 | 70–81 | Advanced backend development | Existing files; quality review and revision pending |
 | 7 | 82–88 | Testing, deployment and production readiness | Existing files; quality review and revision pending |
