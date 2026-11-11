@@ -192,7 +192,7 @@ System check identified no issues (0 silenced).
 A system check does not prove every query or relationship is correct. Run the shell/admin exercises above.
 
 
-## 10A. Expected browser and terminal result
+## 11. Expected browser and terminal result
 
 After createsuperuser, Django asks for a username, email address and password. When the prompts complete successfully, the terminal reports that the superuser was created. The password is not displayed.
 
@@ -209,7 +209,7 @@ Expected browser observations:
 
 If there are no Employee rows yet, the list is empty; that is not an admin registration failure. Add a sample record to verify the list.
 
-## 11. Troubleshooting
+## 12. Troubleshooting
 
 | Symptom | Likely reason | What to inspect |
 |---|---|---|
@@ -222,7 +222,7 @@ If there are no Employee rows yet, the list is empty; that is not an admin regis
 | RelatedObjectDoesNotExist | One-to-one object not created | Create the related profile before accessing it |
 | Query returns unexpected data | Wrong lookup or relationship | Inspect filters and actual records |
 
-## 12. Industry scenario
+## 13. Industry scenario
 
 An HR team maintains employee records. Authorized HR staff must search employees, filter active and inactive employees, and update records without granting every staff member unrestricted access.
 
@@ -233,7 +233,7 @@ Discuss:
 - Why should an HR assistant not automatically become a superuser?
 - What should happen when a required field or unique email is invalid?
 
-## 13. Approved mini-project — Employee Admin Manager
+## 14. Approved mini-project — Employee Admin Manager
 
 ### Objective
 Build the admin/query feature described in today's lesson using the existing Employee model in the profiles app.
@@ -268,7 +268,7 @@ Build the admin/query feature described in today's lesson using the existing Emp
 ### Optional extension
 Add a small query or admin improvement and explain the data behavior before and after.
 
-## 14. AI-assisted learning prompts
+## 15. AI-assisted learning prompts
 
 **Planning**
 ```text
@@ -288,7 +288,7 @@ Here is my model, migration state, exact ORM query and complete traceback.
 Explain the likely cause and smallest safe correction. Do not delete migrations.
 ```
 
-## 15. Daily MCQs
+## 16. Daily MCQs
 
 ### Q1. Why register a model with admin?
 
@@ -335,7 +335,7 @@ D. Only when they can search
 
 **Answer: B.** Least privilege limits the impact of mistakes or compromised accounts.
 
-## 16. Interview preparation
+## 17. Interview preparation
 
 ### Q1. Explain today's concept.
 **Answer:** Django admin is an internal data-management interface generated from registered models. It helps trusted staff inspect and manage records without building every management screen from scratch. It is not intended to replace the customer-facing application. The admin site requires authentication and permissions; only authorized staff should access it.
@@ -354,7 +354,7 @@ D. Only when they can search
 
 **Answer:** System checks do not execute every data operation or prove the business relationship is correct.
 
-## 17. Completion checklist
+## 18. Completion checklist
 
 - [ ] I can explain the business rule.
 - [ ] I can explain the model/query/relationship.
@@ -366,7 +366,7 @@ D. Only when they can search
 - [ ] I submitted code and evidence.
 - [ ] I can explain one data integrity concern.
 
-## 18. Independent completion test
+## 19. Independent completion test
 
 1. Create or query records without copying the entire example.
 2. Explain the file and data flow in your own words.
