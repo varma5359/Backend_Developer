@@ -762,3 +762,167 @@ Record:
 - Which model change it represents.
 
 Do not edit or delete migration files during the review.
+
+---
+
+# Deep Practice Workbook — Migration Review and Recovery Thinking
+
+## 44. Migration review scenario
+
+A developer adds a required department field to a model that already has 500 employee rows.
+
+Django asks how existing rows should receive a value.
+
+Why?
+
+The database cannot create a required non-null column for existing rows without deciding what value those records should contain.
+
+Possible strategies:
+- Supply a deliberate default.
+- Make the field temporarily optional, populate data, then make it required.
+- Use a data migration to assign values based on business rules.
+
+Do not choose an arbitrary default merely to silence the prompt.
+
+## 45. Safe staged migration
+
+A staged approach may be:
+1. Add the field as optional.
+2. Create and apply migration.
+3. Populate existing records with valid values.
+4. Verify no records remain incomplete.
+5. Change the field to required.
+6. Create and apply the next migration.
+7. Run tests.
+
+The correct approach depends on the actual business rules and database.
+
+## 46. Migration file reading exercise
+
+Open an initial migration.
+
+Identify:
+- Migration class.
+- dependencies.
+- operations.
+- CreateModel.
+- AddField.
+- AlterField.
+- AddConstraint.
+
+Write one sentence explaining each operation.
+
+## 47. SQL review exercise
+
+Run sqlmigrate for a migration.
+
+Identify:
+- CREATE TABLE.
+- ALTER TABLE.
+- CREATE INDEX.
+- UNIQUE constraint.
+- Foreign key.
+
+The exact SQL depends on the database backend.
+
+Do not edit generated SQL as a substitute for changing model definitions and migrations.
+
+## 48. Migration graph exercise
+
+A migration may depend on another app's migration.
+
+Draw:
+- App A migration.
+- App B migration.
+- Dependency arrow.
+- Which migration must be applied first.
+
+Explain why a foreign key can create migration dependencies.
+
+## 49. Migration conflict scenario
+
+Two developers create migrations on separate branches from the same previous migration.
+
+Both add a field.
+
+When merged, Django may report conflicting leaf migrations.
+
+A merge migration can depend on both branches and combine the graph.
+
+Before creating it:
+- Inspect both migration files.
+- Check whether operations conflict.
+- Check whether both are needed.
+- Run migrations from a clean database.
+- Test upgrade from an existing database copy.
+
+## 50. Database backup scenario
+
+A migration removes a column that contains important information.
+
+A Git commit cannot restore the deleted database values.
+
+A database backup or tested data migration strategy is required.
+
+Always separate:
+- Source-code history.
+- Database schema history.
+- Database record backup.
+
+## 51. Migration commands review
+
+| Command | Use |
+|---|---|
+| makemigrations | Generate migration files |
+| migrate | Apply or unapply migration operations |
+| showmigrations | Display migration state |
+| sqlmigrate | Display SQL for a migration |
+| migrate --plan | Preview planned migration operations |
+| makemigrations --check --dry-run | Check for model changes without migration files |
+
+## 52. Safe recovery decision tree
+
+If migration fails:
+1. Stop.
+2. Do not delete migration files.
+3. Do not reset the database.
+4. Read the full traceback.
+5. Check the active project and database.
+6. Inspect showmigrations.
+7. Inspect migration files and dependencies.
+8. Check whether the schema was changed manually.
+9. Back up data before repair.
+10. Test the repair on a copy.
+
+## 53. Self-check questions
+
+1. Why can adding a required field need a default?
+2. What is a data migration?
+3. What does a migration dependency mean?
+4. Why inspect sqlmigrate output?
+5. What is a merge migration?
+6. Why is deleting a migration file dangerous?
+7. What is the difference between Git history and database backup?
+8. What should be done before a risky schema change?
+
+## 54. Answers
+
+1. Existing rows need a value for the new required column.
+2. A migration that transforms existing records.
+3. One migration must be applied before another.
+4. To understand the database operations being applied.
+5. A migration that joins parallel migration branches.
+6. It can break migration history and existing environments.
+7. Git stores code; a database backup stores database state.
+8. Review, backup, test on a copy and plan rollback.
+
+## 55. Final migration report
+
+Choose one migration and report:
+- Model change.
+- Migration file.
+- Dependency.
+- SQL effect.
+- Applied state.
+- Validation performed.
+- Data safety consideration.
