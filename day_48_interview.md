@@ -1,59 +1,104 @@
-# Day 48: Interview Questions — Password Management, Password Reset and Secure Password Storage
+# Day 48: Interview Guide — Password Management, Password Reset and Secure Password Storage
 
-**Pathway:** Python Backend Developer Career Pathway (Django)  
-**Phase:** 4 — Django ORM, Forms and Authentication  
-**Related notes:** [Day 48 class notes](day_48_notes.md)  
-**Approved mini-project:** Password Recovery System
+**Related class notes:** [Day 48 notes](day_48_notes.md)  
+**Approved mini-project:** Password Recovery System  
+**Level:** Beginner to Intermediate
 
-## Core technical questions
+## How to use this guide
+Treat password questions as security questions. Explain the risk, the Django API and the safe workflow. Never use real credentials in interview demonstrations.
 
-### Q1. Explain password management, password reset and secure password storage.
-**Answer:** Django stores passwords using configured password hashers, not as readable plaintext. set_password() hashes a new password and check_password() verifies a candidate. Django includes password change and reset views/forms that can be configured with templates and email delivery.
+## 1. Core technical questions
 
-### Q2. Which Django APIs or settings are involved?
-**Answer:** Password API example, config/urls.py — built-in password views. Explain their role in the workflow.
+### Q1. Why should passwords be hashed?
+**Answer:** A database should not store the original readable password. Django stores an encoded password hash and verifies a submitted candidate against it. This reduces the impact of a database exposure compared with storing plain-text passwords.
 
-### Q3. What is a common security mistake?
-**Answer:** Trusting client-side checks, exposing credentials or failing to enforce server-side permissions. Explain the exact risk for this topic.
+### Q2. What is the difference between hashing and encryption?
+**Answer:** Hashing is designed to be one-way and is used for password verification. Encryption is reversible with the correct key and is used when the original data must be recovered.
 
-### Q4. How do you verify the implementation?
-**Answer:** Use local test accounts and data. Test both valid and denied cases and inspect the server-side response.
+### Q3. What is a salt?
+**Answer:** A salt is random data used as part of a password hashing process. It helps ensure that identical passwords do not produce identical stored hash values.
 
-### Q5. Why is security configuration environment-specific?
-**Answer:** Local development and production have different network and secret-management requirements. Production must use secure transport and protected configuration.
+### Q4. What does set_password() do?
+**Answer:** It prepares a password hash using Django's configured password hasher and places the encoded value on the user instance. The instance must then be saved to persist the change.
 
-## Scenario questions
+### Q5. What does check_password() do?
+**Answer:** It verifies a candidate password against the stored encoded value and returns a Boolean. It does not reveal or decrypt the original password.
 
-### Q6. A user can perform an action that should be restricted. What do you inspect?
-**Suggested answer:** Confirm the view has server-side authentication and authorization checks, inspect the user's permissions/group membership and test direct URL access.
+### Q6. Why is direct assignment to user.password unsafe?
+**Answer:** It bypasses Django's password-setting workflow and can store a raw value that cannot be verified through the normal authentication system. Use create_user(), set_password() or built-in forms.
 
-### Q7. How do you test safely?
-**Suggested answer:** Use fake users, local test data and test credentials. Never share a real password, reset token or session cookie.
+### Q7. What are password validators?
+**Answer:** They are configured rules that decide whether a proposed new password is acceptable. Django provides validators for minimum length, common passwords, numeric-only passwords and similarity to user attributes.
 
-## Project viva — Password Recovery System
+### Q8. What does validate_password() do?
+**Answer:** It runs the configured password validators and raises ValidationError when the candidate does not satisfy the policy.
 
-1. What problem does it solve?
-2. Which Django APIs are used?
-3. Which security settings matter?
-4. What happens for an invalid or unauthorized request?
-5. How did you test the workflow?
-6. What secrets did you keep out of Git?
-7. What would you improve for production?
+### Q9. What is the difference between password change and password reset?
+**Answer:** Password change is normally used by an authenticated user who can provide the current password. Password reset is used when the user cannot sign in and needs a time-limited recovery link.
 
-## Rapid revision
+### Q10. What does PasswordChangeForm validate?
+**Answer:** It checks the current password and validates the new password and confirmation using Django's password validation behavior.
 
-- **1.** Explain password hashing and why plaintext storage is unsafe.
-- **2.** Use set_password() when setting a password programmatically.
-- **3.** Use check_password() to verify a candidate password.
-- **4.** Inspect Django's password validation settings.
-- **5.** Understand built-in password change and reset views.
-- **6.** Configure email backend for local development and production separately.
-- **7.** Use generic user-facing reset messages to avoid account enumeration.
-- **8.** Test valid, invalid and expired reset workflows.
+### Q11. What does PasswordResetView do?
+**Answer:** It accepts an account email and starts the reset workflow. Django generates reset instructions using a time-sensitive token and sends the email through the configured email backend.
 
-## Readiness checklist
-- [ ] Explain the feature.
-- [ ] Explain the security risks.
-- [ ] Demonstrate positive and negative cases.
-- [ ] Explain server-side enforcement.
-- [ ] Present Password Recovery System without exposing secrets.
+### Q12. What does the console email backend do?
+**Answer:** It prints email content to the development terminal rather than delivering it to a real mailbox. It is useful for local testing only.
+
+### Q13. What is a password reset token?
+**Answer:** It is a time-sensitive value used by Django to validate a password reset link. Anyone who obtains a valid link may be able to reset the account, so the link must be protected.
+
+### Q14. Why should reset responses not reveal whether an email exists?
+**Answer:** Revealing account existence allows attackers to enumerate registered email addresses. A neutral confirmation message avoids confirming whether an eligible account was found.
+
+### Q15. What is update_session_auth_hash() used for?
+**Answer:** It updates the current session's authentication hash after a password change so the current user can remain signed in. Custom password-change implementations must handle this deliberately.
+
+## 2. Debugging questions
+
+### Q16. Password reset email does not appear.
+**Answer:** Check EMAIL_BACKEND, runserver terminal, user email address, account eligibility and reset form submission. With the console backend, the message appears in the server terminal, not an inbox.
+
+### Q17. Reset link is invalid.
+**Answer:** It may have been copied incompletely, expired, already used, or invalidated by an account-state/password change. Request a new link rather than editing the token.
+
+### Q18. New password is rejected.
+**Answer:** Read the validator messages. Check minimum length, common password, numeric-only and similarity rules. Do not remove validators just to make a weak test password pass.
+
+### Q19. User is signed out after reset.
+**Answer:** Password reset can invalidate existing sessions because the authentication hash changes. This is a security behavior. PasswordChangeView handles the current session differently from a reset workflow.
+
+## 3. Scenario questions
+
+### Q20. A developer emails a forgotten password to the user.
+**Answer:** This is unsafe. The application should not be able to recover the original password. Send a time-limited reset link that lets the user choose a new password.
+
+### Q21. A reset link is pasted into a public support ticket.
+**Answer:** Treat the link as compromised. Request a new reset link and do not share reset tokens publicly.
+
+### Q22. A production application uses console email backend.
+**Answer:** Console backend is for development. Production requires a trusted email provider, secure credentials, TLS, delivery monitoring and secret management.
+
+## 4. Mini-project discussion — Password Recovery System
+
+Demonstrate:
+1. Password hash verification.
+2. Password change while signed in.
+3. Reset request page.
+4. Console email output.
+5. Valid reset link.
+6. Invalid or expired link behavior.
+7. Verification that the new password works.
+8. Proof that the old password no longer works.
+
+## 5. Readiness checklist
+
+- [ ] I can explain hashing versus encryption.
+- [ ] I can explain set_password() and check_password().
+- [ ] I can explain password validators.
+- [ ] I can explain password change and reset.
+- [ ] I can explain reset tokens and email backend.
+- [ ] I can explain session behavior after password changes.
+- [ ] I can demonstrate Password Recovery System safely.
+
+**Related notes:** [Day 48 class notes](day_48_notes.md)
