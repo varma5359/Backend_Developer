@@ -976,3 +976,7 @@ Without reading the notes, explain:
 ## 61. Submission reflection
 
 Write a short admin access policy for HR Staff. List the exact model permissions required, the actions they must not perform, which fields should be read-only, how group membership is reviewed and how access is removed when an employee leaves. Include the result of testing with a non-superuser account.
+
+## 62. Final reviewer prompt
+
+Ask another learner to sign in with the HR Staff test account and attempt one allowed action and one denied action. Record the result and confirm that the backend permission—not only a hidden button—controls access.
