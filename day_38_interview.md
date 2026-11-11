@@ -71,3 +71,29 @@ Before the interview, be able to:
 - [ ] I can present College Relationship Manager with real evidence.
 
 **Readiness rule:** If you cannot reproduce the demonstration, return to the corresponding class notes, repeat the steps and record the output.
+## Additional technical and scenario questions
+
+### Q5. What does ForeignKey represent?
+**Answer:** Many records can refer to one related record. For example, many students can belong to one department.
+
+### Q6. What does OneToOneField represent?
+**Answer:** One record is connected to one related record, such as one student having one student profile.
+
+### Q7. What does ManyToManyField represent?
+**Answer:** Many records on each side can be associated, such as students enrolled in many courses and courses containing many students.
+
+### Q8. What does related_name control?
+**Answer:** It defines the reverse accessor used to navigate from the related object.
+
+### Q9. What is the difference between PROTECT and CASCADE?
+**Answer:** PROTECT prevents deletion while protected related rows exist. CASCADE deletes related rows when the referenced object is deleted.
+
+### Q10. Does remove() delete the related model object?
+**Answer:** No. For a many-to-many relationship, remove() deletes the association, not the related Course record.
+
+### Q11. Scenario: student.profile raises an exception.
+**Answer:** A reverse OneToOne related profile may not exist. Handle the missing case or use get_or_create where appropriate.
+
+### Q12. Scenario: relationship loop causes many queries.
+**Answer:** Use select_related for single-valued relations and prefetch_related for collections after measuring the query pattern.
+
