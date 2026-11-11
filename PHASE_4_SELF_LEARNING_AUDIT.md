@@ -1,19 +1,19 @@
 # Phase 4 — Self-Learning Revision Plan and Audit
 
 **Pathway:** Python Backend Developer Career Pathway (Django)  
-**Scope:** Days 42–54 — Django ORM, Forms and Authentication  
-**Goal:** TechPhile learners should learn concepts, build projects and verify their own work without a trainer or mentor.
+**Scope:** Days 42–54 — Django ORM, forms and authentication  
+**Goal:** A TechPhile learner should be able to understand each lesson, implement its code, verify the result, diagnose common failures and complete the project without a trainer or mentor.
 
-## 1. Approved scope
+## 1. Approved roadmap
 
-The authoritative roadmap is [09_Backend_Developer.md](09_Backend_Developer.md). The approved sequence and mini-project titles must not be silently changed.
+The source of truth is [09_Backend_Developer.md](09_Backend_Developer.md). Keep the approved topics and mini-project titles unchanged.
 
-| Day | Approved topic | Approved mini-project | Revision status |
+| Day | Approved topic | Approved mini-project | Documentation status |
 |---:|---|---|---|
-| 42 | CRUD operations: Create, Read, Update and Delete | Employee CRUD Application | Rewritten self-learning lesson and interview guide |
-| 43 | Advanced Django ORM: filter, exclude, get, order_by and values | Advanced Product Search | Pending |
-| 44 | Query optimization basics: select_related and prefetch_related | Optimized Order Management System | Pending |
-| 45 | Database constraints, field validation and model validation | Data Integrity Management System | Pending |
+| 42 | CRUD operations: Create, Read, Update and Delete | Employee CRUD Application | Revised |
+| 43 | Advanced Django ORM: filter, exclude, get, order_by and values | Advanced Product Search | Revised |
+| 44 | Query optimization basics: select_related and prefetch_related | Optimized Order Management System | Revised |
+| 45 | Database constraints, field validation and model validation | Data Integrity Management System | Revised |
 | 46 | Django authentication system and user model | User Account Management | Pending |
 | 47 | User registration, login and logout | User Authentication Application | Pending |
 | 48 | Password management, password reset and secure password storage | Password Recovery System | Pending |
@@ -24,86 +24,136 @@ The authoritative roadmap is [09_Backend_Developer.md](09_Backend_Developer.md).
 | 53 | Pagination, search and filtering in Django applications | Paginated Product Catalog | Pending |
 | 54 | Complete Django application integration and validation | Job Portal Web Application | Pending |
 
-## 2. Initial repository findings
+## 2. Phase 4 continuity architecture
 
-The existing Phase 4 manuscripts were present, but they were not ready to be described as mentor-free.
+The lessons use one evolving Django project. The existing Phase 3 `profiles` app is preserved.
 
-The initial inspection found recurring quality problems:
+~~~text
+student_portal/
+├── config/
+├── profiles/      # Existing Phase 3 Student and Employee features
+├── catalog/       # Day 43 Product search and catalog rules
+└── orders/        # Day 44 Order and OrderItem relationships
+~~~
 
-- Trainer-dependent instructions remained in the notes.
-- Prerequisite ranges sometimes included the current day or future days.
-- Some code walkthroughs contained placeholder explanations instead of explaining the actual line.
-- Some examples did not provide a complete file-by-file path.
-- Expected terminal, browser and database results were often too general.
-- Some lessons used app files without explaining how they connect to the Phase 3 project.
-- Interview guides often used generic answers instead of day-specific model answers.
+### Day 42 — Employee CRUD
 
-## 3. Continuity decisions
+Uses the existing Employee model in profiles. Adds create, read, update and delete pages. It does not introduce a second Employee model.
 
-### Existing Phase 3 project
+### Day 43 — Product search
 
-The continuous project is the learner's student_portal project with the config project package and profiles app.
+Creates the catalog app and Product model. Teaches QuerySets, filter(), exclude(), get(), order_by(), values(), field lookups, Q objects, query-string validation and a browser search page.
 
-The Employee model introduced in Phase 3 contains employee_code (unique), full_name, email (unique), salary, joining_date, is_active and created_at.
+### Day 44 — Order query optimization
 
-The Phase 3 forms file also contains StudentRegistrationForm. Phase 4 lessons must preserve that form and add new form classes without silently replacing earlier work.
+Creates the orders app and Order / OrderItem models. OrderItem refers to Product from catalog. Learners reproduce an N+1 query pattern, then compare select_related() and prefetch_related() using query measurements and tests.
 
-### Day 42 implementation boundary
+### Day 45 — Product data integrity
 
-Day 42 adds Employee CRUD pages around the existing Employee model. It does not require a new Employee model or a schema migration.
+Extends the same Product model from Day 43. Adds field validators, model clean(), UniqueConstraint and CheckConstraint. Learners inspect existing records before applying constraints and distinguish ValidationError from IntegrityError.
 
-EmployeeForm must use an explicit field allow-list and exclude the automatically populated created_at field. Update must pass the existing instance. Delete must use a confirmation page and POST, not a destructive GET.
+## 3. Self-learning standard
 
-### Authentication boundary
+Every revised lesson is expected to include:
 
-Days 42–45 teach CRUD, ORM querying, optimization and data integrity. User authentication begins on Day 46. Do not claim that Day 42 employee pages are production-protected. Explain this limitation clearly.
-
-## 4. Self-learning acceptance standard
-
-A revised daily lesson must provide:
-
-1. Day title, approved topic, duration, level and accurate prerequisites.
+1. Accurate day title, duration, level and prerequisites.
 2. Measurable learning objectives.
-3. A business problem and plain-language mental model.
-4. Exact starting folder and environment checks.
-5. A file map and exact file paths.
-6. Complete runnable examples with imports and context.
-7. Explanation of important code lines and parameters.
-8. Multiple meaningful examples for important concepts.
-9. Expected terminal, browser or database behavior.
-10. Common errors with likely causes and actionable fixes.
-11. A guided implementation.
-12. An independent mini-project using the approved title.
-13. Acceptance tests and evidence to submit.
-14. A knowledge check with answer key.
-15. Five day-specific MCQs with explanations.
-16. A separate interview guide with model answers and scenarios.
-17. A completion checklist and connection to the next day.
+3. A realistic business situation and plain-language explanation.
+4. Exact starting directory and environment checks.
+5. File map and exact file paths.
+6. Complete code examples with required imports and context.
+7. Explanations of important lines, arguments and methods.
+8. Expected terminal, browser and database behavior.
+9. Common errors with likely causes and practical fixes.
+10. A guided implementation.
+11. An independent mini-project retaining the approved title.
+12. Acceptance tests and evidence to submit.
+13. Knowledge check and answer key.
+14. Five topic-specific MCQs with explanations.
+15. A separate interview guide with model answers and scenarios.
+16. A completion checklist and connection to the next day.
 
-Do not add length by repeating generic explanations. Every section must help the learner perform, understand or verify the work.
+A long document is not automatically a good lesson. Every section must help a learner perform, understand or verify the work.
 
-## 5. Validation policy
+## 4. Day 43–45 revision record
 
-- Static Markdown review is not runtime validation.
-- A code sample is not proven to work merely because it looks plausible.
-- Runtime validation requires executing the relevant Django checks and tests in a known environment.
-- A mentor-free claim requires an actual beginner pilot in addition to static and runtime checks.
-- Do not delete or reset learner databases to make examples repeatable.
-- Use unique sample values and explain how to avoid duplicate unique values.
-- Use a dedicated test record for destructive operations.
-- Preserve prior project files and earlier lesson functionality.
+### Day 43 — Advanced Django ORM
 
-## 6. Current revision status
+**Revised files**
+- [day_43_notes.md](day_43_notes.md)
+- [day_43_interview.md](day_43_interview.md)
 
-| Deliverable | Status |
+**Included**
+- QuerySet versus list and lazy evaluation.
+- Separate catalog app and Product model.
+- filter(), exclude(), get(), order_by() and values().
+- icontains, gte, lte, in and range.
+- Q objects for OR conditions.
+- count(), exists(), first() and SQL inspection.
+- Validated GET search form, safe sort allow-list, product list and detail pages.
+- Missing-object and invalid-query handling.
+- Advanced Product Search project, acceptance checks, answer key and MCQs.
+
+### Day 44 — Query optimization
+
+**Revised files**
+- [day_44_notes.md](day_44_notes.md)
+- [day_44_interview.md](day_44_interview.md)
+
+**Included**
+- N+1 query explanation.
+- Order and OrderItem models related to the Day 43 Product.
+- select_related() for ForeignKey / OneToOneField.
+- prefetch_related() for reverse and many-to-many collections.
+- Nested prefetch and Prefetch with a customized queryset.
+- Query measurement and assertNumQueries().
+- Order list, order detail and item report.
+- Optimized Order Management System project and interview practice.
+
+### Day 45 — Data integrity
+
+**Revised files**
+- [day_45_notes.md](day_45_notes.md)
+- [day_45_interview.md](day_45_interview.md)
+
+**Included**
+- Field validation, model validation and database constraints.
+- MinValueValidator and model clean().
+- full_clean() stages and the important save() distinction.
+- UniqueConstraint and CheckConstraint.
+- Existing-data inspection before a unique constraint migration.
+- Safe IntegrityError demonstration with transaction.atomic().
+- ValidationError versus IntegrityError.
+- Data Integrity Management System project, acceptance checks and interview practice.
+
+## 5. Important technical boundaries
+
+- QuerySets are lazy, but evaluation depends on the operation performed.
+- get() raises DoesNotExist or MultipleObjectsReturned if the query does not match exactly one row.
+- select_related() is for single-valued relations; prefetch_related() is for collections.
+- A nested prefetch of `items__product` normally executes three queries: Order, OrderItem and Product. A customized Prefetch queryset that select_related()s Product can reduce this to two for the demonstrated relationship.
+- Model.save() does not automatically call full_clean().
+- Application validation gives useful feedback; database constraints are the final protection for the rules they enforce.
+- Adding a unique constraint can fail when existing data contains duplicates. Inspect and resolve data safely before applying the migration.
+- Day 42 CRUD pages are learning examples, not production-protected employee management. Authentication and authorization are later lessons.
+
+## 6. Validation status and limitations
+
+| Validation item | Status |
 |---|---|
-| Day 42 class notes | Rewritten with self-paced instructions and complete CRUD walkthrough |
-| Day 42 interview guide | Rewritten with technical model answers, code-reading, scenarios and project viva |
-| Days 43–54 class notes | Pending revision |
-| Days 43–54 interview guides | Pending revision |
-| Phase 4 integrated reference application | Not yet created or runtime-validated |
-| Phase 4 beginner usability pilot | Not yet conducted |
+| Day 42–45 class-note and interview manuscripts revised | Complete |
+| Day 42–45 static Markdown structure and links | Static audit added; CI result pending |
+| Day 43–45 code executed in a clean Django learner project | Pending |
+| Catalog and orders migration workflow executed | Pending |
+| Query-count assertions executed against the documented models | Pending |
+| Constraint migration tested against existing and duplicate data | Pending |
+| End-to-end browser workflow tested on Windows | Pending |
+| Independent beginner usability pilot | Not conducted |
 
-## 7. Final readiness decision
+A documentation-only CI pass must not be described as Django runtime validation. A plausible code sample is not proof that it runs.
 
-**Phase 4 is in progress.** Day 42 has received a self-learning rewrite. The remaining twelve days still require revision and validation. Do not label Phase 4 mentor-free until all thirteen days have passed content review, integrated examples have been runtime-tested, and beginner usability evidence has been collected.
+## 7. Readiness decision
+
+**Days 42–45: documentation revision complete; runtime and beginner validation pending.**
+
+**Phase 4 overall: in progress.** Days 46–54 still need the same self-learning revision. Do not claim that all of Phase 4 is complete or that the pathway is mentor-free until the remaining lessons, integrated runtime checks and beginner pilot have passed.
