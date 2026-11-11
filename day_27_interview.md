@@ -71,3 +71,29 @@ Before the interview, be able to:
 - [ ] I can present Django Environment Setup with real evidence.
 
 **Readiness rule:** If you cannot reproduce the demonstration, return to the corresponding section in [Day 27 class notes](day_27_notes.md), repeat the steps and record the output.
+## Additional technical and scenario questions
+
+### Q7. What problem does a web framework solve?
+**Answer:** A framework provides reusable structure and common capabilities so developers do not need to build routing, request handling, configuration and other repeated web concerns from scratch.
+
+### Q8. What is Django's MVT pattern?
+**Answer:** Model represents data, View handles request logic, and Template presents the response. The URL dispatcher connects a requested path to a view.
+
+### Q9. What happens during a Django request?
+**Answer:** The request passes through middleware, URL resolution selects a view, the view performs required work, a response is created and response middleware runs before the browser receives it.
+
+### Q10. Why use a virtual environment?
+**Answer:** It isolates project dependencies so one project's Django version and packages do not interfere with another project's environment.
+
+### Q11. Why pin the Django version?
+**Answer:** A pinned version makes the learning environment reproducible. All learners can follow the same commands and examples.
+
+### Q12. Is runserver suitable for production?
+**Answer:** No. It is a development server. Production requires a properly configured application server, web server or hosting platform and production security settings.
+
+### Q13. Scenario: Django installs globally but not inside VS Code.
+**Answer:** Check which Python interpreter VS Code uses, activate the project virtual environment and run python -m django --version from the same terminal.
+
+### Q14. Scenario: a beginner says Django is a programming language.
+**Answer:** Django is a Python web framework. Python is the programming language; Django provides reusable web application structure and tools.
+
