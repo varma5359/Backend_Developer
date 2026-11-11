@@ -277,7 +277,7 @@ Expected after this update: `0` active employees among these two sample records.
 
 If you repeat the create example, choose new unique employee codes and emails or use get_or_create after inspecting existing records. Employee code and email are unique fields.
 
-## 11. Troubleshooting
+## 12. Troubleshooting
 
 | Symptom | Likely reason | What to inspect |
 |---|---|---|
@@ -290,7 +290,7 @@ If you repeat the create example, choose new unique employee codes and emails or
 | RelatedObjectDoesNotExist | One-to-one object not created | Create the related profile before accessing it |
 | Query returns unexpected data | Wrong lookup or relationship | Inspect filters and actual records |
 
-## 12. Industry scenario
+## 13. Industry scenario
 
 An HR team needs to answer questions about employee records: how many employees are active, who joined most recently, and whether a particular employee code exists. ORM queries let the backend answer these questions without manually writing SQL for every operation.
 
@@ -300,7 +300,7 @@ Discuss:
 - Why should a query be ordered before displaying it?
 - Why should a developer inspect the database after an update?
 
-## 13. Approved mini-project — Employee Query Explorer
+## 14. Approved mini-project — Employee Query Explorer
 
 ### Objective
 Build the admin/query feature described in today's lesson using the existing Employee model in the profiles app.
@@ -338,7 +338,7 @@ Build the admin/query feature described in today's lesson using the existing Emp
 ### Optional extension
 Add a small query or admin improvement and explain the data behavior before and after.
 
-## 14. AI-assisted learning prompts
+## 15. AI-assisted learning prompts
 
 **Planning**
 ```text
@@ -358,7 +358,7 @@ Here is my model, migration state, exact ORM query and complete traceback.
 Explain the likely cause and smallest safe correction. Do not delete migrations.
 ```
 
-## 15. Daily MCQs
+## 16. Daily MCQs
 
 ### Q1. What is the Django ORM?
 
@@ -405,7 +405,7 @@ D. Only in templates
 
 **Answer: B.** QuerySets are lazy and defer database work until evaluation.
 
-## 16. Interview preparation
+## 17. Interview preparation
 
 ### Q1. Explain today's concept.
 **Answer:** The Django ORM lets a developer work with database records through Python models and QuerySets rather than writing SQL for every operation. A QuerySet represents a database query. Many QuerySets are lazy: Django builds the query first and sends it to the database when results are needed. The ORM does not remove the need to understand SQL, indexes or query performance.
@@ -424,7 +424,7 @@ D. Only in templates
 
 **Answer:** System checks do not execute every data operation or prove the business relationship is correct.
 
-## 17. Completion checklist
+## 18. Completion checklist
 
 - [ ] I can explain the business rule.
 - [ ] I can explain the model/query/relationship.
@@ -436,7 +436,7 @@ D. Only in templates
 - [ ] I submitted code and evidence.
 - [ ] I can explain one data integrity concern.
 
-## 18. Independent completion test
+## 19. Independent completion test
 
 1. Create or query records without copying the entire example.
 2. Explain the file and data flow in your own words.
