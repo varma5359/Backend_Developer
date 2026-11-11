@@ -950,3 +950,17 @@ Submit:
 - One example using Q.
 - One example using F.
 - One aggregation result.
+
+## 53. Final ORM assessment
+
+For one business question, show:
+1. The QuerySet.
+2. The expected records.
+3. The ORM method used.
+4. The approximate SQL operation.
+5. When the QuerySet is evaluated.
+6. One edge case.
+7. One test.
+
+Explain why the database should perform filtering and aggregation rather than loading every record into Python for a large dataset.
+
