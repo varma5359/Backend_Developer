@@ -424,3 +424,341 @@ Do not mark the day complete merely because a file contains code. Complete every
 5. Diagnose and fix one controlled mistake, such as a misspelled variable, template path or setting.
 
 **Next lesson:** Day 36 — Django Admin Panel and Model Registration
+
+---
+
+# Extended Beginner Lab — Migration Workflow and Safety
+
+## 19. What is a migration?
+
+A migration is a versioned description of a database schema change.
+
+Examples:
+- Create a table.
+- Add a column.
+- Change a field.
+- Add a constraint.
+- Rename a field.
+- Remove a field.
+
+Migrations allow developers to track schema evolution with source code.
+
+## 20. Model code versus database schema
+
+Changing models.py does not automatically change the database.
+
+The usual workflow is:
+
+~~~text
+Edit model
+   |
+   v
+makemigrations
+   |
+   v
+Review migration file
+   |
+   v
+migrate
+   |
+   v
+Database schema updated
+~~~
+
+Do not skip the review step for important schema changes.
+
+## 21. makemigrations
+
+Run:
+
+~~~powershell
+python manage.py makemigrations
+~~~
+
+Django compares model definitions with migration state and creates migration files for detected changes.
+
+The command does not apply them to the database.
+
+## 22. migrate
+
+Run:
+
+~~~powershell
+python manage.py migrate
+~~~
+
+Django applies unapplied migrations to the configured database.
+
+It records applied migration state in the django_migrations table.
+
+## 23. showmigrations
+
+Run:
+
+~~~powershell
+python manage.py showmigrations
+~~~
+
+This shows migration files and whether they have been applied.
+
+[X] means applied.
+
+[ ] means not applied.
+
+## 24. sqlmigrate
+
+Run:
+
+~~~powershell
+python manage.py sqlmigrate profiles 0001
+~~~
+
+Replace the app label and migration number with the actual values in your project.
+
+This shows the SQL Django plans to run for that migration.
+
+It is useful for understanding schema operations and reviewing important changes.
+
+## 25. migrate --plan
+
+Run:
+
+~~~powershell
+python manage.py migrate --plan
+~~~
+
+This displays the migrations Django plans to apply.
+
+Use it before applying changes in a sensitive environment.
+
+## 26. Understand migration dependencies
+
+A migration may depend on another migration.
+
+For example:
+- A model has a ForeignKey to another app.
+- The referenced table must exist.
+- Django records dependencies between migrations.
+
+Do not manually delete dependency declarations to make a migration run.
+
+## 27. Understand migration numbering
+
+Migration names commonly contain a number and description.
+
+Examples:
+- 0001_initial.py
+- 0002_add_phone_number.py
+
+The number reflects sequence within the app, not a global order across every app.
+
+Django uses dependencies to determine the full order.
+
+## 28. Understand initial migration
+
+The first migration for an app is often named 0001_initial.py.
+
+It creates the initial schema for that app's models.
+
+Do not assume every app's first migration is applied at the same time.
+
+## 29. What if makemigrations says no changes detected?
+
+Possible reasons:
+- No model change was made.
+- The app is not installed.
+- The wrong settings module is active.
+- The edited file was not saved.
+- The change does not affect schema.
+- You are running the command in another project.
+
+Check the current folder and active interpreter before editing migrations manually.
+
+## 30. What if migrate says no migrations to apply?
+
+Possible reasons:
+- All migrations are already applied.
+- The model change was not converted into a migration.
+- The app has no migration file.
+- The command is running against another database/settings module.
+
+Run showmigrations and inspect the actual database configuration.
+
+## 31. Migration files belong in Git
+
+Migration files are part of the application's source history.
+
+They should normally be committed with the model changes they represent.
+
+Do not add the database file as a substitute for migration history.
+
+## 32. Never casually delete migration files
+
+Deleting migrations can break:
+- Other developers' environments.
+- Deployment history.
+- Migration dependencies.
+- Existing databases.
+- CI test setup.
+
+If a migration problem occurs, inspect the migration graph and actual database state before choosing a repair.
+
+## 33. Understand makemigrations --check
+
+Run:
+
+~~~powershell
+python manage.py makemigrations --check --dry-run
+~~~
+
+This checks whether model changes are missing migration files without writing new migration files.
+
+It is useful in CI.
+
+## 34. Understand migration rollback
+
+Django can migrate an app to an earlier migration state.
+
+Example:
+
+~~~powershell
+python manage.py migrate profiles 0001
+~~~
+
+This asks Django to move the profiles app to migration 0001.
+
+A rollback can remove columns or tables and may destroy data.
+
+Do not run rollback commands on important data without a backup and a clear plan.
+
+## 35. The danger of migrate app zero
+
+A command such as:
+
+~~~powershell
+python manage.py migrate profiles zero
+~~~
+
+asks Django to unapply all migrations for the profiles app.
+
+This can remove database structures and data.
+
+Do not use it as a normal troubleshooting step.
+
+## 36. Data migrations
+
+Some migrations change data rather than only schema.
+
+Examples:
+- Populate a new field for existing rows.
+- Normalize a status value.
+- Move data between columns.
+
+Django supports data migrations using RunPython.
+
+Data migrations must be designed carefully:
+- Use historical models from the migration app registry.
+- Avoid importing current model classes directly.
+- Make the operation safe for the intended data.
+- Consider whether it is reversible.
+
+This is an advanced concept. Do not create a data migration without a specific requirement.
+
+## 37. Migration conflicts
+
+A conflict can occur when two branches create migrations from the same previous migration state.
+
+Django may report conflicting leaf nodes.
+
+Safe response:
+1. Stop before applying migrations.
+2. Inspect the conflicting files.
+3. Inspect the branch history.
+4. Understand which schema changes each file contains.
+5. Create a merge migration if appropriate.
+6. Run makemigrations --check.
+7. Test migrations from a clean database.
+8. Test migration from a copy of an existing database.
+
+Do not delete one branch's migration without understanding its changes.
+
+## 38. Backup before risky migrations
+
+Before changing a database schema in a valuable environment:
+- Make a database backup.
+- Confirm the backup can be restored.
+- Review migration SQL.
+- Test on a copy.
+- Plan downtime or deployment sequencing if required.
+
+A Git commit does not back up database records.
+
+## 39. Common migration errors
+
+| Error/symptom | Possible cause | Safe investigation |
+|---|---|---|
+| No changes detected | Model not changed or wrong project | Check file, app and settings |
+| Table already exists | Database schema and migration state disagree | Inspect migration history and schema |
+| Column already exists | A schema operation was applied outside migration history | Inspect DB and migration state |
+| NOT NULL constraint failed | Existing rows need a value | Plan a data migration/default |
+| Foreign key constraint failed | Related record missing or invalid | Inspect relationship data |
+| Conflicting migrations | Parallel branches changed schema | Inspect graph and create merge migration |
+| Migration import error | Bad Python code or dependency | Read traceback and inspect migration file |
+
+## 40. Safe migration exercise
+
+In a local practice copy:
+1. Add one optional field to a model.
+2. Run makemigrations.
+3. Open the generated migration.
+4. Read the operation.
+5. Run sqlmigrate.
+6. Apply migrate.
+7. Run showmigrations.
+8. Confirm the field exists through the ORM.
+9. Run makemigrations --check --dry-run.
+
+Do not experiment with destructive rollback on the main pathway database.
+
+## 41. Self-check questions
+
+1. What is a migration?
+2. What does makemigrations do?
+3. What does migrate do?
+4. What does showmigrations display?
+5. What does sqlmigrate show?
+6. What is a migration dependency?
+7. Why should migration files be committed?
+8. Why is deleting migrations dangerous?
+9. What does migrate app zero do?
+10. What is a data migration?
+11. What can cause migration conflicts?
+12. Why should important databases be backed up?
+
+## 42. Answers
+
+1. Versioned description of a database schema change.
+2. Creates migration files from model changes.
+3. Applies migration files to the database.
+4. Applied and unapplied migration state.
+5. SQL for a migration operation.
+6. A requirement that another migration be applied first.
+7. Other environments need the same schema history.
+8. It can break dependencies and existing databases.
+9. It unapplies all migrations for the app.
+10. A migration that changes existing data.
+11. Parallel branches creating migrations from the same state.
+12. Schema changes can remove or transform data.
+
+## 43. Independent challenge — Migration History Review
+
+Choose one existing app.
+
+Record:
+- Migration filenames.
+- Which are applied.
+- One migration operation.
+- SQL generated for that operation.
+- Which model change it represents.
+
+Do not edit or delete migration files during the review.
