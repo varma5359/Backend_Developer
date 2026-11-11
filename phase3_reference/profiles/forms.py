@@ -18,9 +18,18 @@ class StudentRegistrationForm(forms.ModelForm):
         full_name = cleaned_data.get("full_name")
         email = cleaned_data.get("email")
 
-        if full_name and email and full_name.casefold() in email.casefold():
-            self.add_error(
-                "email",
-                "Email should not contain the full student name.",
+        if full_name and email:
+            normalized_name = "".join(full_name.casefold().split())
+            email_local_part = email.casefold().split("@", 1)[0]
+            normalized_email = (
+                email_local_part
+                .replace(".", "")
+                .replace("_", "")
+                .replace("-", "")
             )
+            if normalized_name and normalized_name in normalized_email:
+                self.add_error(
+                    "email",
+                    "Email should not contain the full student name.",
+                )
         return cleaned_data
