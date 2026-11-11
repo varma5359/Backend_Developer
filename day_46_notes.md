@@ -571,11 +571,11 @@ Example:
 from django.conf import settings
 from django.db import models
 
-class StudentProfile(models.Model):
+class UserAccountProfile(models.Model):
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        related_name="student_profile",
+        related_name="account_profile",
     )
     phone_number = models.CharField(max_length=20, blank=True)
 ~~~
@@ -587,7 +587,7 @@ Explanation:
 - related_name defines the reverse relationship name.
 - blank=True allows the field to be empty in form validation.
 
-Do not add this model to the existing project without checking whether the project already has a profile model. The example explains the pattern; Day 51 develops the profile design.
+Do not add this model to the existing project without checking whether the project already has a profile model. The example is a generic pattern only. The existing pathway already has a StudentProfile model linked to the Student model; do not rename or repurpose it. Day 51 introduces a separate UserProfile model for the authentication account.
 
 ---
 
@@ -1337,13 +1337,6 @@ class AccountSummaryTests(TestCase):
             first_name="Test",
             last_name="Learner",
         )
-
-    def test_anonymous_user_is_redirected(self):
-        response = self.client.get(
-            reverse("account_summary")
-        )
-
-        self.assertEqual(response.status_code, 302)
 
     def test_authenticated_user_sees_own_summary(self):
         self.client.force_login(self.user)
