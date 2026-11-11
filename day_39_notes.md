@@ -472,3 +472,382 @@ D. To generate URL routes
 5. Confirm that invalid data was not saved and valid data appears in the student list.
 
 **Next phase:** Phase 4 — Day 42: CRUD Operations: Create, Read, Update and Delete.
+
+---
+
+# Extended Beginner Lab — Form Lifecycle and ModelForm Behavior
+
+## 19. What is a form?
+
+A form collects values from a user and validates those values before the application uses them.
+
+A Django form can:
+- Define fields.
+- Render widgets.
+- Validate submitted data.
+- Display errors.
+- Convert valid input to Python values.
+- Help save model records when using ModelForm.
+
+## 20. Unbound form
+
+An unbound form has no submitted data.
+
+Example:
+
+~~~python
+form = StudentForm()
+~~~
+
+This is normally used for the first GET request when the page is opened.
+
+The template displays empty inputs.
+
+## 21. Bound form
+
+A bound form has submitted data attached.
+
+Example:
+
+~~~python
+form = StudentForm(request.POST)
+~~~
+
+Django can validate the submitted values.
+
+If validation fails, the form contains errors and should be rendered again.
+
+## 22. Form lifecycle
+
+~~~text
+GET request
+   |
+   v
+Create unbound form
+   |
+   v
+Render template
+   |
+   v
+User enters values
+   |
+   v
+POST request
+   |
+   v
+Create bound form from request.POST
+   |
+   v
+form.is_valid()
+   |
+   +---- False ----> Render form with errors
+   |
+   +---- True -----> Save or process valid data
+~~~
+
+## 23. What is a widget?
+
+A widget controls how a form field is rendered in HTML.
+
+Examples:
+- TextInput.
+- Textarea.
+- Select.
+- CheckboxInput.
+- DateInput.
+- PasswordInput.
+
+A widget controls presentation. Field validation is handled by the form field and form cleaning process.
+
+## 24. Customize a widget
+
+Example:
+
+~~~python
+from django import forms
+
+class StudentForm(forms.Form):
+    full_name = forms.CharField(
+        max_length=120,
+        widget=forms.TextInput(
+            attrs={
+                "placeholder": "Enter full name",
+                "class": "form-control",
+            }
+        ),
+    )
+~~~
+
+attrs adds HTML attributes to the rendered widget.
+
+Do not use widget attributes as a replacement for server-side validation.
+
+## 25. Required and optional fields
+
+A field is required by default unless configured otherwise.
+
+Example:
+
+~~~python
+phone = forms.CharField(
+    required=False,
+)
+~~~
+
+A blank optional field may produce an empty string in cleaned_data.
+
+The model field and form field must agree with the intended business rule.
+
+## 26. Field-level validation
+
+A field can have validators.
+
+Example:
+
+~~~python
+from django.core.validators import MinLengthValidator
+
+student_code = forms.CharField(
+    validators=[MinLengthValidator(5)]
+)
+~~~
+
+If the value does not satisfy the validator, Django adds a validation error.
+
+## 27. clean_fieldname()
+
+A form can define a method named clean_fieldname to validate one field.
+
+Example:
+
+~~~python
+def clean_full_name(self):
+    value = self.cleaned_data["full_name"].strip()
+
+    if not value:
+        raise forms.ValidationError(
+            "Full name cannot contain only spaces."
+        )
+
+    return value
+~~~
+
+The method:
+- Reads the already field-cleaned value.
+- Applies a custom rule.
+- Raises ValidationError if invalid.
+- Returns the cleaned value if valid.
+
+## 28. Form-wide clean()
+
+Use clean() when a rule depends on more than one field.
+
+Example:
+- Start date must be before end date.
+- Minimum salary must not exceed maximum salary.
+- Password and confirmation must match.
+
+The method should call super().clean() and return cleaned_data.
+
+## 29. What is cleaned_data?
+
+After successful validation, cleaned_data contains converted and validated Python values.
+
+Examples:
+- Integer input becomes an integer.
+- Decimal input becomes Decimal.
+- Date input becomes a date object.
+
+Do not use cleaned_data before form.is_valid() has completed successfully.
+
+## 30. ModelForm
+
+A ModelForm is a form generated from a Django model.
+
+Example:
+
+~~~python
+class StudentModelForm(forms.ModelForm):
+    class Meta:
+        model = Student
+        fields = [
+            "student_code",
+            "full_name",
+            "email",
+            "department",
+        ]
+~~~
+
+Django generates form fields based on the model fields and their configuration.
+
+## 31. fields versus exclude
+
+Use fields to explicitly list allowed fields.
+
+Example:
+
+~~~python
+fields = ["full_name", "email"]
+~~~
+
+exclude lists fields to leave out.
+
+For security-sensitive forms, explicitly listing allowed fields is generally safer because newly added model fields are not automatically exposed.
+
+## 32. Why not expose every model field?
+
+A model may contain:
+- Owner.
+- Approval status.
+- Internal notes.
+- Staff-only fields.
+- Created timestamp.
+- Payment state.
+
+A public form should not automatically allow users to modify these fields.
+
+The view should assign server-controlled fields from trusted request context.
+
+## 33. ModelForm save()
+
+~~~python
+if form.is_valid():
+    student = form.save()
+~~~
+
+For a valid ModelForm, save() creates or updates the model instance depending on whether an instance was supplied.
+
+## 34. save(commit=False)
+
+~~~python
+student = form.save(commit=False)
+student.created_by = request.user
+student.save()
+~~~
+
+commit=False returns an unsaved model instance.
+
+The view can assign fields that were not exposed in the form.
+
+If the ModelForm includes many-to-many fields, save_m2m() may be needed after the instance is saved.
+
+## 35. Update an existing record
+
+~~~python
+student = get_object_or_404(Student, pk=student_id)
+
+if request.method == "POST":
+    form = StudentModelForm(
+        request.POST,
+        instance=student,
+    )
+else:
+    form = StudentModelForm(instance=student)
+~~~
+
+Passing instance tells the ModelForm which record to update.
+
+Without instance, a valid form save normally creates a new record.
+
+## 36. Form errors
+
+A template can display:
+- form.non_field_errors.
+- field.errors.
+- field.help_text.
+
+Example:
+
+~~~django
+{{ form.non_field_errors }}
+
+{% for field in form %}
+    <div>
+        {{ field.label_tag }}
+        {{ field }}
+        {{ field.errors }}
+    </div>
+{% endfor %}
+~~~
+
+Do not hide validation errors from the learner.
+
+## 37. Form rendering options
+
+You can render the whole form:
+
+~~~django
+{{ form.as_p }}
+~~~
+
+Or render fields individually for more control.
+
+For production interfaces, explicit field rendering often provides better layout and accessibility.
+
+## 38. Common form mistakes
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| Form always invalid | Required field missing or wrong input name | Inspect form.errors and HTML name |
+| cleaned_data missing | is_valid() not called or failed | Validate before reading |
+| Update creates duplicate row | instance not passed | Pass instance=existing_object |
+| Owner field can be changed | Sensitive field exposed | Exclude it and assign in view |
+| Errors disappear | New unbound form created after invalid POST | Render the same bound form |
+| Widget style missing | attrs or CSS not configured | Inspect rendered HTML |
+| Many-to-many values not saved | commit=False without save_m2m() | Save instance then call save_m2m() |
+
+## 39. Guided form exercise
+
+Create a Student ModelForm.
+
+Test:
+1. Valid student code.
+2. Missing full name.
+3. Invalid email.
+4. Empty optional phone.
+5. Duplicate unique email.
+6. Update existing student.
+7. Invalid update.
+8. Confirm the existing row is not duplicated.
+
+## 40. Self-check questions
+
+1. What is a form?
+2. What is the difference between bound and unbound?
+3. What does is_valid() do?
+4. What is cleaned_data?
+5. What is a widget?
+6. What is clean_fieldname()?
+7. When should clean() be used?
+8. What is a ModelForm?
+9. Why explicitly list fields?
+10. What does save(commit=False) do?
+11. Why pass instance to an update form?
+12. When is save_m2m() needed?
+
+## 41. Answers
+
+1. Collects and validates user input.
+2. Unbound has no submitted data; bound has submitted data.
+3. Runs form validation.
+4. Dictionary of validated Python values.
+5. Controls HTML rendering of a field.
+6. Custom validation for one field.
+7. For rules involving multiple fields.
+8. Form generated from a model.
+9. To expose only allowed fields.
+10. Creates an unsaved model instance.
+11. To update the existing record rather than create a new one.
+12. After saving a commit=False form that includes many-to-many fields.
+
+## 42. Independent challenge — Student Registration Form
+
+Build a form that:
+- Uses only approved student fields.
+- Validates required information.
+- Displays field errors.
+- Creates a student on valid POST.
+- Updates an existing student when instance is provided.
+- Does not allow the browser to choose internal owner or approval fields.
+
+Record the result of valid and invalid submissions.
