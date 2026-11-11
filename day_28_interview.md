@@ -89,4 +89,4 @@ Be ready to:
 - [ ] I can explain an edge case.
 - [ ] I can present Personal Profile Django Project without reading the notes.
 
-**Trainer note:** Ask the learner to predict the result of a small code or configuration change. Reward reasoning and evidence, not memorized definitions.
+**Self-practice:** Ask yourself to predict the result of a small code or configuration change. Check your reasoning against the code and observed result, not memorized definitions.
