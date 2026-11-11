@@ -815,3 +815,337 @@ Day 45: Enforce rules before invalid data enters the database
 ~~~
 
 **Day 44 is complete only when you can show measured query improvement without changing the displayed order data.**
+
+
+---
+
+# PART 14 — ADVANCED QUERY INVESTIGATION LAB
+
+## 89. Why optimization must be measured
+
+A developer may write a query that looks elegant but still retrieves too much data.
+
+Another developer may add several optimization methods without understanding which relationship is being loaded.
+
+Neither approach is reliable.
+
+Use this sequence:
+
+1. Identify the page that is slow.
+2. Identify which related fields the template accesses.
+3. Inspect the QuerySet used by the view.
+4. Count database queries.
+5. Identify repeated query patterns.
+6. Apply the correct optimization.
+7. Count queries again.
+8. Compare response time using the same dataset.
+9. Confirm that the displayed data is unchanged.
+
+Do not claim that a query is optimized only because select_related() or prefetch_related() appears in the code.
+
+## 90. Trace the relationship access
+
+The Day 44 models contain:
+- Order.
+- OrderItem.
+- Product.
+
+The relationships are:
+- One Order has many OrderItems.
+- Each OrderItem points to one Product.
+
+When a template displays an order and loops through its items, it may access both relationships.
+
+Example:
+
+~~~python
+orders = Order.objects.all()
+
+for order in orders:
+    for item in order.items.all():
+        print(item.product.name)
+~~~
+
+Potential database work:
+- One query to retrieve orders.
+- A query for items for each order.
+- A query for product for each item.
+
+The number of queries can grow with the number of orders and items.
+
+## 91. Understand the query count pattern
+
+Assume:
+- 10 orders.
+- Each order has 3 order items.
+- No related objects are already cached.
+
+A naive pattern may execute:
+- 1 query for orders.
+- 10 queries for order items.
+- 30 queries for products.
+
+Total: up to 41 queries for this simplified access pattern.
+
+The exact number depends on the view, template, database state and any existing query cache. Treat the number as an example, not a guaranteed output.
+
+## 92. Use select_related for the Product foreign key
+
+Each OrderItem has one Product.
+
+Use:
+
+~~~python
+items = OrderItem.objects.select_related("product")
+~~~
+
+Django can join the Product table into the SQL query for OrderItem.
+
+Then:
+
+~~~python
+for item in items:
+    print(item.product.name)
+~~~
+
+The product objects are already populated by the query.
+
+## 93. Use prefetch_related for Order items
+
+An Order has many OrderItem records.
+
+Use:
+
+~~~python
+orders = Order.objects.prefetch_related("items")
+~~~
+
+Django performs an additional query to retrieve related items for the selected orders and joins the results in Python.
+
+The relationship is a collection, so prefetch_related() is appropriate.
+
+## 94. Combine prefetch_related and select_related
+
+Inside the prefetched OrderItem collection, each item points to one Product.
+
+You can optimize both relationship levels:
+
+~~~python
+from django.db.models import Prefetch
+
+optimized_items = OrderItem.objects.select_related("product")
+
+orders = Order.objects.prefetch_related(
+    Prefetch(
+        "items",
+        queryset=optimized_items,
+    )
+)
+~~~
+
+Explanation:
+- Prefetch describes how to load the reverse items collection.
+- The custom queryset loads each item's Product with a SQL join.
+- Django attaches the prefetched items to their corresponding orders.
+- The template can access order.items.all() and item.product without repeating the same lookup pattern.
+
+## 95. Understand Prefetch
+
+Prefetch is useful when you want more control over the QuerySet used for the related objects.
+
+For example, you may want only active related products or a specific ordering.
+
+~~~python
+from django.db.models import Prefetch
+
+optimized_items = (
+    OrderItem.objects
+    .select_related("product")
+    .order_by("pk")
+)
+
+orders = Order.objects.prefetch_related(
+    Prefetch(
+        "items",
+        queryset=optimized_items,
+        to_attr="loaded_items",
+    )
+)
+~~~
+
+With to_attr, the prefetched collection is available through loaded_items.
+
+The template or view must use the same attribute name.
+
+Do not call order.items.all() and expect it to use a Prefetch stored under loaded_items. Use order.loaded_items.
+
+## 96. Count queries with CaptureQueriesContext
+
+For a controlled local investigation, Django provides CaptureQueriesContext.
+
+~~~python
+from django.db import connection
+from django.test.utils import CaptureQueriesContext
+
+with CaptureQueriesContext(connection) as captured:
+    orders = list(
+        Order.objects
+        .prefetch_related(
+            Prefetch(
+                "items",
+                queryset=OrderItem.objects.select_related("product"),
+            )
+        )
+    )
+
+    for order in orders:
+        for item in order.items.all():
+            _ = item.product.name
+
+print("Queries:", len(captured))
+~~~
+
+Explanation:
+- connection represents the active database connection.
+- CaptureQueriesContext temporarily records queries executed inside the block.
+- list() evaluates the QuerySet.
+- The loop accesses the related data.
+- len(captured) reports the captured query count.
+
+Use a test or controlled development environment. Do not leave verbose SQL query capture enabled in production.
+
+## 97. Compare before and after
+
+Run the same dataset and same access pattern twice.
+
+| Measurement | Before optimization | After optimization |
+|---|---:|---:|
+| Orders loaded | Same | Same |
+| Order items displayed | Same | Same |
+| Product names displayed | Same | Same |
+| Query count | Measure | Measure |
+| Response time | Measure | Measure |
+
+The correct target is:
+- Same business result.
+- Fewer unnecessary queries.
+- No missing related records.
+- No accidental increase in memory usage that outweighs the benefit.
+
+Do not invent performance numbers for a report. Record the actual output from your environment.
+
+## 98. Inspect generated SQL
+
+Django QuerySets provide an explain() method.
+
+Example:
+
+~~~python
+queryset = OrderItem.objects.select_related("product")
+print(queryset.explain())
+~~~
+
+The database backend returns a query plan.
+
+A query plan can help identify:
+- Table scans.
+- Index use.
+- Join operations.
+- Estimated row counts.
+- Query execution strategy.
+
+The exact output differs by database backend.
+
+Do not copy a query plan from another machine and claim it represents your database.
+
+## 99. Understand indexes
+
+An index is a database structure that can help locate rows more efficiently for supported query patterns.
+
+Indexes can improve reads but:
+- Consume storage.
+- Add work to inserts and updates.
+- Are not useful for every query.
+- Should be selected based on actual query patterns.
+
+Do not add indexes to every field.
+
+For an order-management application, possible query patterns might include:
+- Order by created_at.
+- Lookup by unique order_number.
+- Filter items by order_id.
+
+The database often creates indexes for primary keys and foreign keys, but inspect the actual schema and query plan before making assumptions.
+
+## 100. Common optimization mistakes
+
+### Mistake 1 — Use select_related on a collection
+
+A reverse ForeignKey collection is not a single-valued relation. Use prefetch_related().
+
+### Mistake 2 — Prefetch data the page never uses
+
+This can add extra query and memory work without improving the page.
+
+### Mistake 3 — Evaluate a QuerySet too early
+
+Converting a large QuerySet to a list can load all rows before the view needs them.
+
+### Mistake 4 — Measure different datasets
+
+Before/after comparisons must use comparable data and the same page behavior.
+
+### Mistake 5 — Ignore template access
+
+A view may look optimized, but the template can still trigger related queries. Trace the complete render flow.
+
+## 101. Guided investigation exercise
+
+1. Create at least 10 orders.
+2. Give each order 3 order items.
+3. Use several Product records across those items.
+4. Write the naive view QuerySet.
+5. Count queries while rendering or traversing related data.
+6. Add prefetch_related("items").
+7. Count again.
+8. Add select_related("product") to the prefetched item QuerySet.
+9. Count again.
+10. Confirm the same order and product names are displayed.
+
+### Self-check
+
+- Which relationship is single-valued?
+- Which relationship is a collection?
+- Which ORM method matches each relationship?
+- Did the result remain identical?
+- Did the query count change?
+- Did the measured response time change?
+
+## 102. Interview extension
+
+**Question:** Why is prefetch_related() implemented using additional queries rather than one SQL join?
+
+**Answer:** It is designed to load related collections efficiently without multiplying the parent rows in the same way a join across collections can. Django retrieves the related rows and associates them in Python.
+
+**Question:** Does a lower query count always mean a faster page?
+
+**Answer:** No. Query duration, row count, join complexity, memory use, network transfer and template rendering also matter.
+
+**Question:** When should you use explain()?
+
+**Answer:** When you need to inspect how the database plans to execute a query, especially for a slow or complex query.
+
+## 103. Final optimization checklist
+
+- [ ] I can identify the N+1 pattern.
+- [ ] I know which relation is single-valued.
+- [ ] I know which relation is a collection.
+- [ ] I can use select_related().
+- [ ] I can use prefetch_related().
+- [ ] I can combine Prefetch and select_related().
+- [ ] I can capture query counts.
+- [ ] I can inspect explain() output.
+- [ ] I understand index trade-offs.
+- [ ] I measured before and after with the same dataset.
+- [ ] I can explain why the result did not change.
+
