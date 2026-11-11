@@ -530,9 +530,13 @@ D. Template variables
 - [ ] I completed Django Student Management Website.
 - [ ] I can explain the application without reading the notes.
 
-## 17. Trainer validation
+## 17. Independent completion test
 
-Ask the student to register a new record without following the exact code line by line. Ask them to predict what happens for an invalid email, duplicate code, missing route or missing template. They should locate the relevant component and explain the fix.
+1. Register a new record without following the exact code line by line.
+2. Predict what happens for an invalid email, duplicate code, missing route or missing template.
+3. Test one case at a time and compare the result with your prediction.
+4. Locate the responsible component and explain the correction.
+5. Confirm that invalid data was not saved and valid data appears in the student list.
 
 **Next phase:** Phase 4 — Day 42: CRUD Operations: Create, Read, Update and Delete.
 
