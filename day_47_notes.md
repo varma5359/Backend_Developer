@@ -2,298 +2,1477 @@
 
 **Pathway:** Python Backend Developer Career Pathway (Django)  
 **Phase:** 4 — Django ORM, Forms and Authentication  
-**Estimated time:** 2–3 hours | **Level:** Intermediate  
-**Prerequisites:** Days 27–46 — Django fundamentals, ORM, forms and user concepts  
-**Tools:** Python, Django, VS Code, terminal, browser and configured database  
+**Estimated time:** 4–5 hours | **Level:** Beginner to Intermediate  
+**Prerequisites:** Days 27–46 — Django project setup, URLs, views, templates, forms, ORM and the configured user model  
+**Environment:** Windows, VS Code, PowerShell, Python virtual environment, Django 5.2.19  
+**Project continuity:** student_portal / config / profiles  
 **Approved mini-project:** User Authentication Application
 
-> **Trainer guidance:** Authentication and data integrity are important backend responsibilities. Use local test users and sample records. Never ask learners to paste real passwords, tokens or secret keys into code or shared screenshots.
+> **Self-learning promise:** You will build a complete registration, login and logout journey using Django's authentication APIs. You will understand the difference between creating an account and signing in, protect pages, handle invalid credentials, and test the complete browser flow. Use fictional local accounts only.
 
-## 1. Learning objectives
+---
 
-- Explain user registration, login and logout.
-- Identify the Django APIs and files involved.
-- Implement the example step by step.
-- Test valid and invalid cases.
-- Explain the security and data-integrity implications.
+# PART 1 — THE USER JOURNEY
+
+## 1. What are we building?
+
+A new student visits an institute portal. The student has no account yet.
+
+The student needs to:
+1. Open a registration page.
+2. Enter a username and password twice.
+3. Submit the registration form.
+4. Receive a clear success or validation message.
+5. Sign in using the new account.
+6. Open a page available only to signed-in users.
+7. Sign out safely.
+8. Be prevented from opening the protected page after signing out.
+
+These steps form an authentication journey.
+
+## 2. Important words
+
+| Term | Meaning |
+|---|---|
+| Registration | Creating a new account |
+| Login | Verifying credentials and establishing an authenticated session |
+| Logout | Ending the current authenticated session |
+| Credential | Information used to prove account identity |
+| Authentication backend | Component that checks submitted credentials |
+| Session | State that allows requests from the same browser session to remain associated with a user |
+| CSRF token | A security token used to help protect state-changing browser requests |
+| Redirect | An HTTP response that tells the browser to request another URL |
+| Validation | Checking whether submitted values follow rules |
+| POST request | HTTP request method commonly used to submit form data that changes server state |
+
+## 3. Registration versus login
+
+| Registration | Login |
+|---|---|
+| Creates a new account | Uses an existing account |
+| Validates new account details | Verifies submitted credentials |
+| Saves a user record | Establishes a signed-in session |
+| Must prevent duplicate usernames | Must reject invalid credentials |
+| Usually uses UserCreationForm or a custom form | Uses authenticate() and login() |
+
+Do not use the words registration and login as if they mean the same operation.
+
+## 4. Complete request flow
+
+~~~text
+New visitor
+   |
+   v
+Registration page
+   |
+   v
+Submit username + password + confirmation
+   |
+   v
+Validate form
+   |
+   +---- Invalid ----> Show field errors
+   |
+   +---- Valid ------> Create user with hashed password
+                           |
+                           v
+                       Registration success
+                           |
+                           v
+                       Login page
+                           |
+                           v
+                  Submit username + password
+                           |
+                           v
+                    authenticate()
+                           |
+                  +--------+--------+
+                  |                 |
+               Invalid            Valid
+                  |                 |
+             Show error          login()
+                                    |
+                                    v
+                              Authenticated session
+                                    |
+                                    v
+                              Protected page
+                                    |
+                                    v
+                              POST logout
+                                    |
+                                    v
+                              Anonymous visitor
+~~~
+
+## 5. Learning outcomes
+
+By the end, you can:
+- Explain the registration and login workflows.
+- Explain why password confirmation is needed.
+- Use Django's UserCreationForm.
+- Explain what form.is_valid() does.
+- Use authenticate() to verify credentials.
+- Use login() to establish an authenticated session.
+- Use logout() to end the session.
+- Protect views with login_required.
+- Use POST for logout.
+- Include CSRF protection in HTML forms.
+- Display validation errors.
+- Test successful and failed workflows.
 - Complete User Authentication Application.
 
-## 2. Concept introduction
+---
 
-Registration creates an account after validating the submitted details. Login verifies credentials and creates an authenticated session. Logout ends the current authenticated session. Django provides UserCreationForm, authenticate(), login(), logout() and login_required for common workflows.
+# PART 2 — PREPARE THE EXISTING PROJECT
 
-## 3. File-by-file implementation
+## 6. Open the project root
 
-### profiles/views.py
+Open the existing student_portal directory in VS Code.
 
-```python
-from django.contrib.auth import authenticate, login, logout
+In PowerShell:
+
+~~~powershell
+Get-Location
+Get-ChildItem
+.\.venv\Scripts\Activate.ps1
+python -m django --version
+~~~
+
+The current directory must contain manage.py. Do not create a second project.
+
+## 7. Confirm the authentication configuration
+
+Open config/settings.py.
+
+Check that these apps are present in INSTALLED_APPS:
+
+~~~python
+"django.contrib.auth",
+"django.contrib.contenttypes",
+"django.contrib.sessions",
+"django.contrib.messages",
+~~~
+
+Check the middleware:
+
+~~~python
+"django.contrib.sessions.middleware.SessionMiddleware",
+"django.contrib.auth.middleware.AuthenticationMiddleware",
+"django.contrib.messages.middleware.MessageMiddleware",
+~~~
+
+SessionMiddleware must come before AuthenticationMiddleware.
+
+## 8. Confirm templates configuration
+
+In config/settings.py, the generated TEMPLATES configuration normally includes:
+
+~~~python
+TEMPLATES = [
+    {
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
+            ],
+        },
+    },
+]
+~~~
+
+Do not replace the whole setting if your project already has additional configuration. Check the important values:
+- APP_DIRS is enabled for app templates.
+- Authentication context processor is present.
+- Messages context processor is present if you use messages in the templates.
+
+## 9. Configure named redirect destinations
+
+Add or confirm these settings:
+
+~~~python
+LOGIN_URL = "login"
+LOGIN_REDIRECT_URL = "account_summary"
+LOGOUT_REDIRECT_URL = "login"
+~~~
+
+A URL name is not a path. It is a stable name used by Django's reverse URL system.
+
+These names must exist in the URL configuration. This lesson will create login, register and logout routes.
+
+## 10. Check the current URL structure
+
+The project URL file config/urls.py should include the profiles application.
+
+The profiles app should have its own urls.py.
+
+Do not remove existing routes for earlier projects. Add today's routes while preserving the working routes.
+
+---
+
+# PART 3 — REGISTRATION WITH UserCreationForm
+
+## 11. What is a form?
+
+A form collects values from a user and validates them before the application uses them.
+
+Example:
+- Username field.
+- Password field.
+- Password confirmation field.
+- Submit button.
+
+A browser form sends values to the server. The server must validate them again. Never assume browser-side validation is sufficient.
+
+## 12. What is UserCreationForm?
+
+Django provides UserCreationForm for creating users.
+
+It includes:
+- Username input.
+- Password input.
+- Password confirmation.
+- Validation that the two passwords match.
+- Password validation according to configured validators.
+- User creation behavior that uses Django's password handling.
+
+This saves you from manually implementing common password rules.
+
+## 13. Why not create a user from raw POST values?
+
+Unsafe idea:
+
+~~~python
+username = request.POST["username"]
+password = request.POST["password"]
+User.objects.create(username=username, password=password)
+~~~
+
+Problems:
+- It does not provide complete form validation.
+- It may store a raw password incorrectly.
+- It does not handle password confirmation.
+- It may fail to handle missing fields safely.
+- It mixes request parsing, validation and database logic.
+
+Use Django forms and the authentication APIs.
+
+## 14. Create the registration view
+
+Open profiles/views.py.
+
+Keep earlier views. Add these imports if they are not already present:
+
+~~~python
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from django.shortcuts import render, redirect
+~~~
 
-def register(request):
-    form = UserCreationForm(request.POST or None)
-    if request.method == "POST" and form.is_valid():
-        form.save()
-        return redirect("login")
-    return render(request, "registration/register.html", {"form": form})
+Add the view:
 
-def user_login(request):
+~~~python
+def register_view(request):
     if request.method == "POST":
-        username = request.POST.get("username")
-        password = request.POST.get("password")
-        user = authenticate(request, username=username, password=password)
+        form = UserCreationForm(request.POST)
+
+        if form.is_valid():
+            user = form.save()
+            messages.success(
+                request,
+                "Your account has been created. You can now sign in."
+            )
+            return redirect("login")
+    else:
+        form = UserCreationForm()
+
+    return render(
+        request,
+        "profiles/register.html",
+        {"form": form},
+    )
+~~~
+
+## 15. Understand request.method
+
+A browser can request a page using different HTTP methods.
+
+GET:
+- Usually requests a page or reads information.
+- Does not normally create an account.
+- Opens an empty registration form.
+
+POST:
+- Submits the form data.
+- The server validates the submitted values.
+- A valid submission may create an account.
+
+The view checks the method so it can distinguish opening the form from submitting it.
+
+## 16. Understand request.POST
+
+request.POST contains submitted form values for a POST request.
+
+Passing request.POST to UserCreationForm binds the submitted values to the form.
+
+A bound form can validate those values and report errors.
+
+Do not print passwords from request.POST into logs or terminal output.
+
+## 17. Understand form.is_valid()
+
+form.is_valid() runs the form's validation.
+
+For UserCreationForm, validation includes checks such as:
+- Required username.
+- Username uniqueness.
+- Password confirmation match.
+- Password validation.
+- Any configured field validation.
+
+If validation fails:
+- is_valid() returns False.
+- The form contains errors.
+- The view renders the form again.
+- The template can display those errors.
+
+If validation succeeds:
+- is_valid() returns True.
+- The form is ready to save.
+
+## 18. Understand form.save()
+
+form.save() creates and saves the user.
+
+UserCreationForm uses Django's user creation behavior. The password is handled through Django's password-setting mechanism.
+
+The returned object is the newly created user instance.
+
+Do not replace this with direct assignment to the password field.
+
+## 19. Create the registration template
+
+Create this file:
+
+profiles/templates/profiles/register.html
+
+~~~html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account</title>
+</head>
+<body>
+    <main>
+        <h1>Create your account</h1>
+
+        <form method="post">
+            {% csrf_token %}
+
+            {{ form.non_field_errors }}
+
+            <div>
+                {{ form.username.label_tag }}
+                {{ form.username }}
+                {{ form.username.errors }}
+            </div>
+
+            <div>
+                {{ form.password1.label_tag }}
+                {{ form.password1 }}
+                {{ form.password1.errors }}
+            </div>
+
+            <div>
+                {{ form.password2.label_tag }}
+                {{ form.password2 }}
+                {{ form.password2.errors }}
+            </div>
+
+            <button type="submit">Register</button>
+        </form>
+
+        <p>
+            Already registered?
+            <a href="{% url 'login' %}">Sign in</a>
+        </p>
+    </main>
+</body>
+</html>
+~~~
+
+## 20. Explain the HTML form
+
+method="post":
+- Sends the form values using POST.
+- Registration changes database state, so POST is appropriate.
+
+{% csrf_token %}:
+- Generates the CSRF token field.
+- Helps protect the request against cross-site request forgery.
+- Must be included in internal POST forms.
+
+{{ form.username }}:
+- Renders the username input widget.
+
+{{ form.username.errors }}:
+- Displays validation errors for that field.
+
+{{ form.non_field_errors }}:
+- Displays errors that do not belong to a single field.
+
+The template displays errors rather than hiding them. A beginner must be able to understand why a submission failed.
+
+## 21. Why password inputs are not displayed as readable text
+
+Django's password form fields render password inputs.
+
+The browser masks the characters while typing. This is a user-interface behavior, not the password hashing mechanism.
+
+Password masking and password hashing solve different problems:
+- Masking hides characters on the screen.
+- Hashing protects stored password representations.
+
+## 22. Add the registration URL
+
+Open profiles/urls.py.
+
+Add the import if needed:
+
+~~~python
+from django.urls import path
+from . import views
+~~~
+
+Add this route to the existing urlpatterns list:
+
+~~~python
+path("register/", views.register_view, name="register"),
+~~~
+
+The route name is register. The browser path is /register/.
+
+Do not create a second urlpatterns list. There should be one list containing the app's routes.
+
+## 23. Verify the registration page
+
+Run:
+
+~~~powershell
+python manage.py check
+python manage.py runserver
+~~~
+
+Open:
+
+~~~text
+http://127.0.0.1:8000/register/
+~~~
+
+Expected:
+- A registration heading.
+- Username input.
+- Password input.
+- Password confirmation input.
+- Register button.
+- Link to the login page.
+
+If the login page is not ready yet, the named login link will not resolve. Complete the login route in the next section before testing the full page.
+
+---
+
+# PART 4 — LOGIN WITH authenticate() AND login()
+
+## 24. What happens during login?
+
+A user submits credentials.
+
+Django must:
+1. Receive the username and password.
+2. Pass the credentials to an authentication backend.
+3. Verify whether they are valid.
+4. Return a user object if authentication succeeds.
+5. Return None if authentication fails.
+6. Establish a session after successful verification.
+
+These are two separate operations:
+- authenticate() verifies credentials.
+- login() associates the user with the current session.
+
+## 25. Import the required functions
+
+In profiles/views.py:
+
+~~~python
+from django.contrib.auth import authenticate, login, logout
+~~~
+
+Do not confuse these function names with URL routes.
+
+## 26. Create the login view
+
+Add:
+
+~~~python
+def login_view(request):
+    error_message = None
+
+    if request.method == "POST":
+        username = request.POST.get("username", "").strip()
+        password = request.POST.get("password", "")
+
+        user = authenticate(
+            request,
+            username=username,
+            password=password,
+        )
+
         if user is not None:
             login(request, user)
-            return redirect("dashboard")
-    return render(request, "registration/login.html")
+            messages.success(request, "You are now signed in.")
+            return redirect("account_summary")
 
+        error_message = "Invalid username or password."
+
+    return render(
+        request,
+        "profiles/login.html",
+        {"error_message": error_message},
+    )
+~~~
+
+## 27. Understand request.POST.get()
+
+request.POST.get("username", ""):
+- Reads the username value.
+- Returns an empty string if the key is missing.
+- Avoids a KeyError when the field is absent.
+
+strip():
+- Removes whitespace from the beginning and end of the username.
+- It should not be used to alter passwords because spaces may be intentional password characters.
+
+The password is read without strip().
+
+## 28. Understand authenticate()
+
+authenticate() asks the configured authentication backends to verify the supplied credentials.
+
+Example:
+
+~~~python
+user = authenticate(
+    request,
+    username=username,
+    password=password,
+)
+~~~
+
+Possible outcomes:
+- Valid credentials: a user object is returned.
+- Invalid credentials: None is returned.
+- Inactive user: standard authentication behavior normally rejects the account.
+
+The exact credential fields depend on the configured user model and authentication backend.
+
+## 29. Understand login()
+
+login(request, user) stores the authenticated user's identity in the session and rotates or establishes session state as appropriate.
+
+It does not validate the password itself.
+
+The safe order is:
+1. Call authenticate().
+2. Check that a user object was returned.
+3. Call login() with the request and user.
+
+Do not call login() with an arbitrary user ID supplied by a browser.
+
+## 30. Why return a generic error?
+
+A login page should normally show a generic message such as:
+
+"Invalid username or password."
+
+Do not reveal whether:
+- A username exists.
+- A password is wrong.
+- A particular account is registered.
+
+Detailed account-existence messages can help attackers enumerate accounts.
+
+## 31. Create the login template
+
+Create:
+
+profiles/templates/profiles/login.html
+
+~~~html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In</title>
+</head>
+<body>
+    <main>
+        <h1>Sign in</h1>
+
+        {% if error_message %}
+            <p role="alert">{{ error_message }}</p>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div>
+                <label for="username">Username</label>
+                <input
+                    type="text"
+                    id="username"
+                    name="username"
+                    autocomplete="username"
+                    required
+                >
+            </div>
+
+            <div>
+                <label for="password">Password</label>
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    autocomplete="current-password"
+                    required
+                >
+            </div>
+
+            <button type="submit">Sign in</button>
+        </form>
+
+        <p>
+            New user?
+            <a href="{% url 'register' %}">Create an account</a>
+        </p>
+    </main>
+</body>
+</html>
+~~~
+
+## 32. Understand the input attributes
+
+| Attribute | Purpose |
+|---|---|
+| type="text" | Shows a normal text input |
+| type="password" | Masks typed characters |
+| name="username" | Key used in request.POST |
+| id="username" | Connects a label to the input |
+| required | Browser-side required-field check |
+| autocomplete="username" | Helps password managers identify the field |
+| autocomplete="current-password" | Identifies an existing account password |
+
+Browser validation is helpful, but Django must still validate the request.
+
+## 33. Add the login URL
+
+In profiles/urls.py, add:
+
+~~~python
+path("login/", views.login_view, name="login"),
+~~~
+
+Now the route name login exists.
+
+## 34. Test valid login
+
+1. Register a fictional test account.
+2. Open /login/.
+3. Enter the same username.
+4. Enter the matching practice password.
+5. Submit.
+
+Expected:
+- authenticate() returns the test user.
+- login() establishes the session.
+- The browser is redirected to account_summary.
+- The protected account page displays the signed-in user's details.
+
+## 35. Test invalid login
+
+Try:
+- Correct username and wrong password.
+- Unknown username.
+- Empty username.
+- Empty password.
+
+Expected:
+- The user is not signed in.
+- The page displays a generic error or browser required-field validation.
+- The protected account page remains inaccessible to the anonymous visitor.
+
+Do not create an authenticated session after a failed credential check.
+
+---
+
+# PART 5 — LOGOUT SAFELY
+
+## 36. What is logout?
+
+Logout ends the current authenticated session.
+
+After logout:
+- The browser should no longer be associated with the signed-in user.
+- request.user should become anonymous on subsequent requests.
+- Protected views should redirect the visitor to login.
+
+## 37. Why logout should use POST
+
+Logging out changes server-side authentication state.
+
+A normal link performs GET. GET requests should not be used for actions that change state.
+
+Use a form with method POST and a CSRF token.
+
+## 38. Create the logout view
+
+In profiles/views.py:
+
+~~~python
+from django.contrib.auth import logout
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
+~~~
+
+Add:
+
+~~~python
 @login_required
-def dashboard(request):
-    return render(request, "registration/dashboard.html")
+@require_POST
+def logout_view(request):
+    logout(request)
+    messages.success(request, "You have signed out.")
+    return redirect("login")
+~~~
 
-def user_logout(request):
-    if request.method == "POST":
-        logout(request)
-        return redirect("login")
-    return redirect("dashboard")
-```
+Explanation:
+- login_required prevents anonymous visitors from using the logout action.
+- require_POST restricts the view to POST requests.
+- logout(request) ends the authenticated session.
+- redirect("login") sends the browser to the named login route.
 
-### Login form template
+## 39. Create a logout form
 
-```python
-<form method="post">
-    {% csrf_token %}
-    <label>Username</label>
-    <input name="username" required>
-    <label>Password</label>
-    <input type="password" name="password" required>
-    <button type="submit">Login</button>
-</form>
-```
+Add this to the account summary template:
 
-### Logout form template
-
-```python
+~~~html
 <form method="post" action="{% url 'logout' %}">
     {% csrf_token %}
-    <button type="submit">Logout</button>
+    <button type="submit">Sign out</button>
 </form>
-```
+~~~
 
-## 4. Explain the important statements
+Do not replace the form with a normal GET link.
 
-### profiles/views.py
+## 40. Add the logout URL
 
-1. `from django.contrib.auth import authenticate, login, logout` — Imports Django authentication, model or validation components.
-2. `from django.contrib.auth.forms import UserCreationForm` — Imports Django authentication, model or validation components.
-3. `from django.contrib.auth.decorators import login_required` — Imports Django authentication, model or validation components.
-4. `from django.shortcuts import render, redirect` — Imports Django authentication, model or validation components.
-5. ` ` — Part of the example; explain its role in the complete workflow.
-6. `def register(request):` — Defines a view or validation method.
-7. `    form = UserCreationForm(request.POST or None)` — Part of the example; explain its role in the complete workflow.
-8. `    if request.method == "POST" and form.is_valid():` — Part of the example; explain its role in the complete workflow.
-9. `        form.save()` — Part of the example; explain its role in the complete workflow.
-10. `        return redirect("login")` — Part of the example; explain its role in the complete workflow.
-11. `    return render(request, "registration/register.html", {"form": form})` — Part of the example; explain its role in the complete workflow.
-12. ` ` — Part of the example; explain its role in the complete workflow.
-13. `def user_login(request):` — Defines a view or validation method.
-14. `    if request.method == "POST":` — Part of the example; explain its role in the complete workflow.
-15. `        username = request.POST.get("username")` — Part of the example; explain its role in the complete workflow.
-16. `        password = request.POST.get("password")` — Part of the example; explain its role in the complete workflow.
-17. `        user = authenticate(request, username=username, password=password)` — Verifies credentials and returns a user or None.
-18. `        if user is not None:` — Part of the example; explain its role in the complete workflow.
-19. `            login(request, user)` — Associates the authenticated user with the current session.
-20. `            return redirect("dashboard")` — Part of the example; explain its role in the complete workflow.
-21. `    return render(request, "registration/login.html")` — Part of the example; explain its role in the complete workflow.
-22. ` ` — Part of the example; explain its role in the complete workflow.
-23. `@login_required` — Part of the example; explain its role in the complete workflow.
-24. `def dashboard(request):` — Defines a view or validation method.
-25. `    return render(request, "registration/dashboard.html")` — Part of the example; explain its role in the complete workflow.
-26. ` ` — Part of the example; explain its role in the complete workflow.
-27. `def user_logout(request):` — Defines a view or validation method.
-28. `    if request.method == "POST":` — Part of the example; explain its role in the complete workflow.
-29. `        logout(request)` — Ends the current authenticated session.
-30. `        return redirect("login")` — Part of the example; explain its role in the complete workflow.
-31. `    return redirect("dashboard")` — Part of the example; explain its role in the complete workflow.
+In profiles/urls.py:
 
-### Login form template
+~~~python
+path("logout/", views.logout_view, name="logout"),
+~~~
 
-1. `<form method="post">` — Part of the example; explain its role in the complete workflow.
-2. `    {% csrf_token %}` — Part of the example; explain its role in the complete workflow.
-3. `    <label>Username</label>` — Part of the example; explain its role in the complete workflow.
-4. `    <input name="username" required>` — Part of the example; explain its role in the complete workflow.
-5. `    <label>Password</label>` — Part of the example; explain its role in the complete workflow.
-6. `    <input type="password" name="password" required>` — Part of the example; explain its role in the complete workflow.
-7. `    <button type="submit">Login</button>` — Part of the example; explain its role in the complete workflow.
-8. `</form>` — Part of the example; explain its role in the complete workflow.
+## 41. Test logout
 
-### Logout form template
+1. Sign in.
+2. Open the account summary page.
+3. Click Sign out.
+4. Confirm that the browser reaches the login page.
+5. Manually type /account/ in the address bar.
+6. Confirm that the protected page redirects to login.
 
-1. `<form method="post" action="{% url 'logout' %}">` — Part of the example; explain its role in the complete workflow.
-2. `    {% csrf_token %}` — Part of the example; explain its role in the complete workflow.
-3. `    <button type="submit">Logout</button>` — Part of the example; explain its role in the complete workflow.
-4. `</form>` — Part of the example; explain its role in the complete workflow.
+Try opening /logout/ using GET.
 
-## 5. Important concepts and distinctions
+Expected:
+- The route should not perform logout through GET.
+- Django should reject the unsupported method with HTTP 405.
 
-| Concept | Meaning |
-|---|---|
-| Validation | Checks whether supplied data satisfies rules |
-| Constraint | Database rule protecting stored data |
-| Authentication | Verifies who the user is |
-| Authorization | Determines what the user is allowed to do |
-| Password hash | One-way derived representation used for password verification |
-| Session | Server-managed state associated with a browser session |
-| Anonymous user | Request that is not authenticated |
-| Superuser | User with broad administrative permissions |
+A 405 response means the URL exists but the HTTP method is not allowed.
 
-## 6. Common errors and troubleshooting
+---
 
-| Symptom | What to inspect |
-|---|---|
-| Duplicate value saved | Unique constraint and validation |
-| Invalid value accepted | Field validator, full_clean and database constraint |
-| Password stored incorrectly | Use create_user() or set_password() |
-| Login always fails | Username, password, authentication backend and user state |
-| Protected page accessible | login_required and view authorization |
-| Logout does not work | POST method, URL and session configuration |
-| User model import mismatch | get_user_model() and AUTH_USER_MODEL |
+# PART 6 — DISPLAY FEEDBACK WITH DJANGO MESSAGES
 
-## 7. Security and reliability notes
+## 42. Why messages matter
 
+Users need feedback after actions.
+
+Examples:
+- Account created successfully.
+- Login successful.
+- Logout successful.
+- Profile saved.
+- Invalid form submission.
+
+Django's messages framework provides temporary messages that can be displayed after redirects.
+
+## 43. Add a message area to templates
+
+Add this block near the top of the body in login.html and register.html:
+
+~~~html
+{% if messages %}
+    <ul>
+        {% for message in messages %}
+            <li>{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+~~~
+
+This is a preview of Day 52, where the messages framework is studied in detail.
+
+## 44. Confirm messages configuration
+
+Check config/settings.py:
+- django.contrib.messages is in INSTALLED_APPS.
+- MessageMiddleware is enabled.
+- messages context processor is enabled.
+
+Do not add duplicate middleware entries.
+
+---
+
+# PART 7 — COMPLETE URL CONFIGURATION
+
+## 45. Example profiles/urls.py
+
+Your file may contain earlier routes. The following is a compact illustration of the new routes. Merge these entries into your existing urlpatterns.
+
+~~~python
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path("register/", views.register_view, name="register"),
+    path("login/", views.login_view, name="login"),
+    path("logout/", views.logout_view, name="logout"),
+    path("account/", views.account_summary, name="account_summary"),
+]
+~~~
+
+## 46. Confirm config/urls.py
+
+~~~python
+from django.contrib import admin
+from django.urls import include, path
+
+urlpatterns = [
+    path("admin/", admin.site.urls),
+    path("", include("profiles.urls")),
+]
+~~~
+
+If your project has another root route, preserve it.
+
+## 47. Route reference table
+
+| Browser path | URL name | View | Method |
+|---|---|---|---|
+| /register/ | register | register_view | GET, POST |
+| /login/ | login | login_view | GET, POST |
+| /logout/ | logout | logout_view | POST |
+| /account/ | account_summary | account_summary | GET |
+
+---
+
+# PART 8 — SECURITY CHECKLIST
+
+## 48. Password handling
+
+- Use Django's user creation form or manager.
 - Never store raw passwords.
-- Use Django's password management APIs.
-- Keep CSRF protection enabled for browser POST forms.
-- Protect views that contain private data.
-- Authentication does not automatically grant permission to every record.
-- Do not expose account existence or sensitive authentication details unnecessarily.
-- Keep secret keys and database credentials outside source control.
-- Use HTTPS in production.
+- Never log submitted passwords.
+- Never display password hashes.
+- Do not email a user's existing password.
+- Use password reset workflows rather than asking for the old password when it is forgotten.
 
-## 8. Industry scenario
+## 49. CSRF protection
 
-Registration creates an account after validating the submitted details. Login verifies credentials and creates an authenticated session. Logout ends the current authenticated session. Django provides UserCreationForm, authenticate(), login(), logout() and login_required for common workflows.
+Every internal HTML form that sends POST data should include the CSRF token.
 
-## 9. Approved mini-project — User Authentication Application
+~~~html
+<form method="post">
+    {% csrf_token %}
+    ...
+</form>
+~~~
 
-**Objective:** User Authentication Application.
+Do not disable CSRF protection to make a form work.
 
-### Required tasks
+## 50. Authentication versus authorization
 
-1. Use UserCreationForm for account registration.
-2. Display the form on GET and bind POST data on submission.
-3. Save the user only after form validation.
-4. Use authenticate() to verify submitted credentials.
-5. Call login() only when authenticate() returns a user.
-6. Protect a dashboard using login_required.
-7. Use POST for logout and include CSRF token.
-8. Test valid, invalid and unauthenticated access.
+login_required proves that the visitor is signed in.
 
-### Suggested structure
+It does not prove:
+- The user owns a particular employee record.
+- The user can edit every product.
+- The user can access staff-only pages.
+- The user can delete another user's data.
 
-```text
-projects/day_47/
-├── README.md
-├── config/
-└── profiles/
-    ├── models.py
-    ├── forms.py
-    ├── views.py
-    ├── urls.py
-    └── templates/
-```
+Add the correct permission or ownership check for each sensitive operation.
 
-### Validation checklist
+## 51. Safe redirect handling
 
-- [ ] Valid registration creates a user.
-- [ ] Duplicate or invalid registration displays form errors.
-- [ ] Valid login creates an authenticated session.
-- [ ] Invalid login does not authenticate the user.
-- [ ] Anonymous users are redirected from the protected dashboard.
-- [ ] Logout ends the session using POST.
+Use named routes such as redirect("account_summary") for fixed destinations.
+
+If you accept a next URL from query parameters or form data, validate that it is safe before redirecting. Do not redirect users to arbitrary untrusted external URLs.
+
+## 52. Account enumeration
+
+Use generic login errors. Avoid responses that reveal whether a username is registered.
+
+Registration can also require careful messaging and throttling in production systems.
+
+## 53. Production considerations
+
+This lesson uses Django's local development server and local database.
+
+A production deployment also needs:
+- HTTPS.
+- Secure cookie settings.
+- Appropriate password validators.
+- Rate limiting or abuse controls.
+- Email verification where required.
+- Monitoring and logging without credentials.
+- Secure secret management.
+- A tested account recovery process.
+
+Do not claim the local demo is production-ready.
+
+---
+
+# PART 9 — TEST THE FULL JOURNEY
+
+## 54. Manual test plan
+
+| Test | Action | Expected result |
+|---|---|---|
+| Open registration | GET /register/ | Registration form appears |
+| Valid registration | Submit unused username and valid matching passwords | Account created |
+| Duplicate username | Register same username again | Validation error |
+| Password mismatch | Enter different password values | Validation error |
+| Weak password | Submit a password rejected by validators | Validation error |
+| Open login | GET /login/ | Login form appears |
+| Valid login | Submit correct credentials | Signed-in session |
+| Wrong password | Submit incorrect password | Generic error |
+| Unknown user | Submit unknown username | Generic error |
+| Protected page anonymous | GET /account/ while signed out | Redirect to login |
+| Protected page signed in | GET /account/ after login | Account summary appears |
+| Logout POST | Submit logout form | Session ends |
+| Logout GET | Open /logout/ with GET | Method not allowed |
+| Protected page after logout | GET /account/ | Redirect to login |
+
+## 55. Add automated tests
+
+Open profiles/tests.py.
+
+If earlier tests exist, keep them. Add the following class and merge imports:
+
+~~~python
+from django.contrib.auth import get_user_model
+from django.test import TestCase
+from django.urls import reverse
+
+User = get_user_model()
+
+
+class AuthenticationFlowTests(TestCase):
+    def test_registration_page_loads(self):
+        response = self.client.get(reverse("register"))
+        self.assertEqual(response.status_code, 200)
+
+    def test_valid_registration_creates_user(self):
+        response = self.client.post(
+            reverse("register"),
+            {
+                "username": "register_test_user",
+                "password1": "Test-Only-Password-123!",
+                "password2": "Test-Only-Password-123!",
+            },
+        )
+
+        self.assertRedirects(response, reverse("login"))
+        self.assertTrue(
+            User.objects.filter(username="register_test_user").exists()
+        )
+
+    def test_invalid_registration_does_not_create_user(self):
+        response = self.client.post(
+            reverse("register"),
+            {
+                "username": "mismatch_user",
+                "password1": "Test-Only-Password-123!",
+                "password2": "Different-Password-456!",
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(
+            User.objects.filter(username="mismatch_user").exists()
+        )
+
+    def test_valid_login_authenticates_user(self):
+        User.objects.create_user(
+            username="login_test_user",
+            password="Test-Only-Password-123!",
+        )
+
+        response = self.client.post(
+            reverse("login"),
+            {
+                "username": "login_test_user",
+                "password": "Test-Only-Password-123!",
+            },
+        )
+
+        self.assertRedirects(response, reverse("account_summary"))
+        self.assertTrue(
+            "_auth_user_id" in self.client.session
+        )
+
+    def test_invalid_login_does_not_authenticate(self):
+        User.objects.create_user(
+            username="wrong_password_user",
+            password="Test-Only-Password-123!",
+        )
+
+        response = self.client.post(
+            reverse("login"),
+            {
+                "username": "wrong_password_user",
+                "password": "Wrong-Password-456!",
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(
+            "_auth_user_id" in self.client.session
+        )
+
+    def test_logout_requires_post(self):
+        user = User.objects.create_user(
+            username="logout_test_user",
+            password="Test-Only-Password-123!",
+        )
+        self.client.force_login(user)
+
+        response = self.client.get(reverse("logout"))
+
+        self.assertEqual(response.status_code, 405)
+
+    def test_logout_ends_session(self):
+        user = User.objects.create_user(
+            username="logout_post_user",
+            password="Test-Only-Password-123!",
+        )
+        self.client.force_login(user)
+
+        response = self.client.post(reverse("logout"))
+
+        self.assertRedirects(response, reverse("login"))
+        self.assertFalse(
+            "_auth_user_id" in self.client.session
+        )
+~~~
+
+Important:
+- These tests assume the exact route names and view behavior described in this lesson.
+- The test user passwords are fictional and exist only in Django's temporary test database.
+- Do not copy test credentials into a production database.
+- If you change a redirect destination, update the corresponding assertion.
+
+## 56. Run the tests
+
+~~~powershell
+python manage.py check
+python manage.py test profiles
+~~~
+
+Read the test summary. A passing run should end with OK.
+
+If a test fails:
+1. Identify the failing test method.
+2. Read the assertion message.
+3. Check the view and URL name.
+4. Check the submitted form field names.
+5. Re-run the single test or the app test suite.
+
+## 57. Test with two different users
+
+Create two fictional accounts.
+
+Test:
+- User A registers and signs in.
+- User A sees their own account summary.
+- User A signs out.
+- User B signs in.
+- User B sees their own account summary.
+
+Do not hard-code one user's ID or username into the view.
+
+---
+
+# PART 10 — COMMON ERRORS
+
+## 58. TemplateDoesNotExist
+
+Cause:
+- Template folder path is wrong.
+- File name is wrong.
+- App is not registered.
+- APP_DIRS is not enabled.
+
+Expected paths:
+- profiles/templates/profiles/register.html
+- profiles/templates/profiles/login.html
+
+## 59. NoReverseMatch
+
+Cause:
+- URL name does not exist.
+- Name is misspelled.
+- App URL file is not included.
+- Duplicate or conflicting URL configuration.
+
+Check:
+1. profiles/urls.py.
+2. config/urls.py.
+3. The exact route name used by redirect() and {% url %}.
+4. Run python manage.py check.
+
+## 60. CSRF verification failed
+
+Cause:
+- Missing {% csrf_token %}.
+- Form is not submitting to the expected same-site endpoint.
+- CSRF middleware was removed or changed.
+- Browser cookies or session state are not working as expected.
+
+Fix:
+- Restore CSRF middleware.
+- Include the token inside the POST form.
+- Do not disable CSRF protection as a shortcut.
+
+## 61. User is created but login fails
+
+Check:
+- Did registration actually save the account?
+- Is the username typed exactly?
+- Is the password the same?
+- Is the account active?
+- Is the authentication backend configured?
+- Did the account creation use UserCreationForm or create_user()?
+
+Do not inspect or attempt to decode the password hash.
+
+## 62. Login succeeds but protected page fails
+
+Check:
+- LOGIN_REDIRECT_URL points to an existing route.
+- The account summary route exists.
+- The account summary template exists.
+- AuthenticationMiddleware is enabled.
+- The view uses request.user.
+
+## 63. Logout returns 405
+
+A 405 on GET is expected in this lesson because logout is restricted to POST.
+
+Use the logout form with:
+- method="post"
+- action pointing to logout
+- {% csrf_token %}
+
+## 64. Form errors do not appear
+
+Check that the template displays:
+- form.non_field_errors
+- individual field errors
+- the bound form passed from the view
+
+When form.is_valid() is False, render the same bound form so its errors remain available.
+
+---
+
+# PART 11 — APPROVED MINI-PROJECT
+
+## 65. User Authentication Application
+
+### Business problem
+
+Build a small authentication feature for a training institute portal.
+
+A new student must be able to register. An existing student must be able to sign in. Signed-in users can access their account summary. Users can sign out safely.
+
+### Functional requirements
+
+1. Registration page.
+2. Username and password confirmation.
+3. Password validation.
+4. Login page.
+5. Credential verification through authenticate().
+6. Session creation through login().
+7. Protected account page.
+8. POST-only logout.
+9. CSRF token on every internal POST form.
+10. Generic invalid-login message.
+11. Registration and login success feedback.
+12. Automated tests for success and failure cases.
+
+### File checklist
+
+| File | Work |
+|---|---|
+| profiles/views.py | Registration, login and logout views |
+| profiles/urls.py | Register, login and logout routes |
+| profiles/templates/profiles/register.html | Registration form |
+| profiles/templates/profiles/login.html | Login form |
+| profiles/templates/profiles/account_summary.html | Protected account page |
+| config/settings.py | Redirect settings and auth configuration |
+| profiles/tests.py | Authentication tests |
+
+### Acceptance criteria
+
+- [ ] A new fictional user can register.
+- [ ] Duplicate username is rejected.
+- [ ] Password mismatch is rejected.
+- [ ] Valid credentials sign in.
+- [ ] Invalid credentials do not sign in.
+- [ ] Anonymous users cannot open account summary.
+- [ ] Authenticated users can open account summary.
+- [ ] Logout uses POST.
+- [ ] A logged-out user cannot reopen the protected page.
+- [ ] No password or password hash is displayed.
+- [ ] Tests pass.
+- [ ] The learner can explain the complete request flow.
 
 ### Submission evidence
 
-- Source code and URL patterns.
-- Registration and login screenshots using test accounts.
-- Valid and invalid test results.
-- Database evidence showing safe user creation.
-- README with setup instructions and security notes.
-- No passwords, access tokens or private data in the repository.
+- Source code.
+- Browser screenshots using fictional data.
+- Terminal output from system checks and tests.
+- README with setup instructions.
+- Test table with actual outcomes.
+- Short explanation of one failure and its fix.
 
-## 10. AI-assisted implementation
+---
 
-**Planning prompt:** "Help me plan User Authentication Application. List the forms, views, URLs, templates, validation rules and test cases. Do not provide a complete solution."
+# PART 12 — SELF-ASSESSMENT
 
-**Guided prompt:** "Guide me through one authentication or validation step at a time. Explain the security implications and wait for my test result."
+## 66. Short-answer questions
 
-**Debugging prompt:** "Here are my exact view, form, settings and error. Identify the cause without asking me to share any real password or secret."
+1. What is registration?
+2. What is login?
+3. Why are registration and login different?
+4. What does UserCreationForm provide?
+5. What does form.is_valid() do?
+6. What happens when form.save() is called?
+7. What does authenticate() return for valid credentials?
+8. What does authenticate() return for invalid credentials?
+9. Why must login() be called after authenticate()?
+10. What does logout() do?
+11. Why should logout use POST?
+12. What does {% csrf_token %} do?
+13. Why should a login error message be generic?
+14. What does a 405 response mean?
+15. Why should a protected page be tested after logout?
 
-**Review prompt:** "Review this local test implementation for validation, authentication, authorization, CSRF and secret handling."
+## 67. Self-check answers
 
-## 11. Five daily MCQs
+1. Registration creates a new account.
+2. Login verifies credentials and establishes an authenticated session.
+3. One creates an account; the other uses an existing account.
+4. It provides standard user creation fields and validation.
+5. It validates submitted form values.
+6. It saves the new user using the form's user-creation behavior.
+7. It returns a user object.
+8. It returns None.
+9. authenticate verifies identity; login establishes session state.
+10. It ends the authenticated session.
+11. Logout changes server-side state and should not be triggered by a safe GET request.
+12. It includes a CSRF token for protection of state-changing form submissions.
+13. It avoids revealing account existence to an attacker.
+14. The URL exists but does not allow the requested HTTP method.
+15. It verifies that the session has actually ended and protected access is blocked.
 
-**Q1. What is the main purpose of today's concept?**  
-A. Protect data integrity or manage user identity securely.  
-B. Replace HTTP.  
-C. Store passwords as plaintext.  
-D. Disable database constraints.  
-**Answer: A.** The feature protects application data and user workflows.
+## 68. MCQ assessment
 
-**Q2. What should be used for password creation?**  
-A. Store raw password in a text field.  
-B. Django's create_user() or set_password() API.  
-C. Put the password in settings.py.  
-D. Commit the password to Git.  
-**Answer: B.** Django provides password hashing APIs.
+### Question 1
+Which Django form is commonly used for standard user registration?
 
-**Q3. What is the difference between authentication and authorization?**  
-A. They mean the same thing.  
-B. Authentication is database sorting.  
-C. Authentication verifies identity; authorization checks permissions.  
-D. Authorization creates passwords.  
-**Answer: C.** They are separate security decisions.
+- A. ModelAdmin
+- B. UserCreationForm
+- C. LoginRequired
+- D. QueryForm
 
-**Q4. What should happen before data is saved?**  
-A. Ignore all validation.  
-B. Disable constraints.  
-C. Trust the browser.  
-D. Validate the data and enforce important integrity rules.  
-**Answer: D.** Validation and constraints protect data.
+**Answer: B.** UserCreationForm includes standard account creation validation.
 
-**Q5. What is the strongest evidence of completion?**  
-A. Valid and invalid workflows are tested and security rules are explained.  
-B. A project title only.  
-C. A long code file.  
-D. A screenshot of the login button.  
-**Answer: A.** Test behavior and explain security choices.
+### Question 2
+Which function verifies credentials?
 
-## 12. Interview preparation
+- A. login()
+- B. logout()
+- C. authenticate()
+- D. redirect()
 
-**Q1. Explain user registration, login and logout.**  
-**Answer:** Registration creates an account after validating the submitted details. Login verifies credentials and creates an authenticated session. Logout ends the current authenticated session. Django provides UserCreationForm, authenticate(), login(), logout() and login_required for common workflows.
+**Answer: C.** authenticate() checks credentials using configured authentication backends.
 
-**Q2. What is one security risk?**  
-**Answer:** Explain the relevant risk such as unsafe password handling, missing authorization, missing CSRF protection or invalid data reaching the database.
+### Question 3
+Which function establishes the authenticated session?
 
-**Q3. How do you verify the workflow?**  
-**Answer:** Use test accounts and test records. Exercise valid and invalid cases, inspect the session or database result and verify access restrictions.
+- A. login()
+- B. authenticate()
+- C. render()
+- D. get_user_model()
 
-**Follow-up:** Why is a successful login not proof of authorization?  
-**Answer:** Authentication proves identity; authorization must still check whether that user has permission for the requested operation or record.
+**Answer: A.** login() associates the user with the request session.
 
-## 13. Completion checklist
+### Question 4
+Which method should be used for a logout form?
 
-- [ ] Explain the concept.
-- [ ] Implement the example.
-- [ ] Test valid and invalid cases.
-- [ ] Verify data or session behavior.
-- [ ] Complete User Authentication Application.
-- [ ] Review security notes.
-- [ ] Complete five MCQs.
-- [ ] Answer interview questions.
-- [ ] Submit code, README and evidence without secrets.
+- A. GET
+- B. POST
+- C. TRACE
+- D. OPTIONS
 
-**Next lesson:** Day 48.
+**Answer: B.** Logout changes authentication state and should be submitted using POST.
+
+### Question 5
+What is the purpose of CSRF token in a POST form?
+
+- A. It stores the password.
+- B. It protects against cross-site request forgery.
+- C. It creates the user.
+- D. It sorts the database.
+
+**Answer: B.** The token helps Django verify that the request originated from an expected form flow.
+
+---
+
+# PART 13 — INTERVIEW PREPARATION
+
+## 69. Explain user registration in Django
+
+**Answer:** Registration collects account details, validates the values and creates a user. Django's UserCreationForm provides standard username and password confirmation behavior. Saving the valid form creates the user through Django's password-handling workflow.
+
+**Follow-up:** Why not directly insert the submitted password into the User model?
+
+**Answer:** Direct assignment can store the raw password. Use Django's user creation APIs.
+
+## 70. Explain authenticate() and login()
+
+**Answer:** authenticate() verifies submitted credentials and returns a user object if they are valid. login() establishes the authenticated session for that user. They perform different responsibilities.
+
+**Follow-up:** What happens when authenticate() returns None?
+
+**Answer:** The credentials were not accepted. Do not call login().
+
+## 71. Why should logout be POST-only?
+
+**Answer:** Logout changes the user's authentication state. GET requests should be safe and should not trigger state-changing actions. A POST form with a CSRF token is the appropriate browser interaction.
+
+**Follow-up:** What HTTP status can a disallowed GET request produce?
+
+**Answer:** HTTP 405 Method Not Allowed.
+
+## 72. What is the difference between a bound and unbound form?
+
+**Answer:** A bound form has submitted data attached to it and can be validated. An unbound form is normally an empty form shown before submission.
+
+**Follow-up:** Why render the bound form again after invalid submission?
+
+**Answer:** It contains validation errors that the template can display.
+
+## 73. Scenario: registration saves duplicate users
+
+**Answer:** The form or model validation is not being applied correctly, or the chosen identity field is not configured as unique. Use the appropriate Django form and database uniqueness rule. Do not rely only on browser-side checks.
+
+## 74. Scenario: login always fails
+
+**Answer:** Check the exact submitted field names, password, account active status, authentication backend and whether the account was created through Django's password APIs. Do not attempt to read the stored hash as if it were the original password.
+
+## 75. Scenario: logout link signs a user out through GET
+
+**Answer:** Replace the GET link with a POST form, include the CSRF token, and restrict the view to POST.
+
+---
+
+# PART 14 — INDEPENDENT COMPLETION
+
+## 76. Explain the journey without reading
+
+Draw the flow from registration to logout.
+
+Include:
+- Registration form.
+- Form validation.
+- User creation.
+- Login form.
+- authenticate().
+- login().
+- Protected page.
+- POST logout.
+- Anonymous request.
+
+## 77. Controlled debugging
+
+In a local practice copy only:
+1. Remove the CSRF token from a test form and observe the failure.
+2. Restore it.
+3. Change a URL name and observe the reverse-resolution error.
+4. Restore the name.
+5. Submit a mismatched password pair.
+6. Explain the validation message.
+7. Sign in with a wrong password.
+8. Explain why the session was not created.
+
+Never leave the intentional mistakes in the final submission.
+
+## 78. Final checklist
+
+- [ ] I understand the difference between registration and login.
+- [ ] I can explain UserCreationForm.
+- [ ] I can explain form validation.
+- [ ] I can explain authenticate().
+- [ ] I can explain login().
+- [ ] I can explain logout().
+- [ ] I used CSRF tokens.
+- [ ] I used POST for logout.
+- [ ] I tested invalid credentials.
+- [ ] I tested anonymous access.
+- [ ] I tested logout and subsequent access.
+- [ ] I completed User Authentication Application.
+- [ ] I ran the automated tests.
+- [ ] I completed the MCQs and interview questions.
+
+**Next lesson:** Day 48 — Password Management, Password Reset and Secure Password Storage.
+
+---
+
+## 79. Official references
+
+1. Django authentication: https://docs.djangoproject.com/en/5.2/topics/auth/
+2. Built-in authentication views and forms: https://docs.djangoproject.com/en/5.2/topics/auth/default/
+3. Password management: https://docs.djangoproject.com/en/5.2/topics/auth/passwords/
+4. CSRF protection: https://docs.djangoproject.com/en/5.2/howto/csrf/
+5. Testing tools: https://docs.djangoproject.com/en/5.2/topics/testing/tools/
+
+**Version reminder:** This lesson targets Django 5.2.19. Re-run the tests if the project version or authentication configuration changes.
