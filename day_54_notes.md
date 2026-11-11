@@ -970,12 +970,24 @@ def job_detail(request, pk):
             applicant=request.user,
         ).exists()
 
+    can_manage_job = (
+        request.user.is_authenticated
+        and (
+            request.user.is_superuser
+            or (
+                request.user.has_perm("jobs.change_job")
+                and job.posted_by_id == request.user.pk
+            )
+        )
+    )
+
     return render(
         request,
         "jobs/job_detail.html",
         {
             "job": job,
             "already_applied": already_applied,
+            "can_manage_job": can_manage_job,
         },
     )
 ~~~
@@ -1575,7 +1587,7 @@ This template assumes the profiles app already provides login, logout and regist
         </p>
     {% endif %}
 
-    {% if user.is_authenticated and job.posted_by_id == user.pk or user.is_superuser %}
+    {% if can_manage_job %}
         <a href="{% url 'job_update' job.pk %}">Edit job</a>
 
         <a href="{% url 'job_applicants' job.pk %}">
