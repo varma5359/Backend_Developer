@@ -985,3 +985,7 @@ Without reading the notes, explain:
 10. How save(commit=False) works.
 11. Why instance is passed for updates.
 12. When save_m2m is needed.
+
+## 53. Submission reflection
+
+Document one invalid form submission. Include the submitted values, form errors, whether cleaned_data was available, whether a database write occurred, and the exact user-facing feedback. Then show the corrected valid submission.
