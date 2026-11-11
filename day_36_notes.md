@@ -215,7 +215,7 @@ Discuss:
 - What should happen if a department is deleted?
 - What constraints should the database enforce?
 
-## 13. Approved mini-project — Admin-Based Inventory Manager
+## 13. Approved mini-project — Employee Admin Manager
 
 ### Objective
 Build the relationship/query/admin feature described in today's lesson using the existing Student Portal.
@@ -348,8 +348,12 @@ D. Only when they can search
 - [ ] I submitted code and evidence.
 - [ ] I can explain one data integrity concern.
 
-## 18. Trainer validation
+## 18. Independent completion test
 
-Ask the student to create or query records independently. Change one relationship or filter and ask them to predict the outcome. Do not mark complete based only on copied model code.
+1. Create or query records without copying the entire example.
+2. Explain the file and data flow in your own words.
+3. Change one admin setting or query filter and predict the result before running it.
+4. Compare the actual result with your prediction.
+5. Diagnose and fix one controlled mistake. Do not mark the lesson complete based only on copied code.
 
 **Next lesson:** Day 37 — Django ORM Fundamentals and Querying Records
