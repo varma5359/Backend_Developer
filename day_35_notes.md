@@ -960,3 +960,17 @@ Before a migration is merged, answer:
 
 Keep the answers with the pull request or change record.
 
+
+## 58. Explain-back assessment
+
+Without reading the notes, explain:
+1. Why a model edit does not directly change the database.
+2. What makemigrations creates.
+3. What migrate applies.
+4. How showmigrations helps.
+5. Why inspect SQL.
+6. What migration dependencies represent.
+7. How data migrations differ from schema migrations.
+8. Why existing rows matter when adding required fields.
+9. Why migration conflicts occur.
+10. Why backups are separate from Git history.
