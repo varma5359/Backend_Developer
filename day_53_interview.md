@@ -1,59 +1,95 @@
-# Day 53: Interview Questions — Pagination, Search and Filtering in Django Applications
+# Day 53: Interview Guide — Pagination, Search and Filtering in Django Applications
 
-**Pathway:** Python Backend Developer Career Pathway (Django)  
-**Phase:** 4 — Django ORM, Forms and Authentication  
-**Related notes:** [Day 53 class notes](day_53_notes.md)  
-**Approved mini-project:** Paginated Product Catalog
+**Related class notes:** [Day 53 notes](day_53_notes.md)  
+**Approved mini-project:** Paginated Product Catalog  
+**Level:** Beginner to Intermediate
 
-## Core technical questions
+## 1. Core technical questions
 
-### Q1. Explain pagination, search and filtering in django applications.
-**Answer:** Pagination divides a large result set into manageable pages. Django's Paginator works with QuerySets and other sliceable data. Search and filtering can be implemented using validated GET parameters and ORM lookups. Query parameters should be handled safely and predictable ordering should be used.
+### Q1. What is pagination?
+**Answer:** Pagination divides a large result set into smaller pages. It reduces the number of records displayed in one response and helps keep pages manageable.
 
-### Q2. Which Django components are involved?
-**Answer:** profiles/views.py, profiles/templates/profiles/employee_search.html. Explain how each component contributes to the feature.
+### Q2. What is Django's Paginator?
+**Answer:** It is a helper that divides a list or QuerySet into pages and provides page metadata such as total count, page range and previous/next information.
 
-### Q3. What is one common implementation mistake?
-**Answer:** Results are sorted predictably. Test the feature with realistic data and verify the database result.
+### Q3. What is a Page object?
+**Answer:** It represents the selected page and provides the objects for that page along with navigation methods.
 
-### Q4. How do you verify the user workflow?
-**Answer:** Use separate test accounts, submit valid and invalid inputs, inspect the response and verify the stored records.
+### Q4. What is the difference between page() and get_page()?
+**Answer:** page() raises exceptions for invalid or out-of-range values. get_page() handles those cases and returns a fallback page.
 
-### Q5. What production concern should you mention?
-**Answer:** Data integrity, permissions, privacy, secure configuration and integration test coverage.
+### Q5. Why should a large QuerySet not be converted to a list before pagination?
+**Answer:** Converting it to a list loads all matching records into application memory. Passing the QuerySet directly allows database slicing for the requested page.
 
-## Scenario questions
+### Q6. Why is GET appropriate for search?
+**Answer:** Search reads data. GET makes the search URL shareable and bookmarkable and allows the browser to repeat the same query.
 
-### Q6. A feature works for one user but fails for another. What do you inspect?
-**Suggested answer:** Check the active user model, group membership, permissions, session, request context and database ownership rules.
+### Q7. What does name__icontains mean?
+**Answer:** It is a Django ORM lookup that matches a case-insensitive substring in the name field.
 
-### Q7. How do you prevent the browser from choosing a protected owner field?
-**Suggested answer:** Exclude the field from the user-facing form and assign it server-side from request.user.
+### Q8. What is a Q object?
+**Answer:** It represents a query condition and supports complex logic such as OR and NOT. For example, search can match product name or SKU.
 
-## Project viva — Paginated Product Catalog
+### Q9. How are multiple filter() keyword conditions combined?
+**Answer:** They are normally combined with AND. Q objects can be used to express OR conditions.
 
-1. What is the business problem?
-2. Which models and relationships are used?
-3. Which form fields are exposed?
-4. How is authentication or ownership handled?
-5. Which database constraints are important?
-6. How are valid and invalid journeys tested?
-7. What would you improve for production?
+### Q10. Why use Decimal for price filters?
+**Answer:** Decimal is appropriate for decimal monetary values. Binary floating-point can represent some decimal fractions imprecisely.
 
-## Rapid revision
+### Q11. Why use an allowlist for sorting?
+**Answer:** It restricts browser input to known supported ordering choices. Do not pass arbitrary sort expressions from the URL directly into order_by().
 
-- **1.** Create a queryset with predictable ordering.
-- **2.** Read the search term from request.GET.
-- **3.** Use Q objects to search multiple fields with OR logic.
-- **4.** Create a Paginator with a suitable page size.
-- **5.** Read the requested page number.
-- **6.** Use get_page() to handle invalid or missing page values safely.
-- **7.** Render page_obj and navigation controls.
-- **8.** Test empty search, matching search and out-of-range pages.
+### Q12. Why is stable ordering important?
+**Answer:** It gives predictable page boundaries. Add a unique tie-breaker such as the primary key when sorting by a non-unique field.
 
-## Readiness checklist
-- [ ] Explain the concept.
-- [ ] Identify connected Django components.
-- [ ] Demonstrate a complete workflow.
-- [ ] Explain validation and permissions.
-- [ ] Present Paginated Product Catalog and evidence.
+### Q13. Why preserve query parameters in pagination links?
+**Answer:** Otherwise the next page may lose the user's search and filters and show a different result set.
+
+### Q14. What is offset-based pagination?
+**Answer:** It skips a number of rows and returns the next subset. It is simple but deep offsets can become expensive on very large datasets.
+
+## 2. Debugging questions
+
+### Q15. Page 2 shows all products instead of filtered results.
+**Answer:** The pagination link probably includes only the page parameter. Preserve the existing GET parameters and update only page.
+
+### Q16. Invalid price crashes the view.
+**Answer:** Parse the value with Decimal inside a try/except for InvalidOperation and show a validation message.
+
+### Q17. User submits an unsupported sort field.
+**Answer:** Use an allowlist dictionary and fall back to a safe default.
+
+### Q18. Products move between pages unexpectedly.
+**Answer:** Use stable ordering with a unique tie-breaker. Concurrent inserts and updates can still affect offset-based pages.
+
+## 3. Scenario questions
+
+### Q19. A catalog has 500,000 records and page 10,000 is slow.
+**Answer:** Measure the query and consider cursor/keyset pagination or another strategy suited to the access pattern. Do not assume changing the template alone will solve it.
+
+### Q20. A user requests 1,000,000 items per page.
+**Answer:** Do not trust a client-supplied page size. Use a fixed size or an allowlist of small values.
+
+## 4. Mini-project discussion — Paginated Product Catalog
+
+Demonstrate:
+1. Active product QuerySet.
+2. Paginator with a fixed page size.
+3. Search by name or SKU.
+4. Category and price filters.
+5. Sort allowlist.
+6. Filter preservation in page links.
+7. Empty and invalid result behavior.
+8. Tests.
+
+## 5. Readiness checklist
+
+- [ ] I can explain Paginator and Page.
+- [ ] I can explain GET search parameters.
+- [ ] I can use ORM lookups and Q objects.
+- [ ] I can validate filters.
+- [ ] I can sort using an allowlist.
+- [ ] I can preserve filters across pages.
+- [ ] I can demonstrate Paginated Product Catalog.
+
+**Related notes:** [Day 53 class notes](day_53_notes.md)
