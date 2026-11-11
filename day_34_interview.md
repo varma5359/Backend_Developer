@@ -71,3 +71,29 @@ Before the interview, be able to:
 - [ ] I can present Employee Management Model with real evidence.
 
 **Readiness rule:** If you cannot reproduce the demonstration, return to the corresponding class notes, repeat the steps and record the output.
+## Additional technical and scenario questions
+
+### Q5. What is a Django model?
+**Answer:** A Python class that describes application data and its database fields and relationships.
+
+### Q6. What is the difference between a model class and instance?
+**Answer:** The class describes the data structure. An instance represents one object with particular values.
+
+### Q7. Why use DecimalField for salary?
+**Answer:** It stores fixed-precision decimal values and avoids binary floating-point precision issues.
+
+### Q8. What is the difference between null and blank?
+**Answer:** null controls database NULL storage. blank controls whether validation permits an empty value.
+
+### Q9. What does unique=True do?
+**Answer:** It enforces uniqueness for a field at database level and participates in model/form validation.
+
+### Q10. What does choices provide?
+**Answer:** It defines a set of allowed values and human-readable labels for a model field.
+
+### Q11. Scenario: phone numbers lose leading zeros.
+**Answer:** The field was likely modeled as a number. Store phone numbers as text because they are identifiers, not quantities.
+
+### Q12. Scenario: department names have inconsistent spelling.
+**Answer:** Model Department as a separate entity and connect employees using a ForeignKey instead of repeating free text.
+
