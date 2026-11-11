@@ -71,3 +71,29 @@ Before the interview, be able to:
 - [ ] I can present Employee Query Explorer with real evidence.
 
 **Readiness rule:** If you cannot reproduce the demonstration, return to the corresponding class notes, repeat the steps and record the output.
+## Additional technical and scenario questions
+
+### Q5. What is QuerySet laziness?
+**Answer:** Django can build a QuerySet without immediately retrieving rows. The query is evaluated when the results are needed.
+
+### Q6. What is the difference between filter() and get()?
+**Answer:** filter() returns a QuerySet with zero or more matches. get() expects exactly one object and raises exceptions otherwise.
+
+### Q7. What does exists() do?
+**Answer:** It checks whether at least one matching row exists without loading all matching model objects.
+
+### Q8. What is the difference between values() and values_list()?
+**Answer:** values() returns dictionaries. values_list() returns tuples or a flat list for a single field.
+
+### Q9. What is a Q object?
+**Answer:** It represents complex query conditions, including OR and NOT.
+
+### Q10. What is an F expression?
+**Answer:** It refers to a model field value inside a database expression, allowing field-to-field comparisons or updates.
+
+### Q11. Scenario: get() raises MultipleObjectsReturned.
+**Answer:** The lookup is not unique. Use a unique field or filter() when multiple records are expected.
+
+### Q12. Scenario: a list page runs one query per row.
+**Answer:** Inspect related-object access and consider select_related or prefetch_related based on relationship type.
+
