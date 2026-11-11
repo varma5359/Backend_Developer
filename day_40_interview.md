@@ -71,3 +71,29 @@ Before the interview, be able to:
 - [ ] I can present Secure Form Validation Application with real evidence.
 
 **Readiness rule:** If you cannot reproduce the demonstration, return to the corresponding class notes, repeat the steps and record the output.
+## Additional technical and scenario questions
+
+### Q5. Why is browser validation not enough?
+**Answer:** Browser-side checks can be bypassed. Django must validate every submitted value on the server.
+
+### Q6. What is ValidationError?
+**Answer:** Django's exception used to communicate validation failures in fields, forms and models.
+
+### Q7. What does CSRF stand for?
+**Answer:** Cross-Site Request Forgery.
+
+### Q8. What does csrf_token do?
+**Answer:** It adds a token to a browser form that Django uses as part of CSRF request validation.
+
+### Q9. Is CSRF the same as authentication?
+**Answer:** No. CSRF protection helps defend against unwanted cross-site requests. Authentication verifies identity.
+
+### Q10. Why should GET not delete a record?
+**Answer:** GET should be safe and should not change server state. Use a protected POST request for deletion.
+
+### Q11. Scenario: form POST receives 403.
+**Answer:** Check the CSRF token, middleware, browser cookie and request origin. Do not disable CSRF middleware as a shortcut.
+
+### Q12. Scenario: invalid form is saved.
+**Answer:** The view is likely saving without checking form.is_valid(). Save only after successful validation.
+
