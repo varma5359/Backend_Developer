@@ -959,3 +959,17 @@ Submit:
 - Invalid form screenshot.
 - Explanation of CSRF versus authentication.
 - Explanation of why disabling CSRF is unsafe.
+
+## 53. Final security assessment
+
+Explain why each control is separate:
+- CSRF token.
+- Authentication.
+- Authorization.
+- Form validation.
+- Database constraints.
+
+For one POST endpoint, demonstrate that a valid CSRF token does not permit an unauthenticated or unauthorized user to perform an action.
+
+The endpoint must still enforce its own authentication, permission and validation rules.
+
