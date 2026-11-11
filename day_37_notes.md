@@ -981,3 +981,17 @@ For each important QuerySet, document:
 
 Do not optimize based on assumptions alone. Measure a representative workflow and preserve the same business result.
 
+
+## 55. Explain-back assessment
+
+Without reading the notes, explain:
+1. What a QuerySet represents.
+2. What lazy evaluation means.
+3. How filter and exclude differ.
+4. When get is appropriate.
+5. Why exists and count are useful.
+6. How order_by works.
+7. How values differs from values_list.
+8. How Q represents OR conditions.
+9. How F references a database field.
+10. How aggregate differs from annotate.
