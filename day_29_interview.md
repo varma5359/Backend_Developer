@@ -71,3 +71,29 @@ Before the interview, be able to:
 - [ ] I can present Django Configuration Explorer with real evidence.
 
 **Readiness rule:** If you cannot reproduce the demonstration, return to the corresponding section in [Day 29 class notes](day_29_notes.md), repeat the steps and record the output.
+## Additional technical and scenario questions
+
+### Q5. What is the purpose of settings.py?
+**Answer:** It configures the project, including installed apps, middleware, templates, database, static files, security and locale settings.
+
+### Q6. What is middleware?
+**Answer:** Middleware is a component that processes requests and responses around the view. It can handle sessions, authentication, CSRF protection and other cross-cutting concerns.
+
+### Q7. Why does middleware order matter?
+**Answer:** Some middleware depends on state established by earlier middleware. For example, authentication uses session state.
+
+### Q8. What is the difference between INSTALLED_APPS and MIDDLEWARE?
+**Answer:** INSTALLED_APPS registers application packages. MIDDLEWARE configures request/response processing components.
+
+### Q9. Why should DEBUG be False in production?
+**Answer:** Detailed error pages can reveal internal implementation and configuration details.
+
+### Q10. What does ALLOWED_HOSTS protect?
+**Answer:** It defines host names Django accepts for the application and helps protect against certain Host header attacks.
+
+### Q11. Scenario: request.user is unavailable.
+**Answer:** Check that django.contrib.auth is installed and AuthenticationMiddleware is configured after SessionMiddleware.
+
+### Q12. Scenario: the template cannot access messages.
+**Answer:** Check the messages app, MessageMiddleware and messages context processor.
+
