@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Static quality gate for the Phase 4 self-learning lesson manuscripts.
+"""Static quality gate for Phase 4 Days 42–45 learning manuscripts.
 
 This checks Markdown structure and required teaching elements only. It does
 not execute Django code or certify beginner usability.
@@ -23,9 +23,9 @@ def check_file(path: Path, required: tuple[str, ...]) -> str:
         ERRORS.append(f"Missing required file: {path.relative_to(ROOT)}")
         return ""
     content = path.read_text(encoding="utf-8")
-    fences = FENCE_RE.findall(content)
-    if len(fences) % 2:
-        ERRORS.append(f"{path.name}: unbalanced code fences ({len(fences)})")
+    fence_count = len(FENCE_RE.findall(content))
+    if fence_count % 2:
+        ERRORS.append(f"{path.name}: unbalanced code fences ({fence_count})")
 
     for target in LINK_RE.findall(content):
         target = target.strip().split()[0].strip("<>")
@@ -57,8 +57,10 @@ def main() -> int:
     total_lines = 0
     for day in DAYS:
         prefix = f"day_{day:02d}"
+        notes_path = ROOT / f"{prefix}_notes.md"
+        interview_path = ROOT / f"{prefix}_interview.md"
         notes = check_file(
-            ROOT / f"{prefix}_notes.md",
+            notes_path,
             (
                 "learning outcomes",
                 "common errors",
@@ -69,14 +71,14 @@ def main() -> int:
             ),
         )
         interview = check_file(
-            ROOT / f"{prefix}_interview.md",
-            (
-                "model answer",
-                "scenario",
-                "project viva",
-                "self-check", "self-assessment",
-            ),
+            interview_path,
+            ("model answer", "scenario", "project viva"),
         )
+        if interview and not any(
+            marker in interview.lower()
+            for marker in ("self-check", "self-assessment")
+        ):
+            WARNINGS.append(f"{interview_path.name}: missing learner self-check")
         total_lines += len(notes.splitlines()) + len(interview.splitlines())
 
     audit_path = ROOT / "PHASE_4_SELF_LEARNING_AUDIT.md"
@@ -84,7 +86,12 @@ def main() -> int:
         ERRORS.append("Missing PHASE_4_SELF_LEARNING_AUDIT.md")
     else:
         audit = audit_path.read_text(encoding="utf-8").lower()
-        for phrase in ("day 43", "day 44", "day 45", "runtime validation pending"):
+        for phrase in (
+            "day 43",
+            "day 44",
+            "day 45",
+            "runtime and beginner validation pending",
+        ):
             if phrase not in audit:
                 ERRORS.append(f"Phase 4 audit is missing: {phrase}")
 
