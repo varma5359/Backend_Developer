@@ -1,60 +1,89 @@
-# Day 51: Interview Questions — Custom User Models and User Profile Management
+# Day 51: Interview Guide — Custom User Models and User Profile Management
 
-**Pathway:** Python Backend Developer Career Pathway (Django)  
-**Phase:** 4 — Django ORM, Forms and Authentication  
-**Related notes:** [Day 51 class notes](day_51_notes.md)  
-**Approved mini-project:** Custom User Profile System
+**Related class notes:** [Day 51 notes](day_51_notes.md)  
+**Approved mini-project:** Custom User Profile System  
+**Level:** Intermediate
 
-## Core technical questions
+## 1. Core technical questions
 
-### Q1. Explain custom user models and user profile management.
-**Answer:** A custom user model lets a project define its user identity fields and authentication behavior. Django recommends deciding whether to use a custom user model at the start of a project. Set AUTH_USER_MODEL before the first migrations that create user-related tables. Changing user models after a project has already migrated can require complex data and migration work.
+### Q1. What is a custom user model?
+**Answer:** It is a project-defined Django model used for authentication. It is useful when the application's account identity or account-level fields differ from the default user model.
 
-### Q2. Which Django components are involved?
-**Answer:** accounts/models.py, profiles/models.py, config/settings.py. Explain how each component contributes to the feature.
+### Q2. What is AbstractUser?
+**Answer:** AbstractUser is a Django abstract base model containing common user fields and behavior. A project can inherit from it and add fields while retaining much of Django's standard authentication functionality.
 
-### Q3. What is one common implementation mistake?
-**Answer:** Custom user class inherits from AbstractUser. Test the feature with realistic data and verify the database result.
+### Q3. What is AbstractBaseUser?
+**Answer:** It is a more minimal base for custom authentication models. The developer must implement more of the user model behavior, manager configuration and permission integration. It is more flexible but requires more care.
 
-### Q4. How do you verify the user workflow?
-**Answer:** Use separate test accounts, submit valid and invalid inputs, inspect the response and verify the stored records.
+### Q4. Which base class is suitable for adding one or two fields?
+**Answer:** AbstractUser is usually the simpler choice when the project wants to keep standard Django authentication and add fields.
 
-### Q5. What production concern should you mention?
-**Answer:** Data integrity, permissions, privacy, secure configuration and integration test coverage.
+### Q5. What does AUTH_USER_MODEL do?
+**Answer:** It identifies the model used by Django as the project's user model, for example accounts.User.
 
-## Scenario questions
+### Q6. When should AUTH_USER_MODEL be configured?
+**Answer:** Before the first migrations that create user-related tables. Other models and authentication tables depend on the configured user model.
 
-### Q6. A feature works for one user but fails for another. What do you inspect?
-**Suggested answer:** Check the active user model, group membership, permissions, session, request context and database ownership rules.
+### Q7. Why is changing the user model after migrations difficult?
+**Answer:** Existing database tables, foreign keys, migration dependencies and account data may reference the previous model. A later change can require complex schema and data migrations.
 
-### Q7. How do you prevent the browser from choosing a protected owner field?
-**Suggested answer:** Exclude the field from the user-facing form and assign it server-side from request.user.
+### Q8. What is the purpose of get_user_model()?
+**Answer:** It returns the configured user model class at runtime. It is useful in views, forms and other Python code that needs to query users.
 
-## Project viva — Custom User Profile System
+### Q9. What should a model use for a relationship to the configured user model?
+**Answer:** Use settings.AUTH_USER_MODEL as the ForeignKey or OneToOneField target.
 
-1. What is the business problem?
-2. Which models and relationships are used?
-3. Which form fields are exposed?
-4. How is authentication or ownership handled?
-5. Which database constraints are important?
-6. How are valid and invalid journeys tested?
-7. What would you improve for production?
+### Q10. What is the difference between a custom user model and a profile model?
+**Answer:** A custom user model changes the model representing the account. A profile model stores additional information in a separate model linked to the user, often through OneToOneField.
 
-## Rapid revision
+### Q11. Can an existing project use the default user model and add profile information?
+**Answer:** Yes. A separate profile model is often appropriate when the existing authentication identity is sufficient and the additional fields are optional user details.
 
-- **1.** Explain why a project may need a custom user model.
-- **2.** Create the accounts app before the initial project migrations.
-- **3.** Define User inheriting from AbstractUser.
-- **4.** Set AUTH_USER_MODEL in settings.py before initial migrations.
-- **5.** Use settings.AUTH_USER_MODEL in relationship fields.
-- **6.** Create a separate UserProfile model for additional profile data.
-- **7.** Create migrations and apply them in a fresh learning database.
-- **8.** Use get_user_model() in application code.
-- **9.** Explain why changing user model later is difficult.
+### Q12. What does OneToOneField enforce?
+**Answer:** It connects one row to one related row and enforces uniqueness on the relationship. It is suitable for one profile per account.
 
-## Readiness checklist
-- [ ] Explain the concept.
-- [ ] Identify connected Django components.
-- [ ] Demonstrate a complete workflow.
-- [ ] Explain validation and permissions.
-- [ ] Present Custom User Profile System and evidence.
+## 2. Migration and design questions
+
+### Q13. Why does this lesson use a separate fresh project?
+**Answer:** The main student_portal already has migrations and a StudentProfile model connected to the Student domain model. Changing AUTH_USER_MODEL or repurposing that model would risk breaking existing work. A separate fresh project safely demonstrates custom user configuration.
+
+### Q14. Why should the profile form not expose the user field?
+**Answer:** The browser must not choose which user's profile it edits. The view should assign the authenticated request.user.
+
+### Q15. Why might phone number be stored as a CharField?
+**Answer:** A phone number is an identifier, not a quantity. It can contain leading zeros, country prefixes and formatting characters.
+
+## 3. Scenario questions
+
+### Q16. A developer wants to add a phone field to an already migrated project. Must they change AUTH_USER_MODEL?
+**Answer:** No. If it is optional profile information, add it to an appropriate existing profile model or create a separate profile model. Do not change the user model just to add one field.
+
+### Q17. A custom user model is configured after the project has many migrations. What should the developer do?
+**Answer:** Stop and plan the migration carefully. Back up the database, map existing relations and account data, create a tested migration strategy and validate it in a copy of the environment. Do not simply change the setting and run migrate.
+
+### Q18. One student can edit another student's profile.
+**Answer:** The view is trusting submitted ownership data. Use request.user to retrieve the current user's profile and do not expose the user relationship in the form.
+
+## 4. Mini-project discussion — Custom User Profile System
+
+Demonstrate:
+1. Fresh custom_user_demo project.
+2. AbstractUser extension.
+3. AUTH_USER_MODEL before migrations.
+4. Custom admin configuration.
+5. get_user_model().
+6. Existing student_portal user model remains unchanged.
+7. Separate UserProfile linked to the configured user.
+8. Ownership-safe profile edit view.
+
+## 5. Readiness checklist
+
+- [ ] I can compare AbstractUser and AbstractBaseUser.
+- [ ] I know when AUTH_USER_MODEL must be set.
+- [ ] I can explain get_user_model() and settings.AUTH_USER_MODEL.
+- [ ] I can distinguish user model and profile model.
+- [ ] I can explain the migration warning.
+- [ ] I can explain profile ownership.
+- [ ] I can demonstrate Custom User Profile System.
+
+**Related notes:** [Day 51 class notes](day_51_notes.md)
