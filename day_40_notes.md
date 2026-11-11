@@ -3,12 +3,12 @@
 **Pathway:** Python Backend Developer Career Pathway (Django)  
 **Phase:** 3 — Django Fundamentals  
 **Duration:** 2–3 hours | **Level:** Beginner to Intermediate  
-**Prerequisites:** Days 27–40 as relevant; project setup, URL routing, views, templates, models, migrations and forms  
+**Prerequisites:** Days 27–39 — project setup, URL routing, views, templates, models, migrations, ORM, relationships and ModelForms  
 **Environment:** Windows, VS Code, PowerShell, Python virtual environment, Django 5.2.19  
 **Continuous project:** `student_portal` / `config` / `profiles`  
 **Approved mini-project:** Secure Form Validation Application
 
-> **Trainer standard:** This is an integration lesson. Students must understand the journey from the browser request to the database and back to the browser. Do not let them copy the complete files without tracing each step.
+> **Self-paced method:** Follow the request from the browser to the view, form, model and database, then back to the browser. Create each file exactly where named. Run each check before continuing, and use the expected results to decide whether your implementation is correct.
 
 ## 1. Learning objectives
 
@@ -150,10 +150,12 @@ The template token works with CsrfViewMiddleware. Do not remove middleware or tu
 
 The code is split by filename. Create or update the correct file. Do not paste HTML into Python files.
 
+**File 1 — `profiles/forms.py`**. Update the existing StudentRegistrationForm from Day 39.
+
 ```python
-# profiles/forms.py
 from django import forms
 from .models import Student
+
 
 class StudentRegistrationForm(forms.ModelForm):
     class Meta:
@@ -179,15 +181,27 @@ class StudentRegistrationForm(forms.ModelForm):
                 "Email should not contain the full student name.",
             )
         return cleaned_data
+```
 
-<!-- profiles/templates/profiles/student_form.html -->
-<h1>Register Student</h1>
-<form method="post">
-    {% csrf_token %}
-    {{ form.non_field_errors }}
-    {{ form.as_p }}
-    <button type="submit">Register</button>
-</form>
+**File 2 — `profiles/templates/profiles/student_form.html`**. Update the HTML template so both field errors and form-wide errors are visible.
+
+```html
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Student Registration</title>
+</head>
+<body>
+    <h1>Register Student</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        {{ form.as_p }}
+        <button type="submit">Register</button>
+    </form>
+</body>
+</html>
 ```
 
 ### Read before typing
