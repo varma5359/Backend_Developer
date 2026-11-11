@@ -79,4 +79,4 @@ Be ready to:
 - [ ] I can explain the Post/Redirect/Get pattern.
 - [ ] I can present Secure Form Validation Application independently.
 
-**Trainer note:** Ask the learner to trace an actual browser request and locate the exact file for each step. Accept no vague answer such as "Django handles it" without explaining which component does what.
+**Self-practice:** Ask yourself to trace an actual browser request and locate the exact file for each step. Do not accept a vague answer such as "Django handles it" without explaining which component does what.
