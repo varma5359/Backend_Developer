@@ -959,3 +959,20 @@ Before completing:
 - Confirm findstatic locates the assets.
 - Confirm the browser loads the CSS.
 - Explain what additional work is required in production.
+
+## 54. Final independent static-file assessment
+
+Create a shared base template and two child templates.
+
+Use one stylesheet and one navigation include.
+
+Test the following:
+1. Both child templates inherit the same header.
+2. Both pages load the same CSS.
+3. A change to the base header appears on both pages.
+4. A change to the navigation include appears on both pages.
+5. findstatic locates the CSS file.
+6. The browser network panel returns the stylesheet successfully.
+
+Write a short explanation of the difference between source static folders and STATIC_ROOT.
+
