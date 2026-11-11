@@ -964,3 +964,20 @@ For one business question, show:
 
 Explain why the database should perform filtering and aggregation rather than loading every record into Python for a large dataset.
 
+
+## 54. Query review rubric
+
+For each important QuerySet, document:
+- Business question.
+- Filter conditions.
+- Ordering.
+- Fields returned.
+- Related objects accessed.
+- Expected row count.
+- Evaluation point.
+- Query count when measured.
+- Index rationale if any.
+- Test coverage.
+
+Do not optimize based on assumptions alone. Measure a representative workflow and preserve the same business result.
+
