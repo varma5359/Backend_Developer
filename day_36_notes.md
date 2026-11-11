@@ -925,3 +925,17 @@ Submit:
 - Group permission setup.
 - Test account permission results.
 - Explanation of the bulk action behavior.
+
+## 58. Final admin security assessment
+
+Create two fictional staff accounts with different permissions.
+
+Verify that:
+- Both can access the admin only when staff access is enabled.
+- View-only staff cannot edit records.
+- Staff without delete permission cannot delete records.
+- A normal non-staff account cannot access admin.
+- Superuser behavior is not used as the only test.
+
+Document the group membership and permission results.
+
