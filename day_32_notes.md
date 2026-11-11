@@ -447,3 +447,271 @@ Do not mark the day complete merely because a file contains code. Complete every
 5. Diagnose and fix one controlled mistake, such as a misspelled variable, template path or setting.
 
 **Next lesson:** Day 33 — Template Inheritance, Reusable Components and Static Files
+
+---
+
+# Extended Beginner Lab — Templates, Context and Safe Rendering
+
+## 19. What is a template?
+
+A Django template is a text file that describes the structure of a response, commonly HTML.
+
+The view prepares data. The template decides how to display that data.
+
+This separation helps keep request handling in views, data structure in models and presentation in templates.
+
+## 20. Understand template variables
+
+Example:
+
+~~~django
+<h1>Welcome, {{ student_name }}</h1>
+~~~
+
+The double curly braces display a value from template context.
+
+If the view passes student_name with the value Asha, the browser receives HTML containing the rendered name.
+
+If the context key is missing, Django normally renders an empty value rather than raising a Python NameError.
+
+## 21. Understand template filters
+
+A filter transforms a value for display.
+
+Example:
+
+~~~django
+{{ student_name|upper }}
+~~~
+
+This displays the value in uppercase.
+
+Other useful filters:
+- lower.
+- title.
+- length.
+- default.
+- date.
+- truncatewords.
+- join.
+- floatformat.
+
+A filter changes presentation. It does not normally update the database value.
+
+## 22. Understand the default filter
+
+~~~django
+{{ student_name|default:"Guest" }}
+~~~
+
+If the value is empty or false-like, the template displays Guest.
+
+Use a default when an optional value may be absent.
+
+Do not use a default to hide a missing required database value without understanding why it is missing.
+
+## 23. Understand loops
+
+~~~django
+{% for student in students %}
+    <p>{{ student.name }}</p>
+{% empty %}
+    <p>No students found.</p>
+{% endfor %}
+~~~
+
+for repeats the block for each item.
+
+empty displays when the collection has no items.
+
+This is useful for lists from a QuerySet.
+
+## 24. Understand conditions
+
+~~~django
+{% if student.is_active %}
+    <span>Active</span>
+{% else %}
+    <span>Inactive</span>
+{% endif %}
+~~~
+
+A template condition controls display.
+
+It is not a replacement for backend authorization. Hiding a button does not protect the view.
+
+## 25. Understand the with tag
+
+The with tag assigns a value to a temporary template variable.
+
+~~~django
+{% with full_name=student.first_name|add:" "|add:student.last_name %}
+    <p>{{ full_name }}</p>
+{% endwith %}
+~~~
+
+Use it for a small presentation expression. Complex business logic belongs in Python.
+
+## 26. Understand URL tag
+
+~~~django
+<a href="{% url 'student_detail' student.id %}">
+    View student
+</a>
+~~~
+
+The url tag reverses a named URL.
+
+If the route name or required argument is wrong, Django raises NoReverseMatch during rendering.
+
+## 27. Understand static tag
+
+~~~django
+{% load static %}
+<link rel="stylesheet" href="{% static 'profiles/css/site.css' %}">
+~~~
+
+The static tag generates the correct URL for a static file.
+
+The path is relative to configured static-file locations.
+
+## 28. Understand CSRF tag
+
+~~~django
+<form method="post">
+    {% csrf_token %}
+    ...
+</form>
+~~~
+
+The CSRF tag inserts a hidden token used by Django's CSRF protection.
+
+Use it in internal POST forms.
+
+## 29. Autoescaping
+
+Django templates automatically escape many variable values in HTML contexts.
+
+This helps prevent untrusted text from being interpreted as HTML or script.
+
+If a user submits a name containing HTML tags, Django generally renders the characters safely rather than executing them as markup.
+
+Do not disable autoescaping casually.
+
+## 30. The safe filter
+
+~~~django
+{{ trusted_html|safe }}
+~~~
+
+The safe filter marks a value as safe HTML.
+
+Use it only when the HTML is trusted and has been safely prepared.
+
+Never apply safe to arbitrary user-submitted text. It can create cross-site scripting vulnerabilities.
+
+## 31. Template inheritance
+
+A base template can define reusable layout blocks.
+
+A child template uses extends and fills the blocks.
+
+This avoids copying the same header, navigation and footer into every page.
+
+## 32. Include reusable template fragments
+
+The include tag renders another template fragment.
+
+Example:
+
+~~~django
+{% include "profiles/_student_card.html" %}
+~~~
+
+Use includes for reusable presentation fragments.
+
+Do not use template includes as a substitute for Python function reuse.
+
+## 33. Context data versus template logic
+
+Good template responsibilities:
+- Display a name.
+- Loop over records.
+- Show an empty-state message.
+- Display a link.
+- Show a simple condition.
+
+Responsibilities better kept in the view/model:
+- Complex database queries.
+- Permission calculations.
+- Financial totals.
+- Multi-step business rules.
+- Data transformations that need unit tests.
+
+## 34. Common template mistakes
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| Variable appears blank | Context key missing or misspelled | Inspect view context |
+| NoReverseMatch | URL name or argument incorrect | Check URLconf |
+| TemplateDoesNotExist | Wrong template path | Check app/templates/app |
+| CSS not loaded | Static path or static tag wrong | Inspect static file URL |
+| User text becomes HTML | Unsafe rendering | Keep autoescaping enabled |
+| Loop displays nothing | QuerySet is empty or wrong context | Inspect view result |
+| Include fails | Wrong include path | Check app template namespace |
+| Block does not render | Child block name differs | Compare base and child block names |
+
+## 35. Guided template exercise
+
+Create a student list template that:
+1. Displays a heading.
+2. Shows each student's name.
+3. Shows a link to the detail route.
+4. Displays Active or Inactive.
+5. Shows an empty message.
+6. Uses a shared base template.
+7. Loads a CSS file through the static tag.
+
+Explain every template tag used.
+
+## 36. Self-check questions
+
+1. What does a template variable do?
+2. What does a template filter do?
+3. What is the purpose of empty?
+4. What does extends do?
+5. What does include do?
+6. Why use the url tag?
+7. Why use the static tag?
+8. What does csrf_token do?
+9. What is autoescaping?
+10. Why is safe dangerous for user input?
+
+## 37. Answers
+
+1. Displays a context value.
+2. Transforms a value for presentation.
+3. Displays content when a loop has no items.
+4. Inherits a base template.
+5. Renders another template fragment.
+6. Generates a URL from a route name.
+7. Generates a URL for a static asset.
+8. Adds a CSRF token to a form.
+9. Escapes unsafe characters in HTML output.
+10. It can cause untrusted content to be interpreted as HTML or script.
+
+## 38. Independent challenge — Student Directory Page
+
+Build a directory page with:
+- Base layout.
+- Student heading.
+- Student loop.
+- Empty state.
+- Detail links.
+- Active status.
+- CSS file.
+- Safe rendering of student-entered text.
+
+Test with at least two records, no records, and a student name containing characters such as angle brackets.
+
+Record what the browser displays and explain why autoescaping matters.
