@@ -993,3 +993,7 @@ Ask another learner to review your schema and identify one field whose type, opt
 ## 59. Final readiness statement
 
 Do not mark the model design complete until you can explain each field to another developer, justify the chosen field type and demonstrate how invalid data is rejected.
+
+## 60. Evidence to retain
+
+Keep your final model diagram, field decision table, model code review and migration preview together. These artifacts explain not only what you built but why the data structure was chosen.
