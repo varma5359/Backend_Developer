@@ -492,3 +492,305 @@ Do not mark the day complete merely because a file contains code. Complete every
 5. Diagnose and fix one controlled mistake, such as a misspelled variable, template path or setting.
 
 **Next lesson:** Day 34 — Django Models and Database Field Types
+
+---
+
+# Extended Beginner Lab — Template Inheritance and Static Files
+
+## 19. Why template inheritance exists
+
+Imagine a portal with a home page, student list, student detail, course list and attendance page.
+
+All pages need the same header, navigation, footer, CSS references and message area.
+
+Copying the same HTML into every file creates maintenance problems.
+
+Template inheritance provides a shared layout.
+
+## 20. Base template
+
+A base template contains the shared page structure.
+
+~~~django
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Student Portal{% endblock %}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'profiles/css/site.css' %}">
+</head>
+<body>
+    <header>
+        <h1>Student Portal</h1>
+    </header>
+
+    <nav>
+        <a href="{% url 'home' %}">Home</a>
+    </nav>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>Student Portal</footer>
+</body>
+</html>
+~~~
+
+## 21. What is a block?
+
+A block defines a section that a child template can override.
+
+The base template provides default content.
+
+A child template supplies its own content for the same block name.
+
+## 22. Child template
+
+~~~django
+{% extends "profiles/base.html" %}
+
+{% block title %}Student List{% endblock %}
+
+{% block content %}
+    <h2>Students</h2>
+    <p>Student list content appears here.</p>
+{% endblock %}
+~~~
+
+extends should appear at the beginning of the child template before ordinary page content.
+
+## 23. Block names must match
+
+If the base template defines content but the child defines body, the child block will not replace content.
+
+Check exact spelling and capitalization.
+
+## 24. Preserve parent block content
+
+Django provides block.super when a child needs to include the parent's block content.
+
+Example:
+
+~~~django
+{% block content %}
+    {{ block.super }}
+    <p>Additional child content</p>
+{% endblock %}
+~~~
+
+Use this only when parent content should remain.
+
+## 25. Include tag
+
+An include renders a separate reusable fragment.
+
+Example:
+
+~~~django
+{% include "profiles/_navigation.html" %}
+~~~
+
+This can be useful for a navigation bar or reusable card.
+
+Inheritance shares the page structure. Include shares a smaller fragment.
+
+## 26. Inheritance versus include
+
+| Inheritance | Include |
+|---|---|
+| Child extends a base | Template inserts another template |
+| Uses blocks | Reuses a fragment |
+| Defines page layout | Defines reusable partial UI |
+| Usually one base hierarchy | Can include multiple fragments |
+
+## 27. Static files
+
+Static files are assets that belong to the application code.
+
+Examples:
+- CSS.
+- JavaScript.
+- Logo.
+- Icons.
+- Background images.
+
+They are different from media files uploaded by users.
+
+## 28. Create a static folder
+
+Inside the profiles app, create:
+
+~~~text
+profiles/
+└── static/
+    └── profiles/
+        ├── css/
+        │   └── site.css
+        └── images/
+            └── logo.png
+~~~
+
+The app namespace inside static prevents name collisions with other apps.
+
+## 29. Load a CSS file
+
+At the top of the template:
+
+~~~django
+{% load static %}
+~~~
+
+Then:
+
+~~~django
+<link rel="stylesheet" href="{% static 'profiles/css/site.css' %}">
+~~~
+
+Django's static tag generates the URL based on static-file settings.
+
+## 30. Example CSS
+
+~~~css
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+}
+
+header,
+footer {
+    padding: 1rem;
+}
+
+main {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+nav a {
+    margin-right: 1rem;
+}
+~~~
+
+The CSS is stored in site.css, not in a Python view.
+
+## 31. Verify static file discovery
+
+Run:
+
+~~~powershell
+python manage.py findstatic profiles/css/site.css
+~~~
+
+Django should report the location of the file if it is discoverable.
+
+If it cannot find the file:
+- Check folder nesting.
+- Check app registration.
+- Check spelling.
+- Check STATICFILES_DIRS if using a project-level static folder.
+
+## 32. Understand STATIC_ROOT and STATICFILES_DIRS
+
+STATIC_ROOT:
+- Destination directory for collected static files.
+- Used by collectstatic in deployment workflows.
+
+STATICFILES_DIRS:
+- Additional directories where Django looks for project-level static files.
+
+App-level static folders can be discovered through installed apps.
+
+Do not set STATIC_ROOT to the same folder used as a source directory for static development assets.
+
+## 33. Development static files versus production
+
+During development, Django can serve static files through the development setup when DEBUG is enabled.
+
+Production uses a separate static-file collection and serving strategy.
+
+The collectstatic command is used later in deployment preparation.
+
+Do not assume that because CSS loads through runserver, production static files are configured.
+
+## 34. Static file caching
+
+Browsers may cache CSS and JavaScript.
+
+If a change does not appear:
+1. Confirm the file was saved.
+2. Confirm the correct static URL.
+3. Open the URL directly.
+4. Refresh with cache disabled.
+5. Inspect browser developer tools.
+
+Do not randomly rename files before checking the path.
+
+## 35. Common inheritance errors
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| Child content not visible | Block names differ | Match block names |
+| Base template not found | Wrong extends path | Check template namespace |
+| Duplicate page header | Child repeats parent layout | Keep shared structure in base |
+| Include missing | Wrong include path | Check app template folder |
+| Child extends after HTML | extends is not at top | Move extends to beginning |
+
+## 36. Common static-file errors
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| CSS 404 | Wrong static path | Check static folder and tag |
+| CSS not applied | Link tag missing or cached | Inspect network and refresh |
+| findstatic cannot locate file | App not installed or wrong path | Check INSTALLED_APPS and folder nesting |
+| Static works locally but not production | Production collection/serving not configured | Review collectstatic and deployment config |
+
+## 37. Guided exercise — Shared Institute Layout
+
+Create:
+1. One base template.
+2. One navigation include.
+3. One student list child.
+4. One student detail child.
+5. One shared CSS file.
+
+Change the header once in the base template and verify that both child pages update.
+
+## 38. Self-check questions
+
+1. What problem does template inheritance solve?
+2. What is a block?
+3. Why must child block names match?
+4. What does block.super do?
+5. What is the difference between extends and include?
+6. What are static files?
+7. What does load static do?
+8. What is the purpose of findstatic?
+9. What is STATIC_ROOT?
+10. Why does production need a static-file strategy?
+
+## 39. Answers
+
+1. It avoids repeated page structure.
+2. A replaceable section in a base template.
+3. Django uses the block name to match child content.
+4. Includes parent block content.
+5. extends inherits a layout; include inserts a fragment.
+6. Application assets such as CSS, JavaScript and logos.
+7. Loads the static template tag library.
+8. Helps locate a static asset.
+9. Destination for collected static files.
+10. Production serving differs from the development server.
+
+## 40. Independent challenge — Multi-Page Institute Theme
+
+Build two child pages using one base template and one CSS file.
+
+Evidence:
+- Screenshot of page one.
+- Screenshot of page two.
+- Browser network result for the CSS file.
+- Output from findstatic.
+- Explanation of inheritance and static-file discovery.
