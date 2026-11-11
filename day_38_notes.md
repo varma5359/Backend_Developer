@@ -881,3 +881,346 @@ Do not mark this lesson complete until you can check all critical items:
 
 **Next lesson:** Day 39 — Django Forms and ModelForms.  
 **Carry-forward:** The Student model and its fields are now available for the registration form lessons. Keep the migration files and database; do not recreate the project.
+
+---
+
+# Extended Beginner Lab — Relationship Navigation and Data Integrity
+
+## 15. Read the relationship diagram from both directions
+
+The models in this lesson contain three important relationships:
+
+- Department to Student: one-to-many.
+- Student to Course: many-to-many.
+- Student to StudentProfile: one-to-one.
+
+The same relationship can be navigated from either side.
+
+## 16. Forward ForeignKey access
+
+A Student has a department field.
+
+Example:
+
+~~~python
+student = Student.objects.get(student_code="STU001")
+student.department
+~~~
+
+This reads the Department connected to the student.
+
+If department is optional and no department is assigned, the value is None.
+
+Do not access student.department.name without checking whether department exists when the relationship is optional.
+
+## 17. Reverse ForeignKey access
+
+Department has the reverse relation name students.
+
+Example:
+
+~~~python
+department = Department.objects.get(name="Computer Science")
+department.students.all()
+~~~
+
+This returns the students associated with that department.
+
+The related_name value controls the reverse accessor.
+
+Without a custom related_name, Django creates a default reverse accessor based on the model name.
+
+## 18. Filter through a ForeignKey
+
+Example:
+
+~~~python
+Student.objects.filter(
+    department__name="Computer Science"
+)
+~~~
+
+The double underscore crosses the relationship.
+
+The query means:
+- Start from Student.
+- Follow department.
+- Match Department.name.
+
+Django creates the appropriate SQL join.
+
+## 19. Filter in the reverse direction
+
+Example:
+
+~~~python
+Department.objects.filter(
+    students__full_name__icontains="asha"
+).distinct()
+~~~
+
+This finds departments with related students whose names match.
+
+distinct() can be useful because one department may match multiple students.
+
+## 20. Understand ManyToManyField
+
+Student.courses connects a student to multiple courses.
+
+A course can also be connected to multiple students.
+
+Django creates an intermediary join table to store the associations.
+
+You normally do not need to create that join table manually.
+
+## 21. Add a course to a student
+
+~~~python
+student = Student.objects.get(student_code="STU001")
+course = Course.objects.get(title="Django Fundamentals")
+
+student.courses.add(course)
+~~~
+
+This creates the relationship in the intermediary table.
+
+It does not create a new Student or Course record.
+
+## 22. Remove a course relationship
+
+~~~python
+student.courses.remove(course)
+~~~
+
+This removes the association between the student and course.
+
+It does not delete the Course record itself.
+
+## 23. Clear all course relationships
+
+~~~python
+student.courses.clear()
+~~~
+
+This removes all course associations for that student.
+
+It does not delete the course records.
+
+Use clear() carefully because it removes every relationship for the selected student.
+
+## 24. Read reverse ManyToMany relationships
+
+The Course model has related_name students.
+
+Example:
+
+~~~python
+course = Course.objects.get(title="Django Fundamentals")
+course.students.all()
+~~~
+
+This returns students connected to that course.
+
+## 25. ManyToMany filtering
+
+Find students enrolled in a course:
+
+~~~python
+Student.objects.filter(
+    courses__title="Django Fundamentals"
+)
+~~~
+
+Find courses associated with a particular student:
+
+~~~python
+student.courses.all()
+~~~
+
+## 26. OneToOneField navigation
+
+StudentProfile has a OneToOneField to Student with related_name profile.
+
+Forward:
+
+~~~python
+profile = StudentProfile.objects.get(student=student)
+~~~
+
+Reverse:
+
+~~~python
+student.profile
+~~~
+
+If no profile exists, reverse access raises a related-object DoesNotExist exception.
+
+Handle the missing-profile case deliberately.
+
+## 27. Create or retrieve a one-to-one profile
+
+~~~python
+profile, created = StudentProfile.objects.get_or_create(
+    student=student
+)
+~~~
+
+If a profile exists:
+- Django returns the existing object.
+- created is False.
+
+If no profile exists:
+- Django creates it.
+- created is True.
+
+This is useful when a profile is optional and should be created on demand.
+
+## 28. Understand on_delete=PROTECT
+
+The Student.department relation uses PROTECT.
+
+If students refer to a department, Django prevents deleting that department until the protected relationships are resolved.
+
+This protects the department reference from accidental removal.
+
+## 29. Understand on_delete=CASCADE
+
+StudentProfile.student uses CASCADE.
+
+If a Student is deleted, the related StudentProfile is deleted too.
+
+This is a business rule: the profile belongs to the student's lifecycle.
+
+For legal, audit or historical records, cascading deletion may not be appropriate. Consider the retention requirement before choosing on_delete.
+
+## 30. Optional ForeignKey
+
+The Student.department field has null=True and blank=True.
+
+This means:
+- The database can store NULL.
+- Forms can allow the field to be empty.
+
+When reading the relationship, handle None.
+
+Example:
+
+~~~python
+if student.department is not None:
+    print(student.department.name)
+else:
+    print("No department assigned")
+~~~
+
+## 31. Why related_name is useful
+
+A clear related_name makes reverse access readable.
+
+Examples:
+- department.students.all()
+- course.students.all()
+- student.profile
+
+Choose names that describe the collection or related object.
+
+Avoid generic names that are difficult to understand.
+
+## 32. Use select_related for ForeignKey and OneToOne
+
+Example:
+
+~~~python
+students = Student.objects.select_related(
+    "department",
+    "profile",
+)
+~~~
+
+This can load single-valued related objects through SQL joins.
+
+The profile relation is reverse OneToOne and is also supported by select_related using its related name.
+
+## 33. Use prefetch_related for ManyToMany
+
+Example:
+
+~~~python
+students = Student.objects.prefetch_related("courses")
+~~~
+
+This loads the related course collection efficiently.
+
+Use the optimization that matches the relationship cardinality.
+
+## 34. Relationship query comparison
+
+| Relationship | Forward access | Reverse access | Common optimization |
+|---|---|---|---|
+| ForeignKey | student.department | department.students | select_related for forward; prefetch for reverse collection |
+| OneToOne | profile.student | student.profile | select_related |
+| ManyToMany | student.courses | course.students | prefetch_related |
+
+## 35. Common relationship mistakes
+
+| Symptom | Likely cause | Fix |
+|---|---|---|
+| Related object is None | Optional ForeignKey is empty | Check before reading fields |
+| RelatedObjectDoesNotExist | Reverse OneToOne record is missing | Use get_or_create or handle missing relation |
+| Wrong reverse accessor | related_name misspelled | Check model declaration |
+| Duplicate parent rows | Join matches multiple related rows | Use distinct where appropriate |
+| Slow loop | N+1 queries | Use select_related or prefetch_related |
+| Deleting parent is blocked | PROTECT relationship exists | Resolve relationship deliberately |
+| Related rows disappear | CASCADE behavior | Understand deletion policy |
+
+## 36. Important model distinction for later lessons
+
+The StudentProfile in this lesson is linked to the Student domain model.
+
+It is not the same thing as an account profile linked to the authentication user.
+
+Do not repurpose StudentProfile to store login-account details. A later lesson uses a separate UserProfile for that purpose.
+
+## 37. Guided relationship exercise
+
+1. Create two departments.
+2. Create three students.
+3. Assign two students to one department.
+4. Leave one student's department empty.
+5. Create two courses.
+6. Connect students to courses.
+7. Create one StudentProfile for a student.
+8. Query students from a department.
+9. Query students enrolled in a course.
+10. Access the student's profile.
+11. Test a student without a profile.
+12. Explain the behavior of PROTECT and CASCADE.
+
+## 38. Self-check questions
+
+1. What does ForeignKey represent?
+2. What does ManyToManyField represent?
+3. What does OneToOneField represent?
+4. What does related_name control?
+5. What does PROTECT do?
+6. What does CASCADE do?
+7. How do you add a ManyToMany relationship?
+8. Does remove() delete the related Course?
+9. How do you access reverse ForeignKey records?
+10. Which relationship access is suitable for select_related?
+11. Which is suitable for prefetch_related?
+12. Why is StudentProfile different from an authentication UserProfile?
+
+## 39. Answers
+
+1. Many records can point to one related record.
+2. Many records on each side can be associated.
+3. One record maps to one related record.
+4. The reverse accessor name.
+5. Prevents deletion while protected related rows exist.
+6. Deletes related rows when the referenced object is deleted.
+7. Use the relationship manager's add() method.
+8. No, it removes only the relationship.
+9. Use the configured related_name manager.
+10. Single-valued ForeignKey and OneToOne relationships.
+11. Collections such as reverse ForeignKey and ManyToMany.
+12. StudentProfile belongs to the Student domain entity; UserProfile belongs to the authentication account.
