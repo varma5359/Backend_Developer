@@ -972,3 +972,7 @@ Without reading the notes, explain:
 10. Why groups and least privilege matter.
 11. Why a bulk action needs testing.
 12. Why a superuser is not a normal test account.
+
+## 61. Submission reflection
+
+Write a short admin access policy for HR Staff. List the exact model permissions required, the actions they must not perform, which fields should be read-only, how group membership is reviewed and how access is removed when an employee leaves. Include the result of testing with a non-superuser account.
