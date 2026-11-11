@@ -421,3 +421,332 @@ Do not mark the day complete merely because a file contains code. Complete every
 5. Diagnose and fix one controlled mistake, such as a misspelled variable, template path or setting.
 
 **Next lesson:** Day 35 — Django Migrations: makemigrations and migrate
+
+---
+
+# Extended Beginner Lab — Model Design and Field Types
+
+## 19. What is a Django model?
+
+A model is a Python class that describes data stored by the application.
+
+Django uses model definitions to:
+- Describe fields.
+- Define relationships.
+- Generate database schema migrations.
+- Query and update records through the ORM.
+- Apply model metadata and constraints.
+
+A model is not the same as a database row. A model class describes the structure; an instance represents one object.
+
+## 20. Model class versus model instance
+
+Model class:
+
+~~~python
+class Employee(models.Model):
+    full_name = models.CharField(max_length=120)
+~~~
+
+Model instance:
+
+~~~python
+employee = Employee(full_name="Asha Rao")
+~~~
+
+The class describes the field. The instance contains one employee's value.
+
+The instance is not stored in the database until it is saved.
+
+## 21. Field selection guide
+
+| Data | Common field |
+|---|---|
+| Short name | CharField |
+| Long description | TextField |
+| Whole number | IntegerField |
+| Decimal amount | DecimalField |
+| True/False | BooleanField |
+| Date only | DateField |
+| Date and time | DateTimeField |
+| Email | EmailField |
+| URL | URLField |
+| File path/upload | FileField |
+| Image upload | ImageField |
+| Unique identifier | UUIDField |
+| Relationship | ForeignKey / OneToOneField / ManyToManyField |
+
+Choose a field based on the meaning and validation requirements of the data.
+
+## 22. CharField and TextField
+
+CharField:
+- Stores short text.
+- Requires max_length.
+- Common for names, codes and categories.
+
+TextField:
+- Stores longer text.
+- Common for descriptions and notes.
+- Does not require max_length in the same way as CharField.
+
+Do not use TextField for every text value. Choose the field that represents the data.
+
+## 23. IntegerField versus DecimalField
+
+IntegerField stores whole numbers.
+
+DecimalField stores fixed-precision decimal values.
+
+Examples:
+- Stock quantity: IntegerField.
+- Salary: DecimalField.
+- Product price: DecimalField.
+
+Do not store money using FloatField unless there is a specific technical reason and rounding behavior is understood.
+
+## 24. BooleanField
+
+BooleanField stores a true/false value.
+
+Example:
+
+~~~python
+is_active = models.BooleanField(default=True)
+~~~
+
+This is useful for status flags.
+
+A BooleanField should represent a genuinely two-state value. If there are more than two business states, use choices or a related model.
+
+## 25. DateField versus DateTimeField
+
+DateField stores a date.
+
+DateTimeField stores a date and time.
+
+Examples:
+- Date of joining: DateField.
+- Record created timestamp: DateTimeField.
+- Appointment time: DateTimeField.
+
+Timezone-aware settings matter for datetime values.
+
+## 26. null versus blank
+
+These options are different.
+
+null:
+- Database-level option.
+- Allows SQL NULL.
+
+blank:
+- Validation/form-level option.
+- Allows the field to be empty in forms.
+
+Do not set both automatically for every optional field.
+
+For text fields, many Django projects use blank=True and keep an empty string rather than NULL. Follow a consistent data policy.
+
+## 27. default
+
+default supplies a value when one is not provided.
+
+Example:
+
+~~~python
+stock = models.IntegerField(default=0)
+~~~
+
+The default is used when a new instance is created without an explicit stock value.
+
+Do not use a mutable object such as a list or dictionary as a shared default without a callable factory.
+
+## 28. auto_now and auto_now_add
+
+auto_now_add:
+- Sets a datetime when the row is first created.
+
+auto_now:
+- Updates a datetime when the model is saved.
+
+Example:
+
+~~~python
+created_at = models.DateTimeField(auto_now_add=True)
+updated_at = models.DateTimeField(auto_now=True)
+~~~
+
+These fields are generally not editable through a normal form.
+
+## 29. unique
+
+unique=True enforces uniqueness for a field.
+
+Example:
+
+~~~python
+employee_code = models.CharField(
+    max_length=20,
+    unique=True,
+)
+~~~
+
+The database prevents duplicate values.
+
+A form can also validate uniqueness and display a helpful error.
+
+## 30. choices
+
+Choices restrict a field to a defined set of values at the application validation layer.
+
+Example:
+
+~~~python
+STATUS_CHOICES = [
+    ("ACTIVE", "Active"),
+    ("INACTIVE", "Inactive"),
+]
+
+status = models.CharField(
+    max_length=10,
+    choices=STATUS_CHOICES,
+    default="ACTIVE",
+)
+~~~
+
+Use stable stored values and human-readable display labels.
+
+## 31. primary key
+
+A primary key uniquely identifies each row.
+
+Django automatically creates a primary key if you do not define one.
+
+You can inspect an instance using:
+- object.pk.
+- object.id when the default field is named id.
+
+Prefer pk when writing generic code because it refers to the primary key regardless of its field name.
+
+## 32. __str__ method
+
+A readable string representation helps in:
+- Admin.
+- Shell output.
+- Logs.
+- Related object widgets.
+
+Example:
+
+~~~python
+def __str__(self):
+    return self.full_name
+~~~
+
+Return a string. Do not return a model object or integer.
+
+## 33. Meta class
+
+A model Meta class configures model metadata.
+
+Examples:
+- ordering.
+- constraints.
+- indexes.
+- verbose_name.
+- verbose_name_plural.
+- db_table.
+
+Example:
+
+~~~python
+class Meta:
+    ordering = ["full_name"]
+    verbose_name_plural = "employees"
+~~~
+
+Use Meta options when they describe the model's behavior or database structure.
+
+## 34. Model design checklist
+
+Before adding a field, ask:
+1. What business value does it represent?
+2. Which field type matches that value?
+3. Is it required?
+4. Can it be empty?
+5. Does it need a default?
+6. Must it be unique?
+7. Does it need choices?
+8. Is there a relationship instead of plain text?
+9. Should it be indexed?
+10. How will the form validate it?
+
+## 35. Common field design mistakes
+
+| Mistake | Why it is a problem | Better choice |
+|---|---|---|
+| Store phone number as integer | Leading zero and symbols can be lost | CharField |
+| Store money as float | Binary precision issues | DecimalField |
+| Use TextField for every value | Loses useful length/field semantics | Choose based on meaning |
+| Set null=True and blank=True everywhere | Inconsistent empty-value semantics | Decide database and form behavior |
+| Use free text for fixed status | Inconsistent values | choices or related table |
+| Expose auto timestamp in form | User can alter system metadata | Keep readonly/server-managed |
+| Assume unique form validation is enough | Concurrent writes can collide | Database unique constraint |
+
+## 36. Practical field-selection exercise
+
+Choose a field for:
+- Employee full name.
+- Employee code.
+- Joining date.
+- Monthly salary.
+- Is currently employed.
+- Biography.
+- Created timestamp.
+- Department relationship.
+
+Explain why each field type is appropriate.
+
+## 37. Self-check questions
+
+1. What is a model class?
+2. What is a model instance?
+3. What is the difference between CharField and TextField?
+4. Why use DecimalField for money?
+5. What is the difference between null and blank?
+6. What does default do?
+7. What is the difference between auto_now and auto_now_add?
+8. What does unique=True enforce?
+9. What is choices?
+10. What is the purpose of __str__?
+11. What is a primary key?
+12. What does Meta configure?
+
+## 38. Answers
+
+1. Python class describing database data.
+2. One object created from the model class.
+3. CharField is short bounded text; TextField is longer text.
+4. It stores fixed-precision decimal values.
+5. null affects database storage; blank affects validation.
+6. Supplies a value when one is not provided.
+7. One sets creation time; the other updates on save.
+8. Prevents duplicate field values.
+9. Defines allowed stored values and display labels.
+10. Provides a readable representation.
+11. A unique identifier for each row.
+12. Model metadata such as ordering, constraints and table options.
+
+## 39. Independent challenge — Employee Schema Design
+
+Design a model for an employee directory.
+
+List:
+- Field name.
+- Field type.
+- Required/optional.
+- Unique/default/choices.
+- Business reason.
+
+Compare the design with the approved Employee model before changing code.
