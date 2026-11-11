@@ -8,7 +8,7 @@
 **Continuous project:** `student_portal` / `config` / `profiles`  
 **Approved mini-project:** Employee Admin Manager
 
-> **Trainer standard:** Explain the database/business requirement first. Show the exact file. Type one component at a time. Run checks and migrations. Verify actual records. Do not ask students to memorize ORM syntax without understanding the relationship or query.
+> **Self-paced method:** Read the business requirement, inspect the named file, make one change at a time, run the check and compare the actual admin page with the verification list. Do not continue when a step fails; use the troubleshooting section.
 
 ## 1. Learning objectives
 
@@ -18,6 +18,8 @@
 4. Explain why admin permissions must be protected.
 
 ## 2. Start from the business requirement
+
+The existing Employee model from Day 34 is the model used in today's admin demonstration. The mini-project is to create a safe internal Employee Admin Manager, not an unrelated inventory system.
 
 Django admin is an internal data-management interface generated from registered models. It helps trusted staff inspect and manage records without building every management screen from scratch. It is not intended to replace the customer-facing application. The admin site requires authentication and permissions; only authorized staff should access it.
 
