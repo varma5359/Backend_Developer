@@ -58,3 +58,18 @@ jobs:
 
       - name: Run routing, template, model, form, admin and CSRF tests
         run: python manage.py test profiles -v 2
+
+  phase4-markdown-quality:
+    name: Validate Phase 4 Days 42–45 learning documents
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run Phase 4 static documentation quality gate
+        run: python scripts/phase4_self_learning_audit.py
