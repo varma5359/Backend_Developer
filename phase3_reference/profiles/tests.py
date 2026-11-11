@@ -2,7 +2,7 @@ from datetime import date
 from decimal import Decimal
 
 from django.contrib import admin
-from django.core.exceptions import ProtectedError
+from django.db.models.deletion import ProtectedError
 from django.test import Client, TestCase
 from django.urls import reverse
 
