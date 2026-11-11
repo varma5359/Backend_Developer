@@ -715,3 +715,230 @@ Build a directory page with:
 Test with at least two records, no records, and a student name containing characters such as angle brackets.
 
 Record what the browser displays and explain why autoescaping matters.
+
+---
+
+# Deep Practice Workbook — Build and Review a Template Page
+
+## 39. Start with a user story
+
+A student opens the institute portal and wants to see:
+- A page title.
+- A welcome message.
+- A list of courses.
+- A link to each course.
+- A message when no courses are available.
+
+The view should retrieve the data. The template should display it.
+
+## 40. Example view
+
+~~~python
+from django.shortcuts import render
+from .models import Course
+
+
+def course_list(request):
+    courses = Course.objects.filter(
+        is_active=True
+    ).order_by("title")
+
+    context = {
+        "page_title": "Available Courses",
+        "courses": courses,
+    }
+
+    return render(
+        request,
+        "profiles/course_list.html",
+        context,
+    )
+~~~
+
+This example assumes the Course model has title and is_active fields. Confirm the actual model field names before using it.
+
+## 41. Example template
+
+~~~django
+{% extends "profiles/base.html" %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+    <h2>{{ page_title }}</h2>
+
+    <p>Choose a course to view its details.</p>
+
+    {% for course in courses %}
+        <article>
+            <h3>{{ course.title }}</h3>
+        </article>
+    {% empty %}
+        <p>No active courses are available.</p>
+    {% endfor %}
+{% endblock %}
+~~~
+
+## 42. Trace the data
+
+- Course.objects.filter() builds the QuerySet.
+- order_by() defines the display order.
+- context connects the Python variable to the template variable.
+- render() loads the template and returns an HttpResponse.
+- The for tag iterates through the courses.
+- empty displays when the QuerySet has no rows.
+
+## 43. Template variable practice
+
+For each context dictionary, write the template expression.
+
+| Context key | Value | Template expression |
+|---|---|---|
+| student_name | Asha |  |
+| total_students | 25 |  |
+| course_title | Django |  |
+| is_active | True |  |
+
+Expected expressions:
+- student_name.
+- total_students.
+- course_title.
+- is_active.
+
+## 44. Filter practice
+
+Predict the result:
+
+~~~django
+{{ "django"|upper }}
+{{ "DJANGO"|lower }}
+{{ student_name|default:"Guest" }}
+{{ description|truncatewords:5 }}
+~~~
+
+Explain:
+- Which filter changes case?
+- Which filter supplies a fallback?
+- Which filter shortens displayed text?
+
+## 45. Loop practice
+
+Given three course records, write a loop that displays:
+- Course title.
+- Course duration.
+- Course detail link.
+
+Then write an empty block.
+
+Test the template with:
+- Three courses.
+- One course.
+- No courses.
+
+## 46. Condition practice
+
+Display Active when course.is_active is true.
+
+Display Inactive otherwise.
+
+Explain why this is a presentation decision and not a permission check.
+
+## 47. URL tag practice
+
+Create a detail link using the named route.
+
+The route should accept a course identifier.
+
+Confirm:
+- The route name exists.
+- The view parameter name matches the converter.
+- The template supplies the required value.
+
+If the URL tag raises NoReverseMatch, inspect the URL configuration before changing the template.
+
+## 48. Static tag practice
+
+Add a CSS file using the static tag.
+
+Verify:
+1. The static folder is inside the app.
+2. The path contains the app namespace.
+3. The static library is loaded.
+4. The browser requests the expected URL.
+5. The response is successful.
+
+## 49. Security review
+
+For every user-provided value displayed in the template:
+- Keep autoescaping enabled.
+- Do not apply safe to untrusted content.
+- Do not display passwords.
+- Do not display session identifiers.
+- Do not display secret values.
+- Avoid exposing private information unnecessarily.
+
+## 50. Accessibility review
+
+A usable template should:
+- Use semantic headings in order.
+- Use labels for form inputs.
+- Use meaningful link text.
+- Provide visible error messages.
+- Not rely on color alone.
+- Provide alternative text for meaningful images.
+
+## 51. Template debugging exercise
+
+Break one item at a time in a practice copy:
+1. Misspell a context variable.
+2. Misspell a route name.
+3. Change a block name.
+4. Change the template path.
+5. Remove the static library load tag.
+6. Remove a required template include.
+
+For each error:
+- Record the symptom.
+- Identify the file.
+- Explain the cause.
+- Apply the smallest correction.
+- Test again.
+
+## 52. Knowledge check
+
+1. Why does a view pass context?
+2. What is the difference between a variable and a filter?
+3. Why use empty in a loop?
+4. What does extends do?
+5. What does include do?
+6. What is the purpose of autoescaping?
+7. Why should safe be used cautiously?
+8. Why use named URLs?
+9. Why use the static tag?
+10. Why should a template not decide authorization?
+
+## 53. Answers
+
+1. To make Python values available to the template.
+2. A variable displays data; a filter transforms it for presentation.
+3. To show a message when the collection has no items.
+4. To inherit a base template.
+5. To render a reusable fragment.
+6. To prevent untrusted text being interpreted as HTML.
+7. It marks content as safe and can allow script injection.
+8. To avoid hard-coded paths and support route changes.
+9. To generate a static asset URL.
+10. Because users can request backend URLs directly.
+
+## 54. Final template review
+
+Before marking the lesson complete:
+- Confirm the view returns render().
+- Confirm the template path.
+- Confirm context names.
+- Confirm loop and empty behavior.
+- Confirm named routes.
+- Confirm static files.
+- Confirm autoescaping.
+- Confirm the page works with zero records.
+- Confirm no sensitive data is exposed.
