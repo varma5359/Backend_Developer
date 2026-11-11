@@ -1,0 +1,24 @@
+name: Django Documentation Quality Audit
+
+on:
+  push:
+    branches:
+      - django-beginner-quality-revision
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  documentation-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Audit Django notes and interview guides
+        run: python scripts/django_quality_audit.py
