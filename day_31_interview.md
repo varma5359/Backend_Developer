@@ -71,3 +71,29 @@ Before the interview, be able to:
 - [ ] I can present Dynamic Welcome Application with real evidence.
 
 **Readiness rule:** If you cannot reproduce the demonstration, return to the corresponding section in [Day 31 class notes](day_31_notes.md), repeat the steps and record the output.
+## Additional technical and scenario questions
+
+### Q5. What is the minimum contract of a Django view?
+**Answer:** A view receives an HttpRequest and returns an HttpResponse or compatible response object.
+
+### Q6. What does render() do?
+**Answer:** It renders a template with a context dictionary and returns an HttpResponse.
+
+### Q7. What is the difference between render() and redirect()?
+**Answer:** render() creates a response using a template. redirect() tells the browser to request another URL.
+
+### Q8. What is JsonResponse?
+**Answer:** It returns a JSON-formatted HTTP response. It is useful for simple JSON endpoints but does not by itself create a complete REST API.
+
+### Q9. Why use get_object_or_404()?
+**Answer:** It returns the object when found and raises Http404 when no matching object exists.
+
+### Q10. Scenario: a view returns None.
+**Answer:** At least one branch does not return a response. Ensure every execution path returns HttpResponse, render or redirect.
+
+### Q11. Scenario: a GET request deletes a record.
+**Answer:** This is an unsafe design. Use a POST-only endpoint with CSRF protection and authorization.
+
+### Q12. Scenario: the view receives no form data.
+**Answer:** Check the HTML form method and input name attributes, then read request.POST for a POST submission.
+
