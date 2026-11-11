@@ -71,3 +71,29 @@ Before the interview, be able to:
 - [ ] I can present Dynamic Employee Profile Website with real evidence.
 
 **Readiness rule:** If you cannot reproduce the demonstration, return to the corresponding class notes, repeat the steps and record the output.
+## Additional technical and scenario questions
+
+### Q5. What is template context?
+**Answer:** It is the data made available to a template, usually through a dictionary passed by the view.
+
+### Q6. What does a template filter do?
+**Answer:** It transforms a value for display, such as changing case, formatting a date or shortening text.
+
+### Q7. What is the difference between for and if?
+**Answer:** for repeats content for each item in a collection. if conditionally displays content based on a value.
+
+### Q8. What does the empty tag do?
+**Answer:** It displays fallback content when a for loop has no items.
+
+### Q9. Why use the url template tag?
+**Answer:** It generates a URL from a named route and arguments rather than hard-coding a path.
+
+### Q10. What is autoescaping?
+**Answer:** Django escapes unsafe characters in template output so untrusted text is not interpreted as HTML or script.
+
+### Q11. Scenario: a variable appears blank.
+**Answer:** Check whether the view passes the correct context key and whether the template uses the same spelling.
+
+### Q12. Scenario: user-submitted HTML executes.
+**Answer:** Check whether autoescaping was disabled or the safe filter was applied to untrusted content. Render untrusted text safely.
+
