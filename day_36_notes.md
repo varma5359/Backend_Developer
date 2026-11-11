@@ -984,3 +984,7 @@ Ask another learner to sign in with the HR Staff test account and attempt one al
 ## 63. Final readiness statement
 
 Do not mark admin configuration complete until an ordinary staff account has been tested, restricted permissions have been verified and sensitive fields are not exposed in the admin interface.
+
+## 64. Evidence to retain
+
+Keep the admin configuration, screenshots of list/search/filter behavior, staff permission matrix and results from allowed/denied access tests. Use fictional employee records and test accounts.
