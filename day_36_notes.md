@@ -6,7 +6,7 @@
 **Prerequisites:** Days 27–35 — Django setup, project structure, settings, routing, views, templates, models and applied migrations  
 **Environment:** Windows, VS Code, PowerShell, Python virtual environment, Django 5.2.19  
 **Continuous project:** `student_portal` / `config` / `profiles`  
-**Approved mini-project:** Admin-Based Inventory Manager
+**Approved mini-project:** Employee Admin Manager
 
 > **Trainer standard:** Explain the database/business requirement first. Show the exact file. Type one component at a time. Run checks and migrations. Verify actual records. Do not ask students to memorize ORM syntax without understanding the relationship or query.
 
