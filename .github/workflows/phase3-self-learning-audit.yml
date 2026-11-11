@@ -53,5 +53,8 @@ jobs:
           python manage.py makemigrations profiles
           python manage.py migrate --noinput
 
-      - name: Run model, form, admin, view and CSRF tests
+      - name: Verify static asset discovery
+        run: python manage.py findstatic profiles/css/site.css --verbosity 2
+
+      - name: Run routing, template, model, form, admin and CSRF tests
         run: python manage.py test profiles -v 2
