@@ -989,3 +989,7 @@ Write a short schema decision record for one field. Include the business meaning
 ## 58. Final reviewer prompt
 
 Ask another learner to review your schema and identify one field whose type, optionality or relationship design could be improved. Record the feedback and explain whether you accepted the change.
+
+## 59. Final readiness statement
+
+Do not mark the model design complete until you can explain each field to another developer, justify the chosen field type and demonstrate how invalid data is rejected.
