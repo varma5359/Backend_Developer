@@ -863,3 +863,90 @@ Produce:
 - Search by name or employee code.
 
 For each result, explain the QuerySet method and what data is returned.
+
+---
+
+# Practice Workbook — ORM Query Planning
+
+## 46. Predict the returned records
+
+Given a small Employee table, write the expected records for:
+1. all().
+2. filter(is_active=True).
+3. exclude(department="HR").
+4. order_by("-salary").
+5. values("full_name", "department").
+6. distinct department values.
+
+Do not run the code until you have predicted the result.
+
+## 47. Choose the right QuerySet method
+
+| Requirement | Method |
+|---|---|
+| Check whether any active employee exists | exists() |
+| Count all employees | count() |
+| Retrieve one unique employee | get() |
+| Retrieve the first match or None | first() |
+| Return selected field dictionaries | values() |
+| Return selected field tuples | values_list() |
+| Calculate average salary | aggregate() |
+
+Explain why each method is more appropriate than loading all objects.
+
+## 48. QuerySet evaluation drill
+
+Create a QuerySet and print its representation.
+
+Then:
+- Iterate through it.
+- Convert it to list.
+- Call count().
+- Call exists().
+
+Observe which operations execute database queries in your environment.
+
+Do not assume every method evaluates the same way.
+
+## 49. Safe update drill
+
+Before a bulk update:
+1. Build the filter.
+2. Inspect matching records.
+3. Count matching records.
+4. Confirm the business rule.
+5. Run update.
+6. Query again to verify.
+
+Never run a bulk update with an empty or overly broad filter without understanding the effect.
+
+## 50. Safe delete drill
+
+Before a delete:
+- Inspect the QuerySet.
+- Count the records.
+- Understand related on_delete rules.
+- Use a practice database.
+- Confirm the expected number of deletions.
+- Verify related records afterward.
+
+## 51. ORM performance reflection
+
+For each page, ask:
+- How many queries run?
+- Are related objects accessed in loops?
+- Does the template need every field?
+- Is the QuerySet paginated?
+- Is the ordering stable?
+- Is an index justified by measured query behavior?
+
+## 52. Final workbook submission
+
+Submit:
+- QuerySet predictions.
+- Method selection table.
+- Evaluation observations.
+- Safe update and delete checklist.
+- One example using Q.
+- One example using F.
+- One aggregation result.
