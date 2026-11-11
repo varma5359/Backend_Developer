@@ -74,7 +74,7 @@ def main() -> int:
                 "model answer",
                 "scenario",
                 "project viva",
-                "self-check",
+                "self-check", "self-assessment",
             ),
         )
         total_lines += len(notes.splitlines()) + len(interview.splitlines())
