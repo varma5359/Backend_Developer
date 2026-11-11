@@ -974,3 +974,7 @@ Without reading the notes, explain:
 8. Why existing rows matter when adding required fields.
 9. Why migration conflicts occur.
 10. Why backups are separate from Git history.
+
+## 59. Submission reflection
+
+Write a safe migration plan for adding a required field to an existing table. Include the initial optional schema change, legacy data population, validation of existing rows, final required-field migration, test database run, backup and deployment rollback consideration. Explain why a default should represent a real business value.
