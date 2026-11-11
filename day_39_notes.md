@@ -993,3 +993,7 @@ Document one invalid form submission. Include the submitted values, form errors,
 ## 54. Final reviewer prompt
 
 Ask another learner to submit an invalid value and explain the error. They should be able to locate the field validator, identify the bound form and prove that no invalid record was saved.
+
+## 55. Final readiness statement
+
+Do not mark form implementation complete until valid data saves, invalid data produces understandable errors, updates change the intended record and server-controlled fields cannot be modified by the browser.
