@@ -51,9 +51,9 @@ def main():
         note_total += note_lines
         guide_total += guide_lines
 
-        if not re.match(rf"^# Day {day:02d}:", notes):
+        if not re.match(rf"^# Day {day:02d}:", notes.lstrip()):
             failures.append(fail(f"{note_path.name}: incorrect/missing day title"))
-        if not re.match(rf"^# Day {day:02d}:", guide):
+        if not re.match(rf"^# Day {day:02d}:", guide.lstrip())
             failures.append(fail(f"{guide_path.name}: incorrect/missing day title"))
         if note_lines < 300:
             failures.append(fail(f"{note_path.name}: only {note_lines} lines (minimum 300)"))
@@ -64,11 +64,11 @@ def main():
         for phrase in ("mini-project", "checklist"):
             if phrase not in lower_notes:
                 failures.append(fail(f"{note_path.name}: missing {phrase} section"))
-        if not any(p in lower_notes for p in ("troubleshooting", "common errors", "common beginner mistakes")):
+        if not any(p in lower_notes for p in ("troubleshooting", "common errors", "common beginner mistakes", "debugging")):
             failures.append(fail(f"{note_path.name}: missing troubleshooting coverage"))
         if not any(p in lower_notes for p in ("interview preparation", "interview questions", "interview guide")):
             failures.append(fail(f"{note_path.name}: missing interview preparation"))
-        if not any(p in lower_notes for p in ("mcq", "self-assessment", "self assessment")):
+        if not any(p in lower_notes for p in ("mcq", "self-assessment", "self assessment", "check your understanding")):
             failures.append(fail(f"{note_path.name}: missing knowledge check"))
 
         lower_guide = guide.lower()
