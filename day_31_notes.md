@@ -903,3 +903,157 @@ For each view, record:
 - Response type.
 - Expected status code.
 - One invalid-input test.
+
+---
+
+# Practice Workbook — Views and Responses
+
+## 44. Response type selection
+
+Choose an appropriate response for each task.
+
+| Requirement | Suitable response |
+|---|---|
+| Display a plain message | HttpResponse |
+| Render a template | render() |
+| Send the browser to another URL | redirect() |
+| Return simple JSON | JsonResponse |
+| Return a missing-resource response | get_object_or_404() followed by view response |
+| Reject an unsupported method | require_POST or require_http_methods |
+
+Explain why the selected response fits the requirement.
+
+## 45. Status code practice
+
+Match the response:
+- 200: successful response.
+- 201: resource created.
+- 302: redirect.
+- 400: bad request.
+- 403: forbidden.
+- 404: not found.
+- 405: method not allowed.
+- 500: unexpected server error.
+
+Do not return 200 for every situation. Status codes are part of the HTTP contract.
+
+## 46. GET versus POST practice
+
+Classify each action:
+- Open student list.
+- Search courses.
+- Create student.
+- Update profile.
+- Delete record.
+- Submit application.
+- Clear cart.
+
+Expected:
+- Read/search operations normally use GET.
+- State-changing operations use POST in ordinary HTML form workflows.
+
+## 47. Request inspection exercise
+
+Build a safe view that returns:
+- request.method.
+- request.path.
+- query parameter q.
+- whether request.user is authenticated.
+
+Do not display:
+- request.session.session_key.
+- Passwords.
+- Authentication cookies.
+- Secret headers.
+
+Explain why these values are sensitive.
+
+## 48. Context dictionary exercise
+
+View:
+
+~~~python
+context = {
+    "page_title": "Student Directory",
+    "students": students,
+    "total_students": students.count(),
+}
+~~~
+
+Template:
+- Display page_title.
+- Loop through students.
+- Display total_students.
+- Display an empty-state message.
+
+Explain which values come from the database and which are computed.
+
+## 49. Redirect exercise
+
+A form is successfully saved.
+
+Write a redirect to a named route.
+
+Explain:
+- Why a redirect is returned.
+- Which request follows.
+- Why refresh no longer repeats the original POST in the same way.
+
+## 50. Method restriction exercise
+
+Create a POST-only endpoint for a feedback submission.
+
+Test:
+- GET.
+- POST.
+- Missing CSRF token.
+- Valid CSRF token.
+
+Expected:
+- GET receives 405.
+- POST passes the method restriction.
+- CSRF validation still applies.
+
+## 51. Common view debugging checklist
+
+When a view fails:
+1. Confirm the URL resolves.
+2. Confirm the view receives expected parameters.
+3. Confirm every branch returns a response.
+4. Check request method.
+5. Check request data source.
+6. Validate the form.
+7. Check database lookup.
+8. Check template path.
+9. Check context keys.
+10. Check status code.
+
+## 52. Independent challenge — Institute Request Flow
+
+Create views for:
+- Welcome page with GET name.
+- Student list.
+- Student detail.
+- JSON health check.
+- POST feedback.
+- Missing student response.
+
+For each view, write a test for the expected status and response content.
+
+## 53. Answer key prompts
+
+- What must a view return? An HttpResponse or compatible response.
+- What does render() do? Renders a template with context.
+- What does redirect() do? Returns a redirect response.
+- What does JsonResponse do? Returns JSON.
+- Why restrict methods? To prevent an action being triggered by an inappropriate HTTP method.
+
+## 54. Final workbook submission
+
+Submit:
+- Response selection table.
+- Status code matching.
+- GET/POST classification.
+- Request inspector output.
+- View debugging checklist.
+- Independent challenge tests.
