@@ -156,4 +156,6 @@ A documentation-only CI pass must not be described as Django runtime validation.
 
 **Days 42–45: documentation revision complete; runtime and beginner validation pending.**
 
+Runtime and beginner validation pending means the Day 43–45 application code still needs to be executed in a clean Django project and independently followed by beginner learners.
+
 **Phase 4 overall: in progress.** Days 46–54 still need the same self-learning revision. Do not claim that all of Phase 4 is complete or that the pathway is mentor-free until the remaining lessons, integrated runtime checks and beginner pilot have passed.
