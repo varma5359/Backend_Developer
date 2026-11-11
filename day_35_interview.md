@@ -71,3 +71,29 @@ Before the interview, be able to:
 - [ ] I can present Database Migration Practice with real evidence.
 
 **Readiness rule:** If you cannot reproduce the demonstration, return to the corresponding class notes, repeat the steps and record the output.
+## Additional technical and scenario questions
+
+### Q5. What is a migration?
+**Answer:** A versioned description of a database schema change.
+
+### Q6. What does makemigrations do?
+**Answer:** It creates migration files based on model changes. It does not apply them to the database.
+
+### Q7. What does migrate do?
+**Answer:** It applies pending migrations to the configured database.
+
+### Q8. Why inspect sqlmigrate output?
+**Answer:** It shows the SQL Django plans to execute and helps developers understand schema changes.
+
+### Q9. What is a data migration?
+**Answer:** A migration that transforms existing database records rather than only changing the schema.
+
+### Q10. Why should migrations be committed?
+**Answer:** Other developers, CI and deployment environments need the same schema history.
+
+### Q11. Scenario: makemigrations says no changes detected.
+**Answer:** Check whether the model was saved, the app is installed and the command is running against the intended settings module.
+
+### Q12. Scenario: two branches create conflicting migrations.
+**Answer:** Inspect both migration files and dependencies, then create a merge migration if the operations are compatible. Do not delete a migration blindly.
+
