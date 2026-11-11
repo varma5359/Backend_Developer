@@ -940,3 +940,18 @@ Submit:
 - Create test.
 - Update test.
 - Ownership field explanation.
+
+## 50. Final ModelForm assessment
+
+Create and update the same student record.
+
+Prove that:
+- A valid create adds one row.
+- An invalid create adds no row.
+- A valid update changes the existing row.
+- An update does not create a duplicate.
+- A server-controlled owner field cannot be submitted by the browser.
+- Field and non-field errors remain visible.
+
+Record the row count before and after each operation.
+
