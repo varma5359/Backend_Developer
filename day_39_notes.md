@@ -989,3 +989,7 @@ Without reading the notes, explain:
 ## 53. Submission reflection
 
 Document one invalid form submission. Include the submitted values, form errors, whether cleaned_data was available, whether a database write occurred, and the exact user-facing feedback. Then show the corrected valid submission.
+
+## 54. Final reviewer prompt
+
+Ask another learner to submit an invalid value and explain the error. They should be able to locate the field validator, identify the bound form and prove that no invalid record was saved.
