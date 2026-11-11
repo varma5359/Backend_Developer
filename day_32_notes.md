@@ -979,3 +979,19 @@ Rate the page against these checks:
 
 Fix every failed check before submission.
 
+
+## 57. Explain-back assessment
+
+Without reading the notes, explain:
+1. How a view passes data to a template.
+2. How a template variable is rendered.
+3. How filters transform display values.
+4. How loops display QuerySet results.
+5. How empty handles zero records.
+6. How conditions change presentation.
+7. How extends reuses a base layout.
+8. How include reuses a fragment.
+9. How url generates a named route.
+10. How static generates an asset URL.
+11. Why autoescaping matters.
+12. Why safe must not be used on untrusted input.
