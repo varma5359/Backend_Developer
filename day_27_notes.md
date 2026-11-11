@@ -2,7 +2,7 @@
 
 **Pathway:** Python Backend Developer Career Pathway (Django)  
 **Phase:** 3 — Django Fundamentals  
-**Estimated time:** 2–3 hours (trainer-led explanation and guided practice)  
+**Estimated time:** 2–3 hours (self-paced reading, hands-on setup and independent verification)  
 **Level:** Beginner  
 **Prerequisites:** Days 1–26 — Python, OOP, HTTP, SQL and Git fundamentals  
 **Tools:** Windows 10/11, Python, VS Code, PowerShell, Git and internet access  
@@ -993,7 +993,7 @@ If your Python version is outside the supported range:
 - Install a compatible Python version or use the appropriate Django release.
 - Keep the classroom version consistent.
 
-Django 6.1 has a newer Python compatibility requirement. Do not install Django 6.1 for this course while following examples that are pinned to Django 5.2 unless the trainer has deliberately migrated the course.
+Django 6.1 has a newer Python compatibility requirement. Do not install Django 6.1 for this course while following examples that are pinned to Django 5.2 unless the course baseline has deliberately been migrated and tested.
 
 ---
 
@@ -1167,7 +1167,7 @@ the \`.venv\` folder is created inside the current working directory.
 
 If you run the command from the wrong folder, you may create the environment in the wrong place.
 
-**Trainer checkpoint:** Ask the learner to show the output of \`Get-Location\` before continuing.
+**Self-check:** Run \`Get-Location\`. Confirm that PowerShell shows the workspace folder you created for this lesson. If it shows a different folder, use \`Set-Location\` to move into the correct workspace before creating \`.venv\`. Do not continue until the current folder is correct.
 
 ## 23. Step 5: Open the folder in VS Code
 
@@ -2194,7 +2194,7 @@ The README must contain:
 
 ### 49.6 How to verify the project
 
-The trainer should ask the learner to demonstrate:
+Before marking the project complete, demonstrate the following to yourself and capture the output in your README or evidence file: 
 
 1. The active terminal.
 2. The active virtual environment.
@@ -2245,26 +2245,24 @@ This is intentional. We want a clean foundation before building the application.
 
 # PART 9 — GUIDED LEARNING AND INDEPENDENT PRACTICE
 
-## 50. Trainer demonstration sequence
+## 50. Self-paced demonstration sequence
 
-The trainer should not paste all commands at once.
+Do not run every command as one large block. Run one step, inspect its result, and explain what changed before continuing.
 
-Use this teaching sequence:
-
-| Step | Trainer demonstrates | Student explains |
+| Step | You do | Ask yourself / verify |
 |---:|---|---|
-| 1 | Check Python version | Which Python is installed? |
+| 1 | Check Python version | Which Python version is installed? |
 | 2 | Print Python executable | Which interpreter is running? |
 | 3 | Create workspace | Where will project files be stored? |
 | 4 | Create virtual environment | Why isolate dependencies? |
 | 5 | Activate environment | What changes in this terminal? |
-| 6 | Check pip path | Which environment will receive packages? |
-| 7 | Install Django | Which version is being installed? |
-| 8 | Verify Django | How do we know it is installed correctly? |
-| 9 | Create requirements file | How can another developer reproduce this setup? |
-| 10 | Create .gitignore | Which files should not be committed? |
+| 6 | Check pip path | Will packages install inside this environment? |
+| 7 | Install Django | Which exact version is being installed? |
+| 8 | Verify Django | Does the reported version match the course baseline? |
+| 9 | Create requirements file | Can another learner reproduce this setup? |
+| 10 | Create .gitignore | Which generated or secret files must not be committed? |
 
-Do not move to the next step until students can explain the current one.
+If a check fails, stop and use the troubleshooting section. Do not copy the next command in the hope that the problem disappears.
 
 ## 51. Questions to ask during the lesson
 
@@ -2620,25 +2618,25 @@ A student should be able to check every item below.
 - [ ] I can explain how another developer recreates the environment.
 - [ ] I can troubleshoot a missing Django installation.
 
-## 61. Trainer quality checklist
+## 61. Independent completion checklist
 
-Before marking Day 27 complete, the trainer should verify:
+Mark each item only after you personally perform it and inspect the result:
 
-| Area | Verification |
+| Area | Evidence you must see |
 |---|---|
 | Python | Correct interpreter and supported version |
-| Virtual environment | Created in the correct workspace |
-| Activation | Environment active in the terminal |
-| pip | Uses the active interpreter |
-| Django | Version 5.2.19 installed |
-| Import | Django imports successfully |
-| Package path | Django installed inside .venv |
-| Dependencies | requirements.txt created |
-| Git hygiene | .venv and .env ignored |
-| Understanding | Student explains commands and architecture |
-| Troubleshooting | Student can diagnose at least one environment error |
+| Virtual environment | .venv exists inside the intended workspace |
+| Activation | PowerShell prompt shows the active environment |
+| pip | \`python -m pip --version\` points inside .venv |
+| Django | Version 5.2.19 is reported |
+| Import | \`python -c \"import django; print(django.get_version())\"\` succeeds |
+| Package path | Django module path is inside .venv |
+| Dependencies | requirements.txt contains the pinned Django requirement |
+| Git hygiene | .venv and .env are ignored |
+| Understanding | You can explain each command without reading the explanation aloud |
+| Troubleshooting | You can diagnose one deliberately introduced environment error |
 
-Do not mark a learner complete only because the terminal screenshot looks correct.
+A screenshot alone is not proof. Re-run the commands and explain the output in your own words.
 
 ## 62. Suggested assessment rubric
 
@@ -2704,7 +2702,7 @@ Use documentation that matches the version used in class.
 5. Python virtual environments: https://docs.python.org/3/library/venv.html
 6. Python package installation guide: https://packaging.python.org/en/latest/tutorials/installing-packages/
 
-**Version note:** This lesson pins Django 5.2.19 for a consistent classroom environment. Before a new student cohort begins, the trainer should check the official Django release and security information and update the course baseline deliberately. If the baseline changes, test the commands and lesson examples against that version before publishing the update.
+**Version note:** This lesson pins Django 5.2.19 for a consistent classroom environment. Before a new cohort begins, the course owner should check the official Django release and security information and update the course baseline deliberately. If the baseline changes, test the commands and lesson examples against that version before publishing the update.
 
 ---
 
