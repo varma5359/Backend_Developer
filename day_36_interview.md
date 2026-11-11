@@ -71,3 +71,29 @@ Before the interview, be able to:
 - [ ] I can present Employee Admin Manager with real evidence.
 
 **Readiness rule:** If you cannot reproduce the demonstration, return to the corresponding class notes, repeat the steps and record the output.
+## Additional technical and scenario questions
+
+### Q5. What is Django admin?
+**Answer:** A built-in internal interface for trusted staff to manage application records.
+
+### Q6. What does ModelAdmin configure?
+**Answer:** It configures how a model is displayed and edited in the admin, including columns, filters, search and read-only fields.
+
+### Q7. What does list_display do?
+**Answer:** It defines columns shown in the admin list page.
+
+### Q8. What does search_fields do?
+**Answer:** It defines model fields searched by the admin search box.
+
+### Q9. What is the difference between is_staff and is_superuser?
+**Answer:** is_staff allows access to admin subject to permissions. is_superuser grants all permissions by default.
+
+### Q10. Why use readonly_fields?
+**Answer:** It prevents normal editing of values such as system-generated timestamps through the admin form.
+
+### Q11. Scenario: model is missing from admin.
+**Answer:** Check that the app is installed and the model is registered in admin.py.
+
+### Q12. Scenario: staff user can delete records unexpectedly.
+**Answer:** Inspect direct and group permissions. Remove unnecessary delete permission and test with an ordinary staff account.
+
