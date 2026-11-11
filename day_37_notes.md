@@ -445,3 +445,421 @@ D. Only in templates
 5. Diagnose and fix one controlled mistake. Do not mark the lesson complete based only on copied code.
 
 **Next lesson:** Day 38 — Model Relationships: One-to-One, One-to-Many and Many-to-Many
+
+---
+
+# Extended Beginner Lab — QuerySet Behavior and Practical ORM Patterns
+
+## 19. What is the Django ORM?
+
+ORM means Object-Relational Mapper.
+
+Django ORM lets Python code work with database records through model classes and QuerySets.
+
+Instead of writing SQL for every common operation, developers use methods such as:
+- all().
+- filter().
+- exclude().
+- get().
+- create().
+- update().
+- delete().
+- order_by().
+- values().
+
+The ORM translates supported operations into database queries.
+
+## 20. QuerySet laziness
+
+A QuerySet is lazy in common operations.
+
+Example:
+
+~~~python
+employees = Employee.objects.filter(is_active=True)
+~~~
+
+This builds a QuerySet. It does not necessarily retrieve all matching records immediately.
+
+The query is evaluated when results are needed, such as:
+- Iteration.
+- list().
+- bool() in some contexts.
+- len().
+- Accessing certain results.
+- Serialization/rendering that iterates over it.
+
+Understanding evaluation helps avoid unnecessary queries.
+
+## 21. all()
+
+~~~python
+Employee.objects.all()
+~~~
+
+Returns a QuerySet representing all records for the model.
+
+Do not assume that all() immediately loads every record.
+
+Use filters and pagination for large tables.
+
+## 22. filter()
+
+~~~python
+Employee.objects.filter(is_active=True)
+~~~
+
+Returns records matching the supplied conditions.
+
+Multiple keyword conditions are normally combined with AND.
+
+Example:
+
+~~~python
+Employee.objects.filter(
+    department="Engineering",
+    is_active=True,
+)
+~~~
+
+This means department is Engineering AND is_active is True.
+
+## 23. exclude()
+
+~~~python
+Employee.objects.exclude(is_active=False)
+~~~
+
+Returns records that do not match the condition.
+
+Read the business meaning carefully. Excluding False may also behave differently for nullable fields than an explicit True filter.
+
+## 24. get()
+
+~~~python
+Employee.objects.get(employee_code="EMP101")
+~~~
+
+get() expects exactly one matching row.
+
+Possible exceptions:
+- Employee.DoesNotExist.
+- Employee.MultipleObjectsReturned.
+
+Use get() when the lookup is expected to be unique.
+
+## 25. first() and last()
+
+~~~python
+Employee.objects.order_by("full_name").first()
+Employee.objects.order_by("full_name").last()
+~~~
+
+first() and last() return one object or None if the QuerySet is empty.
+
+They are useful when a missing record is an expected outcome.
+
+## 26. exists()
+
+~~~python
+Employee.objects.filter(is_active=True).exists()
+~~~
+
+exists() checks whether at least one row matches.
+
+It is usually clearer and more efficient than loading all matching objects merely to check whether the result is non-empty.
+
+## 27. count()
+
+~~~python
+Employee.objects.count()
+~~~
+
+count() asks the database for the number of matching records.
+
+Use it when you need a count rather than the full object list.
+
+## 28. order_by()
+
+~~~python
+Employee.objects.order_by("full_name")
+Employee.objects.order_by("-salary")
+~~~
+
+A field name sorts ascending. A leading minus sign sorts descending.
+
+For stable pagination, add a unique tie-breaker such as primary key.
+
+## 29. values()
+
+~~~python
+Employee.objects.values(
+    "employee_code",
+    "full_name",
+)
+~~~
+
+values() returns dictionaries containing selected fields.
+
+Use it when the code needs field values rather than full model instances.
+
+## 30. values_list()
+
+~~~python
+Employee.objects.values_list(
+    "department",
+    flat=True,
+).distinct()
+~~~
+
+values_list() returns tuples by default.
+
+flat=True returns a flat list-like result for one selected field.
+
+## 31. distinct()
+
+distinct() removes duplicate rows from a QuerySet result.
+
+Example:
+
+~~~python
+Employee.objects.values_list(
+    "department",
+    flat=True,
+).distinct()
+~~~
+
+The generated SQL and behavior can depend on the database backend and selected fields.
+
+## 32. Field lookups
+
+Common lookups:
+
+| Lookup | Meaning |
+|---|---|
+| exact | Exact match |
+| iexact | Case-insensitive exact match |
+| contains | Case-sensitive containment |
+| icontains | Case-insensitive containment |
+| gt | Greater than |
+| gte | Greater than or equal |
+| lt | Less than |
+| lte | Less than or equal |
+| in | Matches any value in a collection |
+| isnull | Checks NULL |
+| range | Value within a range |
+
+Example:
+
+~~~python
+Employee.objects.filter(salary__gte=50000)
+~~~
+
+This returns employees with salary greater than or equal to 50000.
+
+## 33. Q objects
+
+Q objects support complex conditions.
+
+Example:
+
+~~~python
+from django.db.models import Q
+
+Employee.objects.filter(
+    Q(full_name__icontains="asha")
+    | Q(employee_code__icontains="asha")
+)
+~~~
+
+The vertical bar represents OR.
+
+Use parentheses to make complex logic easy to read.
+
+## 34. F expressions
+
+F expressions refer to model field values in database operations.
+
+Example:
+
+~~~python
+from django.db.models import F
+
+Employee.objects.filter(
+    salary__gt=F("bonus")
+)
+~~~
+
+This compares two database fields in the query rather than loading values and comparing them in Python.
+
+F expressions are useful for atomic field updates and comparisons.
+
+## 35. Update records
+
+~~~python
+Employee.objects.filter(
+    department="Support"
+).update(is_active=False)
+~~~
+
+update() performs a direct database update.
+
+Important:
+- It does not call each model instance's save() method.
+- It does not run model save signals in the same way as saving each object.
+- It can bypass custom model save logic.
+
+Use it when a bulk update is intended and those side effects are not required.
+
+## 36. Delete records
+
+~~~python
+Employee.objects.filter(
+    is_active=False
+).delete()
+~~~
+
+delete() removes matching records and may also delete related rows according to on_delete rules.
+
+Do not run bulk deletion on important data without checking the QuerySet first.
+
+Inspect the matching records before deleting.
+
+## 37. Aggregation
+
+Aggregation calculates a summary value over a QuerySet.
+
+Example:
+
+~~~python
+from django.db.models import Avg, Max, Min
+
+Employee.objects.aggregate(
+    average_salary=Avg("salary"),
+    highest_salary=Max("salary"),
+    lowest_salary=Min("salary"),
+)
+~~~
+
+The result is a dictionary of summary values.
+
+## 38. Annotation
+
+annotate() adds a calculated value to each returned object.
+
+Example:
+
+~~~python
+from django.db.models import Count
+
+Department.objects.annotate(
+    employee_count=Count("employees")
+)
+~~~
+
+The reverse relationship name must match the actual model relationship.
+
+## 39. QuerySet chaining
+
+QuerySet methods can be chained:
+
+~~~python
+employees = (
+    Employee.objects
+    .filter(is_active=True)
+    .exclude(department="Archived")
+    .order_by("full_name", "pk")
+)
+~~~
+
+Each method returns a QuerySet-like result that can be further refined.
+
+The final SQL is generally executed when the result is evaluated.
+
+## 40. Inspect SQL
+
+A QuerySet can expose the SQL representation through its query attribute for debugging:
+
+~~~python
+queryset = Employee.objects.filter(is_active=True)
+print(queryset.query)
+~~~
+
+Use this to understand how ORM expressions are translated.
+
+Do not build raw SQL by concatenating user input.
+
+## 41. Common ORM mistakes
+
+| Mistake | Risk | Better approach |
+|---|---|---|
+| Use get() for a non-unique field | MultipleObjectsReturned | Use filter() |
+| Load all rows to check existence | Unnecessary data retrieval | Use exists() |
+| Load all rows to count | Extra memory/work | Use count() |
+| Delete without inspecting | Data loss | Review QuerySet and test |
+| Use float for money | Precision issues | DecimalField |
+| Use raw SQL concatenation | SQL injection risk | ORM parameters or safe raw query APIs |
+| Ignore QuerySet laziness | Unexpected repeated queries | Understand evaluation |
+| Use update() when save hooks matter | Custom logic may be skipped | Save instances deliberately |
+
+## 42. Guided ORM exercise
+
+Using the Employee model:
+1. Retrieve all active employees.
+2. Filter by department.
+3. Search by name.
+4. Find salary greater than a threshold.
+5. Exclude inactive employees.
+6. Retrieve one employee by employee code.
+7. Count employees.
+8. Check whether any employee exists.
+9. List distinct departments.
+10. Calculate average salary.
+11. Explain when each QuerySet executes.
+
+## 43. Self-check questions
+
+1. What is a QuerySet?
+2. What does lazy evaluation mean?
+3. What is the difference between filter() and exclude()?
+4. When should get() be used?
+5. What does exists() do?
+6. What does count() do?
+7. What does order_by() do?
+8. What is the difference between values() and values_list()?
+9. What is a Q object?
+10. What is an F expression?
+11. What is aggregation?
+12. What is annotation?
+13. Why can bulk update skip model save behavior?
+14. Why should bulk delete be used carefully?
+
+## 44. Answers
+
+1. A database query representation and its result interface.
+2. Query execution is deferred until results are needed.
+3. filter returns matches; exclude returns non-matches.
+4. When exactly one matching row is expected.
+5. Checks whether at least one row matches.
+6. Counts matching rows.
+7. Defines result ordering.
+8. Dictionaries versus tuples/flat values.
+9. Complex query condition object.
+10. Reference to a model field in a database expression.
+11. Calculates summary values.
+12. Adds calculated values to each object.
+13. It performs a direct SQL update rather than saving each instance.
+14. It can remove many records and related data.
+
+## 45. Independent challenge — Employee Insights with ORM
+
+Produce:
+- Active employee count.
+- Department-wise employee counts.
+- Highest salary.
+- Average salary.
+- Employees above a salary threshold.
+- Distinct department list.
+- Search by name or employee code.
+
+For each result, explain the QuerySet method and what data is returned.
