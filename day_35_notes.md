@@ -990,3 +990,7 @@ Do not mark a migration complete until you can explain its schema effect, inspec
 ## 62. Evidence to retain
 
 Keep the migration file, showmigrations output, sqlmigrate output, makemigrations check result and a note describing the database used for testing. Never include database passwords or private production data in the evidence.
+
+## 63. Final verification
+
+Confirm the migration has been tested from a clean database and from a copy containing existing records. Record any database-backend difference before approving the change.
