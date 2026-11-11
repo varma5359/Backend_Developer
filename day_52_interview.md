@@ -1,59 +1,88 @@
-# Day 52: Interview Questions — Django Messages Framework and Application Feedback
+# Day 52: Interview Guide — Django Messages Framework and Application Feedback
 
-**Pathway:** Python Backend Developer Career Pathway (Django)  
-**Phase:** 4 — Django ORM, Forms and Authentication  
-**Related notes:** [Day 52 class notes](day_52_notes.md)  
-**Approved mini-project:** User Notification Application
+**Related class notes:** [Day 52 notes](day_52_notes.md)  
+**Approved mini-project:** User Notification Application  
+**Level:** Beginner to Intermediate
 
-## Core technical questions
+## 1. Core technical questions
 
-### Q1. Explain django messages framework and application feedback.
-**Answer:** The messages framework lets a Django application display one-time feedback after an action, such as a successful save or an error. Messages are commonly stored using session or cookie-based storage and displayed in templates. They are useful for user feedback but are not a replacement for persistent notifications.
+### Q1. What is Django's messages framework?
+**Answer:** It provides temporary feedback that can be added during one request and displayed in a later response. It is commonly used after a form submission and redirect.
 
-### Q2. Which Django components are involved?
-**Answer:** profiles/views.py, profiles/templates/base.html. Explain how each component contributes to the feature.
+### Q2. Why are messages useful after redirects?
+**Answer:** A context dictionary belongs to the current response and is not automatically carried to the next request. Messages provide temporary cross-request feedback.
 
-### Q3. What is one common implementation mistake?
-**Answer:** A success message appears after a successful save. Test the feature with realistic data and verify the database result.
+### Q3. Which app must be installed?
+**Answer:** django.contrib.messages.
 
-### Q4. How do you verify the user workflow?
-**Answer:** Use separate test accounts, submit valid and invalid inputs, inspect the response and verify the stored records.
+### Q4. Which middleware is required?
+**Answer:** MessageMiddleware. It participates in loading and storing messages during request/response processing.
 
-### Q5. What production concern should you mention?
-**Answer:** Data integrity, permissions, privacy, secure configuration and integration test coverage.
+### Q5. Which context processor makes messages available to templates?
+**Answer:** django.contrib.messages.context_processors.messages.
 
-## Scenario questions
+### Q6. What are the common message levels?
+**Answer:** DEBUG, INFO, SUCCESS, WARNING and ERROR.
 
-### Q6. A feature works for one user but fails for another. What do you inspect?
-**Suggested answer:** Check the active user model, group membership, permissions, session, request context and database ownership rules.
+### Q7. What does messages.success() do?
+**Answer:** It adds a success-level message to the current request's message storage.
 
-### Q7. How do you prevent the browser from choosing a protected owner field?
-**Suggested answer:** Exclude the field from the user-facing form and assign it server-side from request.user.
+### Q8. What does message.tags provide?
+**Answer:** It provides a CSS-friendly tag associated with the message level. A template can use it to select styling.
 
-## Project viva — User Notification Application
+### Q9. Why should success feedback be added after saving?
+**Answer:** The application should not tell the user that an operation succeeded before the operation has actually completed. Add the success message after a successful save.
 
-1. What is the business problem?
-2. Which models and relationships are used?
-3. Which form fields are exposed?
-4. How is authentication or ownership handled?
-5. Which database constraints are important?
-6. How are valid and invalid journeys tested?
-7. What would you improve for production?
+### Q10. Are messages a replacement for form field errors?
+**Answer:** No. A message can provide general feedback, but field errors explain exactly which values need correction. Render the bound form with its errors.
 
-## Rapid revision
+### Q11. Are messages persistent notifications?
+**Answer:** No. They are intended for temporary feedback. A notification history with read/unread state should use a suitable persistent model or notification service.
 
-- **1.** Confirm messages app and middleware are configured.
-- **2.** Import django.contrib.messages in the view.
-- **3.** Add success, info, warning or error messages after relevant actions.
-- **4.** Redirect after successful POST.
-- **5.** Loop through messages in a shared base template.
-- **6.** Use message tags to style feedback.
-- **7.** Test that messages appear once and then disappear.
-- **8.** Do not store permanent business notifications only in messages.
+### Q12. What is Post/Redirect/Get?
+**Answer:** The browser submits POST, the server processes the action and redirects, and the browser makes a new GET request. This helps avoid accidental duplicate form submissions on refresh.
 
-## Readiness checklist
-- [ ] Explain the concept.
-- [ ] Identify connected Django components.
-- [ ] Demonstrate a complete workflow.
-- [ ] Explain validation and permissions.
-- [ ] Present User Notification Application and evidence.
+## 2. Debugging questions
+
+### Q13. Message does not appear.
+**Answer:** Check the installed app, MessageMiddleware, messages context processor, view helper call, template loop and redirect flow.
+
+### Q14. Message appears twice.
+**Answer:** The message may be added in both the POST and GET views, or the template may render the message collection more than once.
+
+### Q15. Message disappears before the intended page.
+**Answer:** Inspect whether an earlier response iterated over the messages, whether the message storage was consumed, and whether middleware and context processor are configured.
+
+## 3. Scenario questions
+
+### Q16. A success message appears even though the database save failed.
+**Answer:** The message is added too early. Add it only after validation and save succeed.
+
+### Q17. A developer displays the full database exception to the user.
+**Answer:** This may reveal internal details. Display a safe user-facing message and record technical details securely in server logs without secrets.
+
+### Q18. The product needs notifications that remain visible for weeks.
+**Answer:** Django messages are not the right storage. Create a persistent notification model with ownership, timestamps and read/unread state.
+
+## 4. Mini-project discussion — User Notification Application
+
+Demonstrate:
+1. Message configuration.
+2. Reusable base-template message block.
+3. Success after a saved profile.
+4. Error after invalid input.
+5. Warning and info examples.
+6. Message behavior after redirect and refresh.
+7. Accessible message markup.
+8. Tests.
+
+## 5. Readiness checklist
+
+- [ ] I can explain messages and message levels.
+- [ ] I know the required app, middleware and context processor.
+- [ ] I can add and display messages.
+- [ ] I understand message consumption.
+- [ ] I can distinguish temporary messages from persistent notifications.
+- [ ] I can demonstrate User Notification Application.
+
+**Related notes:** [Day 52 class notes](day_52_notes.md)
