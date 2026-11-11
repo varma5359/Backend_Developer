@@ -71,3 +71,28 @@ Before the interview, be able to:
 - [ ] I can present Django Student Management Website with real evidence.
 
 **Readiness rule:** If you cannot reproduce the demonstration, return to the corresponding class notes, repeat the steps and record the output.
+## Additional technical and scenario questions
+
+### Q5. What is integration testing?
+**Answer:** It checks multiple components working together, such as a URL, view, form, model, database and template during one request.
+
+### Q6. What does manage.py check prove?
+**Answer:** It detects certain configuration problems. It does not prove every browser workflow or permission rule works.
+
+### Q7. Why run the full test suite?
+**Answer:** A new feature can break existing behavior in another app. The full suite helps detect regressions.
+
+### Q8. What does the Django test client do?
+**Answer:** It simulates HTTP requests to the application without requiring a real browser.
+
+### Q9. Why test as an ordinary user?
+**Answer:** Superusers bypass many permission restrictions and can hide access-control bugs.
+
+### Q10. What should a debugging record contain?
+**Answer:** Exact URL/command, active environment, traceback, relevant code, expected behavior, actual behavior and the smallest fix.
+
+### Q11. Scenario: page works for admin but not student.
+**Answer:** Check authentication, permissions, ownership, context assumptions and the data available to an ordinary user.
+
+### Q12. Scenario: system check passes but form submission fails.
+**Answer:** Run a functional test and inspect CSRF, form validation, database migration state and view behavior. System checks do not simulate every request.
