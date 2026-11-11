@@ -939,3 +939,20 @@ Verify that:
 
 Document the group membership and permission results.
 
+
+## 59. Admin release checklist
+
+Before enabling an admin feature:
+- Confirm model registration.
+- Confirm list columns.
+- Confirm filters.
+- Confirm search fields.
+- Confirm read-only fields.
+- Confirm fieldsets.
+- Confirm staff access.
+- Confirm least-privilege permissions.
+- Confirm dangerous actions are restricted.
+- Confirm ordinary users are denied.
+- Confirm sensitive fields are not displayed.
+- Confirm the interface works with realistic record counts.
+
