@@ -985,3 +985,7 @@ Without reading the notes, explain:
 ## 57. Submission reflection
 
 Write a short schema decision record for one field. Include the business meaning, selected field type, required/optional decision, validation, database rule and one rejected alternative. Explain why the selected design is better for this data.
+
+## 58. Final reviewer prompt
+
+Ask another learner to review your schema and identify one field whose type, optionality or relationship design could be improved. Record the feedback and explain whether you accepted the change.
