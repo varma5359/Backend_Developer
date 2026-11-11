@@ -150,9 +150,9 @@ latest_first = Employee.objects.order_by("-joining_date")
 # GET exactly one record
 employee = Employee.objects.get(employee_code="EMP1001")
 
-# UPDATE
-employee.is_active = False
-employee.save(update_fields=["is_active"])
+# UPDATE — run this only after checking the initial query results
+# employee.is_active = False
+# employee.save(update_fields=["is_active"])
 
 # DELETE only after confirming the target
 # employee.delete()
@@ -265,7 +265,15 @@ Expected:
 
 The first query orders by employee code so the output order is predictable. The second counts active employees; Asha is active by default and Rahul is created as inactive. The third searches for the text asha without case sensitivity.
 
-When you update Asha to inactive, re-run the active count. It should now be 0 for these two sample records. Do not assume an update worked just because save() returned without an error; query the record again.
+After recording the initial count, run the update:
+
+```python
+employee.is_active = False
+employee.save(update_fields=["is_active"])
+print(Employee.objects.filter(is_active=True).count())
+```
+
+Expected after this update: `0` active employees among these two sample records. Do not assume an update worked just because save() returned without an error; query the record again.
 
 If you repeat the create example, choose new unique employee codes and emails or use get_or_create after inspecting existing records. Employee code and email are unique fields.
 
