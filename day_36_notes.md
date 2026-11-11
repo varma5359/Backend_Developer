@@ -988,3 +988,7 @@ Do not mark admin configuration complete until an ordinary staff account has bee
 ## 64. Evidence to retain
 
 Keep the admin configuration, screenshots of list/search/filter behavior, staff permission matrix and results from allowed/denied access tests. Use fictional employee records and test accounts.
+
+## 65. Final verification
+
+Confirm that a staff member without the required permission receives the expected denial when requesting the backend URL directly. A hidden admin control is not sufficient evidence of access control.
