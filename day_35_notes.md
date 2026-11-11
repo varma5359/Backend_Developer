@@ -926,3 +926,20 @@ Choose one migration and report:
 - Applied state.
 - Validation performed.
 - Data safety consideration.
+
+## 56. Final migration safety assessment
+
+A teammate asks you to delete migration files because the local database reports an error.
+
+Explain why this is unsafe.
+
+Your response must include:
+- The difference between model state and database state.
+- How to inspect showmigrations.
+- How to inspect migration dependencies.
+- How sqlmigrate helps.
+- Why a database backup is different from a Git commit.
+- Why the problem must be reproduced on a copy before repair.
+
+Do not run destructive migration commands on important data.
+
