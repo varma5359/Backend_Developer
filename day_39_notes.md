@@ -969,3 +969,19 @@ A reviewer should be able to identify:
 - Whether many-to-many values require save_m2m().
 - Which tests prove valid and invalid submissions.
 
+
+## 52. Explain-back assessment
+
+Without reading the notes, explain:
+1. What a form does.
+2. How bound and unbound forms differ.
+3. What is_valid does.
+4. What cleaned_data contains.
+5. What a widget controls.
+6. How clean_fieldname works.
+7. When form clean is used.
+8. What ModelForm provides.
+9. Why fields should be explicit.
+10. How save(commit=False) works.
+11. Why instance is passed for updates.
+12. When save_m2m is needed.
