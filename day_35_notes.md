@@ -982,3 +982,7 @@ Write a safe migration plan for adding a required field to an existing table. In
 ## 60. Final reviewer prompt
 
 Ask another learner to inspect your migration plan. They must identify the model change, SQL effect, dependency, existing-data impact and rollback concern. Do not apply the migration to important data until the review is complete.
+
+## 61. Final readiness statement
+
+Do not mark a migration complete until you can explain its schema effect, inspect its SQL, identify its dependencies, validate existing data and describe how you would recover from a failed deployment.
