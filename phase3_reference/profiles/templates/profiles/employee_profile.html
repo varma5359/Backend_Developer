@@ -1,0 +1,17 @@
+{% extends 'profiles/base.html' %}
+{% block title %}Employee Profile{% endblock %}
+{% block content %}
+<h1>{{ employee.name|upper }}</h1>
+<p>Role: {{ employee.role }}</p>
+<h2>Skills</h2>
+<ul>
+{% for skill in employee.skills %}
+    <li>{{ skill }}</li>
+{% empty %}
+    <li>No skills listed.</li>
+{% endfor %}
+</ul>
+{% if employee.skills %}
+<p>Skills are available.</p>
+{% endif %}
+{% endblock %}
