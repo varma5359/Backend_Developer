@@ -84,4 +84,4 @@ Be prepared to:
 - [ ] I can answer a scenario question.
 - [ ] I can present Employee Management Model independently.
 
-**Trainer note:** Ask the learner to explain why a step is needed and predict what changes when one value or setting is modified.
+**Self-practice:** Ask yourself to explain why a step is needed and predict what changes when one value or setting is modified.
