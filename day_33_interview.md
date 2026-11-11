@@ -3,85 +3,71 @@
 **Pathway:** Python Backend Developer Career Pathway (Django)  
 **Phase:** 3 — Django Fundamentals  
 **Related class notes:** [Day 33 notes](day_33_notes.md)  
-**Approved mini-project:** Reusable Website Layout
+**Mini-project:** Reusable Website Layout
 
-## 1. Core technical questions
+## 1. Technical questions with model answers
 
-### Q1. Explain today's concept.
-**Answer:** Most pages on a website share a header, navigation, footer and overall layout. Copying the same HTML into every page creates duplication. Template inheritance lets one base template define the shared layout while child templates provide page-specific content. Static files such as CSS, JavaScript and logos are application assets served separately from templates.
+### Q1. Why use template inheritance?
 
-**Follow-up:** Explain how this concept appears in the Student Portal.
+**Model answer:** It lets child templates reuse a shared base layout. The base defines blocks, and child templates override those blocks instead of duplicating the whole HTML page.
 
-### Q2. Which files or commands are involved?
-**Answer:** `profiles/templates/profiles/base.html`, `profiles/templates/profiles/home.html`, `profiles/templates/profiles/about.html`, `profiles/static/profiles/css/site.css`, `profiles/views.py`, `profiles/urls.py`. Explain what each one is responsible for and how they connect.
+### Q2. What does extends do?
 
-**Follow-up:** What error might occur if a file is missing or incorrectly configured?
+**Model answer:** It declares the parent template that a child template inherits from. It should appear before other template content in the child.
 
-### Q3. What does Django do automatically, and what must the developer write?
-**Answer:** Django supplies framework mechanisms and conventions. The developer defines the application's requirements, configuration, business rules, correct file connections and tests.
+### Q3. What does block do?
 
-### Q4. How do you verify your work?
-**Answer:** Run `python manage.py check`, execute the relevant commands, inspect the output and test the actual browser/database behavior. Include an edge case.
+**Model answer:** It marks a named region in the base template that a child template can replace or extend.
 
-## 2. Scenario-based questions
+### Q4. What is the difference between include and extends?
 
-### Q5. The feature does not work even though the code is present. What do you inspect?
-**Suggested answer:**
-1. Reproduce the problem.
-2. Read the complete error.
-3. Check the current folder and Python environment.
-4. Inspect the named file and nearby lines.
-5. Check imports, app registration, URL patterns and file paths.
-6. Run Django checks.
-7. Repeat the actual test.
+**Model answer:** extends reuses a page layout through inheritance. include inserts a reusable template fragment, such as a navigation component.
 
-### Q6. A learner says the command succeeded, so the task is complete. Is that enough?
-**Suggested answer:** No. A command may create a file or run a server without proving the expected feature works. Demonstrate the result, test an edge case and explain the implementation.
+### Q5. How does Django serve static files during development?
 
-### Q7. How would you explain this work to a teammate?
-**Suggested answer:** Describe the requirement, relevant files, command sequence, execution flow, expected output, tests and one error/fix.
+**Model answer:** The template loads the static tag library and references a static asset with {% static '...' %}. STATIC_URL defines the URL prefix. Production static files require a separate collection/serving strategy.
 
-## 3. Practical discussion
+### Q6. How do you debug CSS that is not loading?
 
-Be prepared to:
-- Identify the exact file path.
-- Explain important code statements.
-- Demonstrate the required commands.
-- Explain the observed result.
-- Modify one small part and predict the effect.
-- Test a normal and edge case.
-- Describe a safe debugging method.
+**Model answer:** Inspect the rendered link URL, confirm the file path and static directory, check STATIC_URL and browser Network tab status, and read the runserver output.
+
+## 2. Scenario-based interview question
+
+**Scenario:** The HTML page loads but has no styling. What is the most reliable debugging sequence?
+
+**Model answer:** Inspect the browser Network tab for the CSS request and status code, copy the requested path, verify the file exists in the configured static directory, confirm {% load static %} and the static tag path, then check settings. Do not assume a CSS problem is caused by the template layout.
+
+**What the interviewer is checking:** Whether you can connect the concept to a real project, identify the relevant file or command, verify the result and explain the reason for your debugging steps.
+
+## 3. Practical demonstration
+
+Create a base template, define navigation and content blocks, extend it from two child pages, include a reusable component, add a CSS file and verify both pages plus the CSS request.
+
+Before the interview, be able to:
+- Explain the feature without reading the notes.
+- Identify the exact file or command involved.
+- Demonstrate the behavior in a terminal or browser.
+- Predict one result before running the code.
+- Explain one common failure and how to fix it.
 
 ## 4. Mini-project viva — Reusable Website Layout
 
-1. What problem does the project solve?
-2. What are the functional requirements?
-3. Which files did you create or update?
-4. Which commands did you run?
-5. What does the important code do?
-6. How did you verify the normal case?
-7. Which edge case did you test?
-8. What error did you encounter?
-9. How did you fix it?
-10. What would you improve next?
+1. What user or business problem does this project solve?
+2. What did you build and what did you deliberately leave out?
+3. Which files and commands were required?
+4. Explain the execution flow from input to output.
+5. What result did you verify?
+6. What was the most useful debugging check?
+7. What would you improve if this became a production feature?
 
-## 5. Rapid revision
+**Model viva answer structure:** State the requirement → explain the design → identify the files → describe the implementation → show the observed result → explain one limitation or improvement. Use your own project evidence; do not invent results.
 
-- Define the concept.
-- Name the important files.
-- Explain the execution flow.
-- Demonstrate the project.
-- Run checks.
-- Explain one failure and its fix.
+## 5. Self-check
 
-## 6. Readiness checklist
+- [ ] I can answer all six technical questions without memorizing paragraphs.
+- [ ] I can explain the scenario and justify each debugging step.
+- [ ] I can demonstrate the feature from a fresh terminal/browser session.
+- [ ] I can explain one alternative design and why I did not choose it.
+- [ ] I can present Reusable Website Layout with real evidence.
 
-- [ ] I can explain the concept clearly.
-- [ ] I can identify the relevant files.
-- [ ] I can reproduce the example.
-- [ ] I can explain the important code.
-- [ ] I can verify the result.
-- [ ] I can answer a scenario question.
-- [ ] I can present Reusable Website Layout independently.
-
-**Self-practice:** Explain why a step is needed and predict what changes when one value or setting is modified.
+**Readiness rule:** If you cannot reproduce the demonstration, return to the corresponding class notes, repeat the steps and record the output.
