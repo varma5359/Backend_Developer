@@ -3,7 +3,7 @@
 **Pathway:** Python Backend Developer Career Pathway (Django)  
 **Phase:** 3 — Django Fundamentals  
 **Duration:** 2–3 hours | **Level:** Beginner to Intermediate  
-**Prerequisites:** Days 27–37 as relevant; Django project, models, migrations and ORM basics  
+**Prerequisites:** Days 27–35 — Django setup, project structure, settings, routing, views, templates, models and applied migrations  
 **Environment:** Windows, VS Code, PowerShell, Python virtual environment, Django 5.2.19  
 **Continuous project:** `student_portal` / `config` / `profiles`  
 **Approved mini-project:** Admin-Based Inventory Manager
