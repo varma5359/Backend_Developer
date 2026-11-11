@@ -3,80 +3,71 @@
 **Pathway:** Python Backend Developer Career Pathway (Django)  
 **Phase:** 3 — Django Fundamentals  
 **Related class notes:** [Day 40 notes](day_40_notes.md)  
-**Approved mini-project:** Secure Form Validation Application
+**Mini-project:** Secure Form Validation Application
 
-## 1. Core technical questions
+## 1. Technical questions with model answers
 
-### Q1. Explain today's topic.
-**Answer:** Validation checks whether submitted data is acceptable before it is saved. Django performs built-in field validation and lets developers add field-specific and form-wide rules. Error messages should help users correct mistakes. CSRF protection solves a separate security problem: it helps stop an attacker from causing a user's browser to submit an unwanted request using that user's session.
+### Q1. What is clean_fieldname() used for?
 
-**Follow-up:** Explain it using the Student Portal.
+**Model answer:** It validates or normalizes one field after that field's built-in validation. It should return the cleaned value or raise forms.ValidationError.
 
-### Q2. Which files are involved?
-**Answer:** `profiles/forms.py`, `profiles/views.py`, `profiles/templates/profiles/student_form.html`, `config/settings.py`. Explain the responsibility of each and how they connect.
+### Q2. What is clean() used for?
 
-**Follow-up:** What happens if one of these components is missing or incorrectly configured?
+**Model answer:** It performs validation involving multiple fields. It should call super().clean(), inspect cleaned_data safely and add field or non-field errors.
 
-### Q3. What does Django do automatically, and what does the developer implement?
-**Answer:** Django provides URL resolution, request objects, middleware processing, ORM mechanisms, template rendering and response construction. The developer defines the application routes, models, views, form rules, templates and business behavior.
+### Q3. What is cleaned_data?
 
-### Q4. How do you verify this feature?
-**Answer:** Run the system check, test the browser flow, submit invalid and valid values, inspect the database record and verify the redirect.
+**Model answer:** It is the dictionary of validated, converted form values available after validation. Only read values that survived field validation.
 
-## 2. Scenario-based questions
+### Q4. What is the difference between a field error and a non-field error?
 
-### Q5. The registration form is displayed, but the record is not saved. What do you inspect?
-**Suggested answer:** Confirm the request is POST, inspect form.errors, check is_valid(), ensure save() is inside the valid branch, inspect model constraints and database migration state.
+**Model answer:** A field error belongs to a specific input and can be shown beside it. A non-field error applies to the form as a whole.
 
-### Q6. The save succeeds, but the redirect fails. What do you inspect?
-**Suggested answer:** Check that the named route exists, that its name is spelled correctly and that the root URLconf includes the app URLconf.
+### Q5. What is CSRF protection?
 
-### Q7. Why should the form not save invalid data?
-**Suggested answer:** Invalid data can violate business rules and database constraints. Server-side validation must succeed before persistence.
+**Model answer:** It helps prevent cross-site request forgery by requiring a valid token for unsafe requests. It is separate from authentication and does not replace authorization.
 
-## 3. Practical coding discussion
+### Q6. Why is browser-side validation insufficient?
 
-Be ready to:
-- Trace a GET request to the list view.
-- Trace a GET request to the registration form.
-- Trace a valid POST request to the database and redirect.
-- Trace an invalid POST request to the error display.
-- Identify the files involved.
-- Verify the saved record in the admin.
-- Explain the boundary between this lesson and full CRUD.
+**Model answer:** A client can bypass or alter browser validation. The server must independently validate all submitted data before saving.
+
+## 2. Scenario-based interview question
+
+**Scenario:** A valid form works, but a POST from a page without a CSRF token returns 403. Is that the same as form validation failing?
+
+**Model answer:** No. CSRF middleware rejects the request before normal view/form processing because the request lacks a valid CSRF token. Include {% csrf_token %} inside the POST form and keep CSRF middleware enabled. Then test field validation separately.
+
+**What the interviewer is checking:** Whether you can connect the concept to a real project, identify the relevant file or command, verify the result and explain the reason for your debugging steps.
+
+## 3. Practical demonstration
+
+Add field-specific and cross-field validation, render field and non-field errors, submit invalid and valid data, and explain the separate purpose of CSRF protection.
+
+Before the interview, be able to:
+- Explain the feature without reading the notes.
+- Identify the exact file or command involved.
+- Demonstrate the behavior in a terminal or browser.
+- Predict one result before running the code.
+- Explain one common failure and how to fix it.
 
 ## 4. Mini-project viva — Secure Form Validation Application
 
-1. What business problem does it solve?
-2. Which routes are implemented?
-3. Which view handles each route?
-4. Which model and form are used?
-5. How does GET differ from POST?
-6. How are invalid errors displayed?
-7. How is a valid record saved?
-8. Why is a redirect used after saving?
-9. How did you verify the database record?
-10. Which feature is deferred to Day 42?
+1. What user or business problem does this project solve?
+2. What did you build and what did you deliberately leave out?
+3. Which files and commands were required?
+4. Explain the execution flow from input to output.
+5. What result did you verify?
+6. What was the most useful debugging check?
+7. What would you improve if this became a production feature?
 
-## 5. Rapid revision
+**Model viva answer structure:** State the requirement → explain the design → identify the files → describe the implementation → show the observed result → explain one limitation or improvement. Use your own project evidence; do not invent results.
 
-- Browser request enters the root URLconf.
-- Root URLconf includes the app URLconf.
-- App URL selects the view.
-- View uses the form and model.
-- ORM interacts with the database.
-- Template renders the response.
-- Valid POST redirects to the list.
-- Invalid POST redisplays the form with errors.
+## 5. Self-check
 
-## 6. Interview readiness checklist
+- [ ] I can answer all six technical questions without memorizing paragraphs.
+- [ ] I can explain the scenario and justify each debugging step.
+- [ ] I can demonstrate the feature from a fresh terminal/browser session.
+- [ ] I can explain one alternative design and why I did not choose it.
+- [ ] I can present Secure Form Validation Application with real evidence.
 
-- [ ] I can explain the complete request-response lifecycle.
-- [ ] I can identify all involved files.
-- [ ] I can explain GET and POST separately.
-- [ ] I can explain validation before saving.
-- [ ] I can verify the database record.
-- [ ] I can explain the Post/Redirect/Get pattern.
-- [ ] I can present Secure Form Validation Application independently.
-
-**Self-practice:** Trace an actual browser request and locate the exact file for each step. Do not accept a vague answer such as "Django handles it" without explaining which component does what.
+**Readiness rule:** If you cannot reproduce the demonstration, return to the corresponding class notes, repeat the steps and record the output.
