@@ -98,12 +98,13 @@ The following revisions have been applied on `phase-3-self-learning-audit` after
 
 | Area | Revision made | Remaining verification |
 |---|---|---|
+|---|---|---|
 | Day 27 class notes | Changed the lesson to self-paced setup, replaced trainer demonstration/checkpoint language with learner self-checks, retained exact environment verification steps, and corrected escaped Markdown code formatting so code examples render as code blocks. | Check the complete setup in a clean Windows environment. |
 | Day 36 class notes and interview guide | Corrected prerequisite range and aligned the mini-project with the Employee model used in the lesson. Replaced trainer-directed teaching instructions with a self-paced method and added expected admin/browser observations. | Verify admin registration and permissions against the actual project state. |
 | Day 37 class notes and interview guide | Corrected prerequisite range and aligned the project title to Employee Query Explorer, matching the Employee model used in the ORM examples. Added a two-record sample and deterministic query outputs, including the result before and after an update. | Verify all ORM commands and sample output against the actual database. |
 | Day 38 class notes | Rebuilt the lesson as a detailed beginner walkthrough covering schema reasoning, relationship placement, on_delete, migration steps, repeatable sample data, forward/reverse queries, expected results, troubleshooting and an independent challenge. | Execute the migrations and shell examples in the real project. |
 | Days 39–41 class notes | Corrected circular prerequisite wording, replaced trainer-only instructions with self-paced directions, and separated Python and HTML code into language-specific blocks with exact filenames. | Run the full registration workflow from a clean environment, confirm Day 38's Student model is reused rather than recreated, and test invalid/valid cases. |
-| Days 27–41 interview guides | Replaced trainer-only closing instructions with student self-practice instructions. | Continue improving answer keys where a question still requires a more specific technical model answer. |
+| Days 27–41 interview guides | Rewritten with topic-specific technical questions and model answers, scenario answers, practical demonstrations, project viva and learner self-checks. | A trainer should still review whether the questions match local interview expectations. |
 
 ### Revised content status
 
@@ -114,6 +115,9 @@ The following revisions have been applied on `phase-3-self-learning-audit` after
 - Days 39–41: **Self-learning and code-block revisions applied; Day 41 now explicitly reuses the Student model from Day 38 — not runtime-verified**.
 - Interview guides 27–41: **Rewritten with topic-specific technical model answers, scenario answers, practical demonstrations, project viva and learner self-checks**.
 - Static documentation quality gate: **GitHub Actions passed** on commit `b01339c091efb7e3af66df6fdc860a887588e400` (balanced code fences, required files, local Markdown links and section-presence checks). See [workflow run](https://github.com/varma5359/Backend_Developer/actions/runs/42970546832). This is documentation validation only, not Django runtime validation.
+
+| Phase 3 reference project | Added a runnable Django 5.2.19 project under `phase3_reference/` with Employee and Student models, routes, templates, static CSS, ModelForm validation and admin configuration. | Reference project is CI-tested on Linux/Python 3.12; learners should still run it on their own Windows setup. |
+| Automated runtime suite | Added 27 Django tests covering routing, templates, static asset discovery, models, relationships, admin, forms, valid/invalid submissions and CSRF. | Does not substitute for a beginner usability study or production deployment testing. |
 
 ## 9. Project continuity clarified
 
@@ -131,8 +135,8 @@ The change of domain at Day 38 is explicitly explained in the lesson. Do not rem
 
 **Documentation gate:** Passed on the current branch. The automated workflow checked all 15 class-note files and 15 interview guides for required files, balanced Markdown code fences and valid local links. The interview guides were rewritten with topic-specific model answers and self-checks.
 
-**Runtime gate:** Not yet executed. The repository contains the learning manuscripts rather than a complete checked-in Django project, so the workflow does not prove that `manage.py`, migrations, views or browser submissions run. No runtime pass is claimed.
+**Runtime gate:** Passed for the checked-in reference application. GitHub Actions installed Django 5.2.19 on Python 3.12, ran `manage.py check`, generated and applied migrations, verified static-file discovery and ran **27 tests successfully**. The tests cover routing, template inheritance, static asset references, model relationships, admin registration, ModelForm validation, valid/invalid registration and CSRF behavior. This proves the reference application runs in the CI environment; it does not prove every student's local Windows environment is correct.
 
 **Beginner usability gate:** Not yet executed. A true mentor-free claim requires a beginner to complete the daily exercises and capstone using only the notes, without verbal intervention.
 
-Phase 3 therefore remains **not approved for a final mentor-free readiness claim**. The documentation revision is materially improved and its static gate passes; the remaining work is a clean-project Django execution and a beginner usability test.
+Phase 3 is now **documentation- and reference-runtime-verified**, but not yet certified as fully mentor-free. The remaining gate is a real beginner usability test: a learner must complete the sequence without verbal intervention, and every point of confusion must be fixed in the notes.
