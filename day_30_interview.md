@@ -89,4 +89,4 @@ Be ready to:
 - [ ] I can explain an edge case.
 - [ ] I can present Multi-Page Routing Application without reading the notes.
 
-**Self-practice:** Ask yourself to predict the result of a small code or configuration change. Check your reasoning against the code and observed result, not memorized definitions.
+**Self-practice:** Predict the result of a small code or configuration change. Check your reasoning against the code and observed result, not memorized definitions.
