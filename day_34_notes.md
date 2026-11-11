@@ -981,3 +981,7 @@ Without reading the notes, explain:
 10. What a ForeignKey represents.
 11. What a primary key does.
 12. Why __str__ is useful.
+
+## 57. Submission reflection
+
+Write a short schema decision record for one field. Include the business meaning, selected field type, required/optional decision, validation, database rule and one rejected alternative. Explain why the selected design is better for this data.
