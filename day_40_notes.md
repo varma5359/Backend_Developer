@@ -988,3 +988,17 @@ For each state-changing view, verify:
 - User-facing errors are safe.
 - Automated tests cover denied requests.
 
+
+## 55. Explain-back assessment
+
+Without reading the notes, explain:
+1. Why browser validation is insufficient.
+2. How field validation works.
+3. How cross-field validation works.
+4. What ValidationError communicates.
+5. Why a bound form is reused.
+6. What CSRF protects against.
+7. How the token is included.
+8. What middleware checks.
+9. Why GET should not change data.
+10. Why authorization remains separate.
