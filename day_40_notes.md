@@ -802,3 +802,160 @@ Build a student create/update form that:
 - Does not display internal exceptions.
 
 Test both normal and invalid submissions and submit the evidence.
+
+---
+
+# Practice Workbook — Validate and Protect a Student Form
+
+## 42. Build a validation table
+
+Create a table for each form field:
+
+| Field | Required? | Input type | Validation | Error message |
+|---|---|---|---|---|
+| Full name | Yes | Text | Not only spaces | Enter a valid name |
+| Email | Yes | Email | Valid email format | Enter a valid email |
+| Phone | Optional | Text | Business-specific | Check phone number |
+| Joining date | Yes | Date | Valid date | Enter joining date |
+
+The exact fields depend on the approved Student model.
+
+## 43. Test field validation
+
+For every field, test:
+- Missing value.
+- Empty string.
+- Whitespace-only value.
+- Valid value.
+- Too-short value.
+- Too-long value.
+- Incorrect type or format.
+
+Record whether the failure comes from the field definition, validator or custom clean method.
+
+## 44. Test cross-field validation
+
+Example business rule:
+- start_date must be before end_date.
+
+Test:
+1. Both values missing.
+2. Only start_date.
+3. Only end_date.
+4. Start date earlier.
+5. Same date.
+6. Start date later.
+
+Decide whether equal dates are allowed and encode that rule deliberately.
+
+## 45. CSRF request flow
+
+A browser form normally receives a CSRF token when the page is rendered.
+
+The POST request must include the expected token and cookie/context.
+
+The CSRF middleware checks the request before the view processes the unsafe operation.
+
+If the check fails, the view should not save the form.
+
+## 46. Test CSRF with Django's test client
+
+Django's test client does not enforce CSRF checks by default in every ordinary test setup.
+
+To test CSRF enforcement, use a client configured with enforce_csrf_checks=True.
+
+Example:
+
+~~~python
+from django.test import Client, TestCase
+
+
+class CsrfProtectionTests(TestCase):
+    def test_post_without_csrf_token_is_rejected(self):
+        client = Client(enforce_csrf_checks=True)
+
+        response = client.post(
+            "/feedback/",
+            {"message": "Test message"},
+        )
+
+        self.assertEqual(response.status_code, 403)
+~~~
+
+The exact URL and payload must match the application.
+
+A second test should load the form page, obtain the CSRF cookie/token through the normal browser flow and submit a valid POST.
+
+## 47. Why CSRF is not authentication
+
+A CSRF token helps protect a browser from unwanted cross-site state-changing requests.
+
+It does not prove that the user has permission to update a record.
+
+The application still needs:
+- Authentication.
+- Authorization.
+- Ownership checks.
+- Form validation.
+
+## 48. Why CSRF is not input validation
+
+A valid CSRF token does not make submitted values trustworthy.
+
+A request with a valid token can still contain:
+- Invalid email.
+- Negative stock.
+- Unexpected field values.
+- Another user's object ID.
+
+Validate all data on the server.
+
+## 49. Error response decision
+
+Choose the response:
+- Invalid form: render form with errors.
+- Missing object: 404.
+- Authenticated user lacks permission: 403.
+- Unsupported HTTP method: 405.
+- Unexpected server exception: safe 500 response.
+
+Do not use one generic status code for every failure.
+
+## 50. Security debugging scenario
+
+A learner disables CsrfViewMiddleware because the form receives 403.
+
+This is not a safe fix.
+
+Instead:
+1. Confirm the form uses POST.
+2. Confirm csrf_token is inside the form.
+3. Confirm middleware remains enabled.
+4. Confirm browser cookies are accepted.
+5. Confirm the form is loaded from the expected host.
+6. Inspect the CSRF failure reason in the server log.
+7. Fix the actual token/origin issue.
+
+## 51. Validation and CSRF checklist
+
+- [ ] Server-side form validation exists.
+- [ ] Cross-field rules are tested.
+- [ ] Invalid forms are not saved.
+- [ ] Bound form is rendered after failure.
+- [ ] POST forms include CSRF token.
+- [ ] CsrfViewMiddleware remains enabled.
+- [ ] State-changing actions do not use GET.
+- [ ] Permission checks remain separate from CSRF.
+- [ ] Safe user-facing errors are displayed.
+- [ ] Technical details are logged securely.
+
+## 52. Final workbook submission
+
+Submit:
+- Field validation table.
+- Cross-field test cases.
+- CSRF flow diagram.
+- CSRF test code.
+- Invalid form screenshot.
+- Explanation of CSRF versus authentication.
+- Explanation of why disabling CSRF is unsafe.
