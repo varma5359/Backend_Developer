@@ -498,3 +498,408 @@ Do not mark the day complete just because code exists. Complete every check your
 5. Diagnose and fix one controlled mistake, such as a misspelled URL, setting or file path.
 
 **Next lesson:** Day 32 — Django Templates, Template Variables and Template Tags
+
+---
+
+# Extended Beginner Lab — Function-Based Views and HTTP Responses
+
+## 19. What exactly is a Django view?
+
+A Django view is a Python callable that receives an HttpRequest and returns an HttpResponse.
+
+A view can be:
+- A function.
+- A class-based view callable generated through as_view().
+
+This lesson focuses on function-based views.
+
+## 20. Understand the request parameter
+
+Example:
+
+~~~python
+def home(request):
+    ...
+~~~
+
+request represents the incoming HTTP request.
+
+It contains information about:
+- HTTP method.
+- Path.
+- Query parameters.
+- Submitted form data.
+- Headers.
+- Cookies.
+- Session.
+- Current user.
+
+The view reads the request and decides what response to return.
+
+## 21. Understand request.method
+
+Common values:
+- GET.
+- POST.
+- PUT.
+- PATCH.
+- DELETE.
+- HEAD.
+- OPTIONS.
+
+In beginner HTML form workflows:
+- GET displays a page or reads data.
+- POST submits data that may change server state.
+
+Do not use GET for deleting records or creating orders.
+
+## 22. Understand request.path
+
+Example:
+
+~~~python
+def inspect_request(request):
+    return HttpResponse(request.path)
+~~~
+
+If the browser requests /about/, request.path contains the path portion.
+
+It does not include the full domain and query string.
+
+## 23. Understand request.GET
+
+request.GET contains query-string parameters.
+
+Example URL:
+
+~~~text
+/search/?q=django
+~~~
+
+Read:
+
+~~~python
+term = request.GET.get("q", "")
+~~~
+
+The value is normally a string.
+
+Validate it before using it in business logic.
+
+## 24. Understand request.POST
+
+request.POST contains submitted form values for POST requests.
+
+Example:
+
+~~~python
+name = request.POST.get("name", "")
+~~~
+
+Use Django forms to validate submitted values rather than trusting raw request data.
+
+Never log raw passwords.
+
+## 25. Understand request.headers
+
+Headers carry metadata about the request.
+
+Example:
+
+~~~python
+user_agent = request.headers.get("User-Agent", "")
+~~~
+
+Do not trust a header as proof of identity or authorization. Headers can be supplied by clients.
+
+## 26. Understand request.user
+
+When authentication middleware is configured, request.user identifies the authenticated user or AnonymousUser.
+
+A view should check authentication before using private account functionality.
+
+## 27. What is HttpResponse?
+
+HttpResponse represents an HTTP response returned by a view.
+
+Example:
+
+~~~python
+from django.http import HttpResponse
+
+def home(request):
+    return HttpResponse("Welcome")
+~~~
+
+The browser displays the response body.
+
+## 28. Set a response status code
+
+Example:
+
+~~~python
+return HttpResponse(
+    "Created",
+    status=201,
+)
+~~~
+
+Status codes communicate the result of the request.
+
+Common examples:
+- 200 OK.
+- 201 Created.
+- 302 Found/redirect.
+- 400 Bad Request.
+- 403 Forbidden.
+- 404 Not Found.
+- 405 Method Not Allowed.
+- 500 Internal Server Error.
+
+Use a status code that matches the actual response behavior.
+
+## 29. What is JsonResponse?
+
+JsonResponse returns a JSON response.
+
+Example:
+
+~~~python
+from django.http import JsonResponse
+
+def health_check(request):
+    return JsonResponse({
+        "status": "ok",
+        "service": "student_portal",
+    })
+~~~
+
+It is useful for simple JSON responses.
+
+A JSON response is not automatically a complete REST API. API authentication, serializers, permissions and validation are covered in the Django REST Framework phase.
+
+## 30. What does render() do?
+
+render() combines:
+- The request.
+- A template path.
+- A context dictionary.
+
+It returns an HttpResponse containing the rendered template.
+
+Example:
+
+~~~python
+from django.shortcuts import render
+
+def about(request):
+    context = {
+        "page_title": "About the Institute",
+    }
+    return render(
+        request,
+        "profiles/about.html",
+        context,
+    )
+~~~
+
+## 31. Understand context
+
+A context dictionary maps names to values.
+
+Example:
+
+~~~python
+context = {
+    "student_name": "Asha",
+    "course_name": "Django",
+}
+~~~
+
+The template can display:
+- student_name.
+- course_name.
+
+Keep presentation in templates and request-handling logic in views.
+
+## 32. What does redirect() do?
+
+redirect() returns an HTTP redirect response.
+
+Example:
+
+~~~python
+from django.shortcuts import redirect
+
+def old_page(request):
+    return redirect("home")
+~~~
+
+The browser receives a redirect and requests the destination.
+
+Prefer named URL routes rather than hard-coded paths when possible.
+
+## 33. Why redirect after a successful POST?
+
+A common workflow:
+1. Browser submits a form using POST.
+2. View validates the form.
+3. View saves the record.
+4. View redirects to a GET page.
+5. Browser displays the updated page.
+
+This is Post/Redirect/GET.
+
+It helps avoid accidental duplicate submissions when the user refreshes the result page.
+
+## 34. Return a 404 safely
+
+Use get_object_or_404() when a missing record should result in a 404 response.
+
+Example:
+
+~~~python
+student = get_object_or_404(Student, pk=student_id)
+~~~
+
+This is clearer than allowing an unhandled DoesNotExist exception in the view.
+
+## 35. Understand decorators
+
+A decorator wraps a function to add behavior.
+
+Django provides decorators such as:
+- login_required.
+- require_GET.
+- require_POST.
+- require_http_methods.
+- permission_required.
+
+Example:
+
+~~~python
+from django.views.decorators.http import require_POST
+
+@require_POST
+def submit_action(request):
+    ...
+~~~
+
+The decorator restricts the view to POST.
+
+## 36. Understand method restrictions
+
+If a view is designed to accept POST only, a GET request should not perform the action.
+
+Use the appropriate method decorator.
+
+A disallowed method normally produces HTTP 405.
+
+## 37. Avoid putting all logic into one view
+
+A view should coordinate the request.
+
+When logic grows:
+- Use forms for input validation.
+- Use models for data structure and model behavior.
+- Use helper/service functions for reusable business logic.
+- Use templates for presentation.
+- Use tests for expected behavior.
+
+Do not write a 500-line view for a simple page.
+
+## 38. Common view mistakes
+
+| Symptom | Likely cause | Correction |
+|---|---|---|
+| View returns None | No response returned on a branch | Return HttpResponse, render or redirect on every path |
+| Template not found | Wrong template path | Verify app/templates/app/file.html |
+| POST values missing | Form method/name mismatch | Check method and input name attributes |
+| GET query missing | Reading request.POST | Use request.GET |
+| 404 not handled | Direct get() lookup | Use get_object_or_404 where appropriate |
+| Wrong status code | Response does not match operation | Choose the correct status |
+| Duplicate record after refresh | Render directly after POST | Redirect after successful POST |
+| Sensitive data in response | Entire model or password exposed | Select only required fields and values |
+
+## 39. Trace one request
+
+For the URL /welcome/?name=Asha:
+1. Browser sends GET.
+2. URL resolver selects the welcome view.
+3. View reads request.GET.
+4. View extracts name.
+5. View builds a response.
+6. Browser displays the response body.
+
+For a registration POST:
+1. Browser submits form.
+2. CSRF middleware checks the request.
+3. View binds the form.
+4. Form validates.
+5. Valid data is saved.
+6. View redirects.
+7. Browser loads the result page.
+
+## 40. Guided exercise — Request Inspector
+
+Build a temporary view that displays:
+- request.method.
+- request.path.
+- request.GET.get("q", "").
+- request.user.is_authenticated.
+
+Do not display:
+- Password.
+- Session key.
+- Authentication cookie.
+- Secret values.
+
+Use a template or safe response body. Explain each property.
+
+## 41. Self-check questions
+
+1. What must a Django view return?
+2. What is HttpRequest?
+3. What is HttpResponse?
+4. What is JsonResponse?
+5. What does render() do?
+6. What does redirect() do?
+7. What is request.GET?
+8. What is request.POST?
+9. Why use get_object_or_404()?
+10. Why redirect after successful POST?
+11. What does require_POST do?
+12. What is HTTP 405?
+
+## 42. Answers
+
+1. An HttpResponse or compatible response object.
+2. The incoming HTTP request.
+3. An HTTP response with content and status.
+4. An HTTP response containing JSON.
+5. Renders a template with context.
+6. Returns a redirect response.
+7. Query-string values.
+8. Submitted POST form values.
+9. It returns 404 when the object is missing.
+10. To use Post/Redirect/GET and reduce duplicate submissions.
+11. Restricts a view to POST requests.
+12. Method Not Allowed.
+
+## 43. Independent challenge — Dynamic Institute Pages
+
+Create views for:
+- Home page.
+- About page.
+- Welcome page that reads a GET name.
+- Health check JSON response.
+- Page that returns 404 for an unknown student.
+- POST-only feedback endpoint.
+
+For each view, record:
+- URL.
+- HTTP method.
+- Request values used.
+- Response type.
+- Expected status code.
+- One invalid-input test.
