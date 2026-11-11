@@ -956,3 +956,19 @@ Before enabling an admin feature:
 - Confirm sensitive fields are not displayed.
 - Confirm the interface works with realistic record counts.
 
+
+## 60. Explain-back assessment
+
+Without reading the notes, explain:
+1. Why Django admin exists.
+2. How a model is registered.
+3. What ModelAdmin configures.
+4. How list_display improves usability.
+5. How list_filter works.
+6. How search_fields works.
+7. Why timestamps may be read-only.
+8. How fieldsets organize a form.
+9. What is_staff controls.
+10. Why groups and least privilege matter.
+11. Why a bulk action needs testing.
+12. Why a superuser is not a normal test account.
