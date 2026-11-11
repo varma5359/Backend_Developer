@@ -74,7 +74,7 @@ The initial Phase 3 audit and revision log are maintained in [PHASE_3_SELF_LEARN
 
 Phase 3 (Days 27–41) has received a first complete documentation revision pass. Day 27 is self-paced; Days 28–35 include independent verification steps; Days 36–37 use a consistent Employee model example with expected results; Day 38 is substantially expanded; Days 39–41 provide a connected Student registration and validation workflow. Interview guides for all 15 days have topic-specific model answers, scenario responses and self-checks. The examples deliberately progress from basic routing/views to Employee model practice, then introduce Student / Department / Course relationships on Day 38; the Employee model is retained in the same `profiles` app.
 
-**Readiness status:** Documentation and reference-project runtime checks passed in GitHub Actions. The reference project is in [phase3_reference/](phase3_reference/). A real beginner usability test on a learner's Windows setup is still required before Phase 3 can be certified as fully mentor-free. See [PHASE_3_SELF_LEARNING_AUDIT.md](PHASE_3_SELF_LEARNING_AUDIT.md) for the day-by-day findings and validation limits.
+**Readiness status:** Documentation and reference-project runtime checks passed in GitHub Actions. The reference project is in [phase3_reference/](phase3_reference/). A real beginner usability test on a learner's Windows setup is still required before Phase 3 can be certified as fully mentor-free. Use the [Phase 3 Beginner Usability Pilot Checklist](PHASE_3_BEGINNER_PILOT_CHECKLIST.md) to run that test. See [PHASE_3_SELF_LEARNING_AUDIT.md](PHASE_3_SELF_LEARNING_AUDIT.md) for the day-by-day findings and validation limits.
 
 ## Remaining phases
 
