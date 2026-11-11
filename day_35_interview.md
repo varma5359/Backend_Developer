@@ -3,85 +3,71 @@
 **Pathway:** Python Backend Developer Career Pathway (Django)  
 **Phase:** 3 — Django Fundamentals  
 **Related class notes:** [Day 35 notes](day_35_notes.md)  
-**Approved mini-project:** Database Migration Practice
+**Mini-project:** Database Migration Practice
 
-## 1. Core technical questions
+## 1. Technical questions with model answers
 
-### Q1. Explain today's concept.
-**Answer:** A model describes the database structure Django expects. A migration is a version-controlled instruction describing a schema change. makemigrations creates migration files from model changes. migrate applies unapplied migrations to the selected database. Creating a migration and applying it are two separate actions.
+### Q1. Why does Django use migrations?
 
-**Follow-up:** Explain how this concept appears in the Student Portal.
+**Model answer:** Migrations record schema changes as versioned Python operations so the database structure can evolve consistently across development and deployment environments.
 
-### Q2. Which files or commands are involved?
-**Answer:** `profiles/models.py`, `profiles/migrations/0001_initial.py (generated)`, `db.sqlite3 (local database file)`. Explain what each one is responsible for and how they connect.
+### Q2. What is the difference between makemigrations and migrate?
 
-**Follow-up:** What error might occur if a file is missing or incorrectly configured?
+**Model answer:** makemigrations compares model state with migration history and creates migration files. migrate applies unapplied migration operations to the configured database.
 
-### Q3. What does Django do automatically, and what must the developer write?
-**Answer:** Django supplies framework mechanisms and conventions. The developer defines the application's requirements, configuration, business rules, correct file connections and tests.
+### Q3. What does showmigrations show?
 
-### Q4. How do you verify your work?
-**Answer:** Run `python manage.py check`, execute the relevant commands, inspect the output and test the actual browser/database behavior. Include an edge case.
+**Model answer:** It lists migrations for apps and indicates which have been applied to the current database.
 
-## 2. Scenario-based questions
+### Q4. What does sqlmigrate do?
 
-### Q5. The feature does not work even though the code is present. What do you inspect?
-**Suggested answer:**
-1. Reproduce the problem.
-2. Read the complete error.
-3. Check the current folder and Python environment.
-4. Inspect the named file and nearby lines.
-5. Check imports, app registration, URL patterns and file paths.
-6. Run Django checks.
-7. Repeat the actual test.
+**Model answer:** It displays the SQL Django plans to execute for a specified migration and database connection. It does not apply that SQL.
 
-### Q6. A learner says the command succeeded, so the task is complete. Is that enough?
-**Suggested answer:** No. A command may create a file or run a server without proving the expected feature works. Demonstrate the result, test an edge case and explain the implementation.
+### Q5. Why should migration files be committed to version control?
 
-### Q7. How would you explain this work to a teammate?
-**Suggested answer:** Describe the requirement, relevant files, command sequence, execution flow, expected output, tests and one error/fix.
+**Model answer:** They are part of the application's schema history. Other developers and deployment environments need the same ordered changes.
 
-## 3. Practical discussion
+### Q6. What should you do when adding a non-null field to a table that already has records?
 
-Be prepared to:
-- Identify the exact file path.
-- Explain important code statements.
-- Demonstrate the required commands.
-- Explain the observed result.
-- Modify one small part and predict the effect.
-- Test a normal and edge case.
-- Describe a safe debugging method.
+**Model answer:** Decide the correct business default or data migration. Inspect Django's prompt and generated migration. Do not choose an arbitrary value merely to make the command finish.
+
+## 2. Scenario-based interview question
+
+**Scenario:** A teammate deleted a migration file because its number looked incorrect. What risks does this create?
+
+**Model answer:** Other databases may already have applied it and later migrations may depend on it. The migration graph and actual database schema can diverge. Restore the shared migration history or create a deliberate forward migration; do not reset production data or delete applied history casually.
+
+**What the interviewer is checking:** Whether you can connect the concept to a real project, identify the relevant file or command, verify the result and explain the reason for your debugging steps.
+
+## 3. Practical demonstration
+
+Change a model field, generate a migration, inspect its operations, inspect SQL with sqlmigrate, apply it, verify showmigrations and explain the difference between model code and database schema.
+
+Before the interview, be able to:
+- Explain the feature without reading the notes.
+- Identify the exact file or command involved.
+- Demonstrate the behavior in a terminal or browser.
+- Predict one result before running the code.
+- Explain one common failure and how to fix it.
 
 ## 4. Mini-project viva — Database Migration Practice
 
-1. What problem does the project solve?
-2. What are the functional requirements?
-3. Which files did you create or update?
-4. Which commands did you run?
-5. What does the important code do?
-6. How did you verify the normal case?
-7. Which edge case did you test?
-8. What error did you encounter?
-9. How did you fix it?
-10. What would you improve next?
+1. What user or business problem does this project solve?
+2. What did you build and what did you deliberately leave out?
+3. Which files and commands were required?
+4. Explain the execution flow from input to output.
+5. What result did you verify?
+6. What was the most useful debugging check?
+7. What would you improve if this became a production feature?
 
-## 5. Rapid revision
+**Model viva answer structure:** State the requirement → explain the design → identify the files → describe the implementation → show the observed result → explain one limitation or improvement. Use your own project evidence; do not invent results.
 
-- Define the concept.
-- Name the important files.
-- Explain the execution flow.
-- Demonstrate the project.
-- Run checks.
-- Explain one failure and its fix.
+## 5. Self-check
 
-## 6. Readiness checklist
+- [ ] I can answer all six technical questions without memorizing paragraphs.
+- [ ] I can explain the scenario and justify each debugging step.
+- [ ] I can demonstrate the feature from a fresh terminal/browser session.
+- [ ] I can explain one alternative design and why I did not choose it.
+- [ ] I can present Database Migration Practice with real evidence.
 
-- [ ] I can explain the concept clearly.
-- [ ] I can identify the relevant files.
-- [ ] I can reproduce the example.
-- [ ] I can explain the important code.
-- [ ] I can verify the result.
-- [ ] I can answer a scenario question.
-- [ ] I can present Database Migration Practice independently.
-
-**Self-practice:** Explain why a step is needed and predict what changes when one value or setting is modified.
+**Readiness rule:** If you cannot reproduce the demonstration, return to the corresponding class notes, repeat the steps and record the output.
