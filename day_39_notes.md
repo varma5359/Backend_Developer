@@ -955,3 +955,17 @@ Prove that:
 
 Record the row count before and after each operation.
 
+
+## 51. Form handover checklist
+
+A reviewer should be able to identify:
+- Which fields are accepted.
+- Which fields are excluded.
+- Which field validators run.
+- Which cross-field rules run.
+- What errors are shown.
+- How create differs from update.
+- Which server-controlled fields are assigned in the view.
+- Whether many-to-many values require save_m2m().
+- Which tests prove valid and invalid submissions.
+
