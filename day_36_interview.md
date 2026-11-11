@@ -3,7 +3,7 @@
 **Pathway:** Python Backend Developer Career Pathway (Django)  
 **Phase:** 3 — Django Fundamentals  
 **Related class notes:** [Day 36 notes](day_36_notes.md)  
-**Approved mini-project:** Admin-Based Inventory Manager
+**Approved mini-project:** Employee Admin Manager
 
 ## 1. Core questions
 
