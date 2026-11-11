@@ -2,271 +2,833 @@
 
 **Pathway:** Python Backend Developer Career Pathway (Django)  
 **Phase:** 4 — Django ORM, Forms and Authentication  
-**Estimated time:** 2–3 hours | **Level:** Intermediate  
-**Prerequisites:** Days 27–46 — Django fundamentals, ORM, forms and user concepts  
-**Tools:** Python, Django, VS Code, terminal, browser and configured database  
+**Duration:** 2–3 hours | **Level:** Intermediate  
+**Prerequisites:** Days 27–44 — Django models, forms, CRUD, QuerySets, relationships and query optimization  
+**Environment:** Windows, VS Code, PowerShell, Python virtual environment, Django and configured database  
 **Approved mini-project:** Data Integrity Management System
 
-> **Trainer guidance:** Authentication and data integrity are important backend responsibilities. Use local test users and sample records. Never ask learners to paste real passwords, tokens or secret keys into code or shared screenshots.
+> **Self-learning method:** You will strengthen the Product model created on Day 43. Do not create a second Product model. This lesson is about making invalid data difficult to save, even when data is submitted through a path other than your browser form.
 
-## 1. Learning objectives
+---
 
-- Explain database constraints, field validation and model validation.
-- Identify the Django APIs and files involved.
-- Implement the example step by step.
-- Test valid and invalid cases.
-- Explain the security and data-integrity implications.
-- Complete Data Integrity Management System.
+## 1. What you will build
 
-## 2. Concept introduction
+Imagine an online store. A product must follow these business rules:
 
-Database constraints protect data integrity at the database level. Field validators and model clean() provide application-level validation. UniqueConstraint and CheckConstraint express rules that should remain true for stored rows. Django does not automatically call full_clean() every time model.save() is used, so validation strategy must be deliberate.
+- Every product must have a unique SKU.
+- Product name cannot be empty or only spaces.
+- Product price must be greater than zero.
+- Stock cannot be negative.
+- A product's data must remain valid even when another script or admin operation attempts to save it.
 
-## 3. File-by-file implementation
+You will implement these rules using:
+1. Field validators.
+2. Model clean() validation.
+3. Database constraints.
+4. ModelForm validation.
+5. Tests for valid and invalid data.
 
-### profiles/models.py
+### Learning outcomes
 
-```python
+By the end, you should be able to:
+- Explain validation versus a database constraint.
+- Use MinValueValidator.
+- Override model clean().
+- Call full_clean() deliberately.
+- Add UniqueConstraint and CheckConstraint.
+- Explain why model.save() does not automatically call full_clean().
+- Understand IntegrityError and ValidationError.
+- Create migrations safely when existing data may violate a new rule.
+- Test invalid input through forms and database constraints.
+
+## 2. Understand the three layers
+
+A useful backend validates data at more than one layer.
+
+~~~text
+User submits data
+       |
+       v
+Django Form / ModelForm
+       |
+       | Field and form validation
+       v
+Model validation (full_clean)
+       |
+       | clean_fields(), clean(), validate_unique(),
+       | validate_constraints()
+       v
+Database constraints
+       |
+       v
+Data stored only if database rules pass
+~~~
+
+### 2.1 Field validation
+
+A field validator checks an individual field value.
+
+Example: price must be at least 0.01.
+
+### 2.2 Model validation
+
+Model clean() checks rules involving model fields or multiple fields. Example: product name cannot contain only whitespace.
+
+### 2.3 Database constraints
+
+A database constraint protects stored data at the database level. It remains important when data is written by a script, admin operation, bulk operation or another application path.
+
+**Important distinction:** Validators and clean() run when Django's validation process is called. Database constraints are enforced by the database when a write is attempted.
+
+## 3. Check your Day 43 Product model
+
+Open the Django project containing manage.py. Your catalog/models.py should contain the Product model from Day 43.
+
+~~~python
+class Product(models.Model):
+    sku = models.CharField(max_length=30)
+    name = models.CharField(max_length=120)
+    category = models.CharField(max_length=60)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    stock = models.IntegerField(default=0)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+~~~
+
+If your file is different, compare it with Day 43 first. Preserve any other models or app code.
+
+Run:
+
+~~~powershell
+python manage.py check
+python manage.py showmigrations catalog
+~~~
+
+Expected: catalog migrations are applied.
+
+## 4. Understand ValidationError and IntegrityError
+
+These two exceptions are not the same.
+
+| Exception | Usually means | Example |
+|---|---|---|
+| ValidationError | Django validation rejected the value | Price is below minimum |
+| IntegrityError | Database rejected a write due to a constraint | Duplicate SKU or negative stock |
+
+A form normally displays validation errors to a user. A database IntegrityError must be handled carefully, especially when concurrent requests can attempt the same unique value.
+
+Do not catch every exception and silently continue. Handle expected failures and keep the database transaction safe.
+
+## 5. Add field validators
+
+Open catalog/models.py. Add imports:
+
+~~~python
+from decimal import Decimal
+
+from django.core.validators import MinValueValidator
+from django.db import models
+from django.db.models import Q
+from django.core.exceptions import ValidationError
+~~~
+
+Update the price field:
+
+~~~python
+price = models.DecimalField(
+    max_digits=10,
+    decimal_places=2,
+    validators=[MinValueValidator(Decimal("0.01"))],
+)
+~~~
+
+### 5.1 Explain the validator
+
+- DecimalField stores decimal numbers, suitable for monetary values.
+- max_digits=10 allows at most ten digits in total.
+- decimal_places=2 allows two digits after the decimal point.
+- MinValueValidator checks that the value is at least the supplied minimum.
+- Decimal("0.01") avoids representing a decimal amount using a binary floating-point literal.
+
+Examples:
+
+~~~python
+MinValueValidator(Decimal("0.01"))
+~~~
+
+Accepts 0.01 and 100.00, but rejects 0.00 and negative values during validation.
+
+**Important:** A field validator is not a substitute for a database constraint. A direct model.save() call does not automatically execute full_clean().
+
+## 6. Add database constraints
+
+Inside the Product model, add a Meta class:
+
+~~~python
+class Meta:
+    constraints = [
+        models.UniqueConstraint(
+            fields=["sku"],
+            name="catalog_product_sku_unique",
+        ),
+        models.CheckConstraint(
+            condition=Q(price__gt=0),
+            name="catalog_product_price_positive",
+        ),
+        models.CheckConstraint(
+            condition=Q(stock__gte=0),
+            name="catalog_product_stock_nonnegative",
+        ),
+    ]
+~~~
+
+### 6.1 UniqueConstraint
+
+~~~python
+models.UniqueConstraint(
+    fields=["sku"],
+    name="catalog_product_sku_unique",
+)
+~~~
+
+This tells the database that two Product rows cannot have the same SKU.
+
+Why is this important?
+- Two users may submit the same SKU at almost the same time.
+- Form validation can check duplicates, but both requests might pass before either saves.
+- The database constraint is the final protection against duplicate rows.
+
+### 6.2 CheckConstraint for price
+
+~~~python
+models.CheckConstraint(
+    condition=Q(price__gt=0),
+    name="catalog_product_price_positive",
+)
+~~~
+
+This means price must be greater than zero.
+
+### 6.3 CheckConstraint for stock
+
+~~~python
+models.CheckConstraint(
+    condition=Q(stock__gte=0),
+    name="catalog_product_stock_nonnegative",
+)
+~~~
+
+This means stock must be greater than or equal to zero.
+
+### 6.4 Constraint naming
+
+Constraint names must be unique within the database table and should be descriptive. A clear name helps identify which rule failed when debugging a database error.
+
+## 7. Add model-level clean() validation
+
+Inside the Product class, add:
+
+~~~python
+def clean(self):
+    super().clean()
+
+    if self.sku:
+        self.sku = self.sku.strip().upper()
+
+    if self.name and not self.name.strip():
+        raise ValidationError({
+            "name": "Product name cannot contain only spaces."
+        })
+
+    if self.name:
+        self.name = self.name.strip()
+
+    if self.category and not self.category.strip():
+        raise ValidationError({
+            "category": "Category cannot contain only spaces."
+        })
+
+    if self.category:
+        self.category = self.category.strip()
+~~~
+
+### 7.1 Understand the code
+
+- clean() is a model validation hook.
+- super().clean() preserves any validation behavior from the parent class.
+- strip() removes spaces at the beginning and end.
+- upper() normalizes SKU to uppercase.
+- A whitespace-only name is rejected.
+- A whitespace-only category is rejected.
+- ValidationError reports a useful field-level message.
+
+### 7.2 Why normalize SKU?
+
+These values should represent the same business identifier:
+
+- kb-101
+- KB-101
+- " KB-101 "
+
+Normalizing the value in the model validation path makes the stored representation consistent when full_clean() is called.
+
+**Important limitation:** clean() does not automatically run when you call save(). The application must use a validation path deliberately. Database uniqueness remains case-sensitive or case-insensitive according to the database collation and constraint behavior; if case-insensitive uniqueness is a requirement, design and test a suitable database expression constraint for your supported database.
+
+## 8. Understand full_clean()
+
+Django models provide:
+
+~~~python
+product.full_clean()
+~~~
+
+This runs the model validation stages:
+1. clean_fields() — validates individual model fields and their validators.
+2. clean() — runs custom model-level validation.
+3. validate_unique() — checks uniqueness rules supported by model validation.
+4. validate_constraints() — validates model constraints.
+
+If validation fails, Django raises ValidationError.
+
+### 8.1 Important: save() does not call full_clean()
+
+This is a critical Django behavior.
+
+~~~python
+product = Product(
+    sku="P-100",
+    name="Keyboard",
+    category="Accessories",
+    price=Decimal("799.00"),
+    stock=10,
+)
+
+product.save()
+~~~
+
+Calling save() does not automatically run the complete model validation sequence. Database constraints still protect the rules that are represented as database constraints, but field validators and clean() are not automatically run by save().
+
+For a deliberate model validation workflow:
+
+~~~python
+product.full_clean()
+product.save()
+~~~
+
+A ModelForm performs validation as part of its normal is_valid() flow. Do not assume every script, bulk operation or direct save() uses a ModelForm.
+
+## 9. Update catalog/models.py completely
+
+Your Product model should now look like this. If you already have other models in the file, preserve them.
+
+~~~python
+from decimal import Decimal
+
+from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import Q
 
+
 class Product(models.Model):
     sku = models.CharField(max_length=30)
     name = models.CharField(max_length=120)
+    category = models.CharField(max_length=60)
     price = models.DecimalField(
         max_digits=10,
         decimal_places=2,
-        validators=[MinValueValidator(0.01)]
+        validators=[MinValueValidator(Decimal("0.01"))],
     )
     stock = models.IntegerField(default=0)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=["sku"], name="unique_product_sku"),
-            models.CheckConstraint(condition=Q(stock__gte=0), name="stock_non_negative"),
+            models.UniqueConstraint(
+                fields=["sku"],
+                name="catalog_product_sku_unique",
+            ),
+            models.CheckConstraint(
+                condition=Q(price__gt=0),
+                name="catalog_product_price_positive",
+            ),
+            models.CheckConstraint(
+                condition=Q(stock__gte=0),
+                name="catalog_product_stock_nonnegative",
+            ),
         ]
 
     def clean(self):
         super().clean()
-        if self.name and self.name.strip() == "":
-            from django.core.exceptions import ValidationError
-            raise ValidationError({"name": "Name cannot be blank"})
-```
 
-### Validation example
+        if self.sku:
+            self.sku = self.sku.strip().upper()
 
-```python
+        if self.name and not self.name.strip():
+            raise ValidationError({
+                "name": "Product name cannot contain only spaces."
+            })
+
+        if self.name:
+            self.name = self.name.strip()
+
+        if self.category and not self.category.strip():
+            raise ValidationError({
+                "category": "Category cannot contain only spaces."
+            })
+
+        if self.category:
+            self.category = self.category.strip()
+
+    def __str__(self):
+        return f"{self.sku} - {self.name}"
+~~~
+
+The Decimal import is used for the minimum validator. ValidationError is used by clean(). Q is used to express database check conditions.
+
+## 10. Before creating migrations — inspect existing data
+
+You already created sample products on Day 43. A new unique constraint can fail to apply if duplicate SKUs already exist.
+
+Before applying the migration, inspect the data.
+
+Open shell:
+
+~~~powershell
+python manage.py shell
+~~~
+
+Find duplicate SKUs:
+
+~~~python
+from django.db.models import Count
+from catalog.models import Product
+
+Product.objects.values("sku").annotate(total=Count("id")).filter(total__gt=1)
+~~~
+
+Find invalid stock:
+
+~~~python
+Product.objects.filter(stock__lt=0)
+~~~
+
+Find invalid prices:
+
+~~~python
+Product.objects.filter(price__lte=0)
+~~~
+
+Expected for the Day 43 sample data: no duplicates, negative stock or zero/negative prices.
+
+If invalid records exist:
+- Do not delete them blindly.
+- Identify why they exist.
+- Back up the database before any correction.
+- Decide the correct business value.
+- Correct records using an approved data-cleaning process.
+- Re-run the checks before applying the migration.
+
+Exit shell.
+
+## 11. Create and apply the migration
+
+~~~powershell
+python manage.py makemigrations catalog
+python manage.py sqlmigrate catalog 0002
+python manage.py migrate
+python manage.py check
+~~~
+
+**Note:** The migration number may differ if you already created additional catalog migrations. Use the actual migration filename shown by makemigrations in the sqlmigrate command.
+
+Expected:
+- A new migration adds the constraints.
+- sqlmigrate displays the database operations Django plans to perform.
+- migrate applies the migration.
+- check reports no system-check errors.
+
+### Why inspect sqlmigrate?
+
+It shows the SQL operations generated by Django for the migration. This is especially useful before adding constraints to an existing table.
+
+## 12. Test validation in Django shell
+
+Open:
+
+~~~powershell
+python manage.py shell
+~~~
+
+Import:
+
+~~~python
+from decimal import Decimal
 from django.core.exceptions import ValidationError
-from profiles.models import Product
+from django.db import IntegrityError, transaction
+from catalog.models import Product
+~~~
 
-product = Product(sku="P100", name="Keyboard", price=799, stock=10)
+### Test 1 — Valid product
+
+~~~python
+product = Product(
+    sku=" new-200 ",
+    name="  USB Hub  ",
+    category="  Accessories  ",
+    price=Decimal("499.00"),
+    stock=15,
+)
+
+product.full_clean()
+product.save()
+
+product.sku, product.name, product.category
+~~~
+
+Expected:
+
+~~~text
+('NEW-200', 'USB Hub', 'Accessories')
+~~~
+
+The model clean() method normalized the values because full_clean() was called.
+
+### Test 2 — Invalid price
+
+~~~python
+product = Product(
+    sku="BAD-PRICE",
+    name="Invalid Price Product",
+    category="Accessories",
+    price=Decimal("0.00"),
+    stock=5,
+)
+
+product.full_clean()
+~~~
+
+Expected: ValidationError because price is below the minimum.
+
+### Test 3 — Whitespace-only name
+
+~~~python
+product = Product(
+    sku="BAD-NAME",
+    name="   ",
+    category="Accessories",
+    price=Decimal("100.00"),
+    stock=5,
+)
+
+product.full_clean()
+~~~
+
+Expected: ValidationError for name.
+
+### Test 4 — Duplicate SKU
+
+First, verify that the sample SKU exists:
+
+~~~python
+Product.objects.filter(sku="KB-101").exists()
+~~~
+
+If True, try:
+
+~~~python
+duplicate = Product(
+    sku="KB-101",
+    name="Another Keyboard",
+    category="Accessories",
+    price=Decimal("500.00"),
+    stock=10,
+)
+
+duplicate.full_clean()
+~~~
+
+Expected: ValidationError for the uniqueness rule. The database constraint also protects the table if a write bypasses the normal model validation path.
+
+### Test 5 — Database-level check constraint
+
+The following is an intentionally invalid direct database write. Use a transaction savepoint so the expected database error does not leave the shell connection in a broken transaction.
+
+~~~python
 try:
-    product.full_clean()
-    product.save()
-except ValidationError as error:
-    print(error.message_dict)
-```
+    with transaction.atomic():
+        Product.objects.create(
+            sku="BAD-STOCK",
+            name="Invalid Stock Product",
+            category="Accessories",
+            price=Decimal("100.00"),
+            stock=-5,
+        )
+except IntegrityError:
+    print("Database rejected negative stock.")
+~~~
 
-## 4. Explain the important statements
+Expected:
 
-### profiles/models.py
+~~~text
+Database rejected negative stock.
+~~~
 
-1. `from django.core.validators import MinValueValidator` — Imports Django authentication, model or validation components.
-2. `from django.db import models` — Imports Django authentication, model or validation components.
-3. `from django.db.models import Q` — Imports Django authentication, model or validation components.
-4. ` ` — Part of the example; explain its role in the complete workflow.
-5. `class Product(models.Model):` — Defines a model or class.
-6. `    sku = models.CharField(max_length=30)` — Part of the example; explain its role in the complete workflow.
-7. `    name = models.CharField(max_length=120)` — Part of the example; explain its role in the complete workflow.
-8. `    price = models.DecimalField(` — Part of the example; explain its role in the complete workflow.
-9. `        max_digits=10,` — Part of the example; explain its role in the complete workflow.
-10. `        decimal_places=2,` — Part of the example; explain its role in the complete workflow.
-11. `        validators=[MinValueValidator(0.01)]` — Part of the example; explain its role in the complete workflow.
-12. `    )` — Part of the example; explain its role in the complete workflow.
-13. `    stock = models.IntegerField(default=0)` — Part of the example; explain its role in the complete workflow.
-14. ` ` — Part of the example; explain its role in the complete workflow.
-15. `    class Meta:` — Defines a model or class.
-16. `        constraints = [` — Part of the example; explain its role in the complete workflow.
-17. `            models.UniqueConstraint(fields=["sku"], name="unique_product_sku"),` — Declares a database-level integrity rule.
-18. `            models.CheckConstraint(condition=Q(stock__gte=0), name="stock_non_negative"),` — Declares a database-level integrity rule.
-19. `        ]` — Part of the example; explain its role in the complete workflow.
-20. ` ` — Part of the example; explain its role in the complete workflow.
-21. `    def clean(self):` — Defines a view or validation method.
-22. `        super().clean()` — Part of the example; explain its role in the complete workflow.
-23. `        if self.name and self.name.strip() == "":` — Part of the example; explain its role in the complete workflow.
-24. `            from django.core.exceptions import ValidationError` — Imports Django authentication, model or validation components.
-25. `            raise ValidationError({"name": "Name cannot be blank"})` — Part of the example; explain its role in the complete workflow.
+The database constraint rejects the invalid row even though QuerySet.create() did not call model full_clean().
 
-### Validation example
+### Test 6 — Verify the invalid row was not stored
 
-1. `from django.core.exceptions import ValidationError` — Imports Django authentication, model or validation components.
-2. `from profiles.models import Product` — Imports Django authentication, model or validation components.
-3. ` ` — Part of the example; explain its role in the complete workflow.
-4. `product = Product(sku="P100", name="Keyboard", price=799, stock=10)` — Part of the example; explain its role in the complete workflow.
-5. `try:` — Part of the example; explain its role in the complete workflow.
-6. `    product.full_clean()` — Runs model field and model-level validation.
-7. `    product.save()` — Part of the example; explain its role in the complete workflow.
-8. `except ValidationError as error:` — Part of the example; explain its role in the complete workflow.
-9. `    print(error.message_dict)` — Part of the example; explain its role in the complete workflow.
+~~~python
+Product.objects.filter(sku="BAD-STOCK").exists()
+~~~
 
-## 5. Important concepts and distinctions
+Expected: False.
 
-| Concept | Meaning |
-|---|---|
-| Validation | Checks whether supplied data satisfies rules |
-| Constraint | Database rule protecting stored data |
-| Authentication | Verifies who the user is |
-| Authorization | Determines what the user is allowed to do |
-| Password hash | One-way derived representation used for password verification |
-| Session | Server-managed state associated with a browser session |
-| Anonymous user | Request that is not authenticated |
-| Superuser | User with broad administrative permissions |
+Exit the shell.
 
-## 6. Common errors and troubleshooting
+## 13. Understand ModelForm validation
 
-| Symptom | What to inspect |
-|---|---|
-| Duplicate value saved | Unique constraint and validation |
-| Invalid value accepted | Field validator, full_clean and database constraint |
-| Password stored incorrectly | Use create_user() or set_password() |
-| Login always fails | Username, password, authentication backend and user state |
-| Protected page accessible | login_required and view authorization |
-| Logout does not work | POST method, URL and session configuration |
-| User model import mismatch | get_user_model() and AUTH_USER_MODEL |
+A ModelForm uses model field definitions and model validation as part of its validation process.
 
-## 7. Security and reliability notes
+Example in catalog/forms.py:
 
-- Never store raw passwords.
-- Use Django's password management APIs.
-- Keep CSRF protection enabled for browser POST forms.
-- Protect views that contain private data.
-- Authentication does not automatically grant permission to every record.
-- Do not expose account existence or sensitive authentication details unnecessarily.
-- Keep secret keys and database credentials outside source control.
-- Use HTTPS in production.
+~~~python
+from django import forms
+from .models import Product
 
-## 8. Industry scenario
 
-Database constraints protect data integrity at the database level. Field validators and model clean() provide application-level validation. UniqueConstraint and CheckConstraint express rules that should remain true for stored rows. Django does not automatically call full_clean() every time model.save() is used, so validation strategy must be deliberate.
+class ProductForm(forms.ModelForm):
+    class Meta:
+        model = Product
+        fields = [
+            "sku",
+            "name",
+            "category",
+            "price",
+            "stock",
+            "is_active",
+        ]
+~~~
 
-## 9. Approved mini-project — Data Integrity Management System
+When a view calls:
 
-**Objective:** Data Integrity Management System.
+~~~python
+form = ProductForm(request.POST)
+if form.is_valid():
+    form.save()
+~~~
 
-### Required tasks
+Django validates the submitted values. If the form is invalid, display the errors and do not save.
 
-1. Identify the business rules that must always hold.
-2. Add field validators for individual field values.
-3. Add a UniqueConstraint for unique business identifiers.
-4. Add a CheckConstraint for a database-level condition.
-5. Override clean() for model-wide business validation where appropriate.
-6. Call full_clean() explicitly in the demonstration before save.
-7. Test duplicate and invalid values.
-8. Explain why database constraints are still important.
+**Do not create a second ProductForm if Day 43 already created one.** Add or merge the required fields into the existing form only if needed.
 
-### Suggested structure
+## 14. Validation versus database protection
 
-```text
-projects/day_45/
-├── README.md
-├── config/
-└── profiles/
-    ├── models.py
-    ├── forms.py
-    ├── views.py
-    ├── urls.py
-    └── templates/
-```
+| Rule | Field validator / model validation | Database constraint |
+|---|---|---|
+| Price must be positive | MinValueValidator | CheckConstraint |
+| Stock cannot be negative | Can add MinValueValidator(0) | CheckConstraint |
+| SKU must be unique | Model uniqueness validation can check | UniqueConstraint |
+| Name cannot be only spaces | clean() | Not included in this lesson's DB constraints |
+| Normalize SKU | clean() | Not a database normalization rule |
 
-### Validation checklist
+Why both layers?
 
+- Django validation gives users useful error messages.
+- Database constraints protect stored data even when validation is bypassed.
+- A database constraint cannot replace every user-friendly validation rule.
+- A validator cannot replace database protection when concurrent writes occur.
+
+## 15. Common errors and troubleshooting
+
+| Symptom | Likely cause | What to do |
+|---|---|---|
+| Migration fails adding unique SKU | Duplicate existing values | Inspect duplicates, back up, correct data, retry |
+| IntegrityError on duplicate SKU | Unique constraint rejected write | Use a unique SKU and show a friendly form error |
+| Negative stock saved through save() | No database check constraint or migration not applied | Confirm constraint and migration |
+| full_clean() raises ValidationError | Field or model rule failed | Inspect error.message_dict |
+| save() accepts invalid field value | save() does not call full_clean() | Validate explicitly and add database constraints |
+| CheckConstraint API error | Wrong Django version or syntax | Check installed Django version and supported API |
+| No such table | Migration not applied | Run showmigrations and migrate |
+| Migration conflict | Multiple migration branches | Inspect migration graph; do not delete migration files blindly |
+| Duplicate migration operation | Repeated or conflicting model edits | Inspect makemigrations output before applying |
+| Existing tests fail after constraint | Test data violates new rule | Update test fixtures to valid business values |
+
+## 16. Independent mini-project — Data Integrity Management System
+
+**Business requirement:** Build a product data management feature that rejects invalid product records and protects stored data.
+
+### Required rules
+
+1. SKU is required and unique.
+2. SKU is normalized to uppercase in the validation path.
+3. Product name cannot be blank or whitespace-only.
+4. Category cannot be blank or whitespace-only.
+5. Price must be greater than zero.
+6. Stock must be zero or greater.
+
+### Required implementation
+
+- Add field validators.
+- Add model clean().
+- Add a UniqueConstraint.
+- Add CheckConstraint rules.
+- Use full_clean() in a direct model validation demonstration.
+- Use a ModelForm for browser input.
+- Create and apply migrations.
+- Test both ValidationError and IntegrityError paths.
+- Preserve valid Day 43 products and Day 44 order records.
+
+### Acceptance checklist
+
+- [ ] Valid Product can be created.
+- [ ] SKU normalization works when full_clean() is called.
 - [ ] Duplicate SKU is rejected.
-- [ ] Negative stock is rejected by the database constraint.
-- [ ] Invalid price fails field validation.
-- [ ] Model clean() rejects whitespace-only names.
-- [ ] The learner understands save() does not automatically call full_clean().
+- [ ] Whitespace-only name is rejected.
+- [ ] Whitespace-only category is rejected.
+- [ ] Zero or negative price fails validation.
+- [ ] Negative stock is rejected by the database.
+- [ ] Invalid records are not stored.
+- [ ] Existing valid products remain available.
+- [ ] Existing order items still refer to the correct Product.
+- [ ] The learner can explain why save() does not automatically call full_clean().
 
-### Submission evidence
+### Evidence to submit
 
-- Source code and URL patterns.
-- Registration and login screenshots using test accounts.
-- Valid and invalid test results.
-- Database evidence showing safe user creation.
-- README with setup instructions and security notes.
-- No passwords, access tokens or private data in the repository.
+- Updated Product model.
+- Migration file.
+- Output from duplicate and invalid data tests.
+- Output showing negative stock was rejected by the database.
+- Screenshot or terminal output of valid Product creation.
+- README with business rules and validation layers.
+- No secrets or real customer data.
 
-## 10. AI-assisted implementation
+## 17. Knowledge check
 
-**Planning prompt:** "Help me plan Data Integrity Management System. List the forms, views, URLs, templates, validation rules and test cases. Do not provide a complete solution."
+1. What is the difference between validation and a database constraint?
+2. What does MinValueValidator do?
+3. What is the purpose of model clean()?
+4. What does full_clean() execute?
+5. Does model.save() automatically call full_clean()?
+6. What is UniqueConstraint used for?
+7. What is CheckConstraint used for?
+8. What is the difference between ValidationError and IntegrityError?
+9. Why can a form uniqueness check alone be insufficient?
+10. Why inspect existing data before adding a unique constraint?
+11. What is the purpose of a migration?
+12. Why should database credentials and secret keys not be committed?
 
-**Guided prompt:** "Guide me through one authentication or validation step at a time. Explain the security implications and wait for my test result."
+### Answer key
 
-**Debugging prompt:** "Here are my exact view, form, settings and error. Identify the cause without asking me to share any real password or secret."
+1. Validation checks data in Django's application layer; constraints enforce rules in the database.
+2. It rejects values below a configured minimum during validation.
+3. It provides custom model-level validation.
+4. Field validation, model clean(), uniqueness validation and constraint validation.
+5. No.
+6. It prevents duplicate values for the specified fields.
+7. It enforces a boolean condition on stored rows.
+8. ValidationError comes from Django validation; IntegrityError comes from a database integrity failure.
+9. Concurrent requests can both pass a form check before either one saves.
+10. Existing duplicate values can make the migration fail.
+11. It records and applies database schema changes.
+12. They are sensitive credentials and can compromise systems.
 
-**Review prompt:** "Review this local test implementation for validation, authentication, authorization, CSRF and secret handling."
+## 18. Five MCQs with explanations
 
-## 11. Five daily MCQs
+### Q1. Which validator checks a minimum numeric value?
 
-**Q1. What is the main purpose of today's concept?**  
-A. Protect data integrity or manage user identity securely.  
-B. Replace HTTP.  
-C. Store passwords as plaintext.  
-D. Disable database constraints.  
-**Answer: A.** The feature protects application data and user workflows.
+A. MaxLengthValidator  
+B. MinValueValidator  
+C. URLValidator  
+D. EmailValidator
 
-**Q2. What should be used for password creation?**  
-A. Store raw password in a text field.  
-B. Django's create_user() or set_password() API.  
-C. Put the password in settings.py.  
-D. Commit the password to Git.  
-**Answer: B.** Django provides password hashing APIs.
+**Answer: B.** MinValueValidator checks that a value is not below a configured minimum.
 
-**Q3. What is the difference between authentication and authorization?**  
-A. They mean the same thing.  
-B. Authentication is database sorting.  
-C. Authentication verifies identity; authorization checks permissions.  
-D. Authorization creates passwords.  
-**Answer: C.** They are separate security decisions.
+### Q2. Which method runs model field and custom model validation?
 
-**Q4. What should happen before data is saved?**  
-A. Ignore all validation.  
-B. Disable constraints.  
-C. Trust the browser.  
-D. Validate the data and enforce important integrity rules.  
-**Answer: D.** Validation and constraints protect data.
+A. save()  
+B. delete()  
+C. full_clean()  
+D. refresh_from_db()
 
-**Q5. What is the strongest evidence of completion?**  
-A. Valid and invalid workflows are tested and security rules are explained.  
-B. A project title only.  
-C. A long code file.  
-D. A screenshot of the login button.  
-**Answer: A.** Test behavior and explain security choices.
+**Answer: C.** full_clean() runs the model validation stages.
 
-## 12. Interview preparation
+### Q3. Which constraint prevents duplicate SKU values?
 
-**Q1. Explain database constraints, field validation and model validation.**  
-**Answer:** Database constraints protect data integrity at the database level. Field validators and model clean() provide application-level validation. UniqueConstraint and CheckConstraint express rules that should remain true for stored rows. Django does not automatically call full_clean() every time model.save() is used, so validation strategy must be deliberate.
+A. CheckConstraint  
+B. UniqueConstraint  
+C. OrderBy  
+D. Prefetch
 
-**Q2. What is one security risk?**  
-**Answer:** Explain the relevant risk such as unsafe password handling, missing authorization, missing CSRF protection or invalid data reaching the database.
+**Answer: B.** UniqueConstraint enforces uniqueness in the database.
 
-**Q3. How do you verify the workflow?**  
-**Answer:** Use test accounts and test records. Exercise valid and invalid cases, inspect the session or database result and verify access restrictions.
+### Q4. Why can save() store a value that a field validator would reject?
 
-**Follow-up:** Why is a successful login not proof of authorization?  
-**Answer:** Authentication proves identity; authorization must still check whether that user has permission for the requested operation or record.
+A. save() automatically deletes validators  
+B. save() does not automatically call full_clean()  
+C. Django ignores every field  
+D. Database constraints never run
 
-## 13. Completion checklist
+**Answer: B.** Model.save() does not automatically run the full model validation sequence.
 
-- [ ] Explain the concept.
-- [ ] Implement the example.
-- [ ] Test valid and invalid cases.
-- [ ] Verify data or session behavior.
-- [ ] Complete Data Integrity Management System.
-- [ ] Review security notes.
-- [ ] Complete five MCQs.
-- [ ] Answer interview questions.
-- [ ] Submit code, README and evidence without secrets.
+### Q5. Which exception usually indicates that a database constraint rejected a write?
 
-**Next lesson:** Day 46.
+A. TemplateDoesNotExist  
+B. ValidationError  
+C. IntegrityError  
+D. NoReverseMatch
+
+**Answer: C.** IntegrityError indicates a database integrity violation.
+
+## 19. Interview preparation
+
+Prepare to explain:
+1. What is data integrity?
+2. What is the difference between field validation and model validation?
+3. What does full_clean() do?
+4. Does save() call full_clean()?
+5. Explain UniqueConstraint and CheckConstraint.
+6. What is the difference between ValidationError and IntegrityError?
+7. Why should important rules be enforced at the database layer?
+8. How do you add a constraint to an existing table safely?
+9. How do you handle duplicate values from concurrent requests?
+10. Why should a ModelForm and a database constraint both be used?
+
+Use the separate Day 45 interview guide for model answers, scenarios and project viva.
+
+## 20. Completion checklist
+
+- [ ] I understand the three validation layers.
+- [ ] I added the price validator.
+- [ ] I added model clean().
+- [ ] I added unique and check constraints.
+- [ ] I inspected existing data before migration.
+- [ ] I created and applied the migration.
+- [ ] I tested full_clean().
+- [ ] I tested a database IntegrityError safely.
+- [ ] I verified invalid records were not stored.
+- [ ] I completed Data Integrity Management System.
+- [ ] I can explain why save() does not call full_clean() automatically.
+
+## 21. Phase 4 progress and next lesson
+
+Days 42–45 form the database foundation of Phase 4:
+
+~~~text
+Day 42: CRUD — create, read, update and delete
+       |
+       v
+Day 43: ORM — search and filter records
+       |
+       v
+Day 44: Optimization — load related data efficiently
+       |
+       v
+Day 45: Integrity — prevent invalid data from being stored
+       |
+       v
+Day 46: Authentication — understand users and identity
+~~~
+
+**Day 45 is complete only when you can demonstrate both Django validation and database-level rejection of invalid data.**
