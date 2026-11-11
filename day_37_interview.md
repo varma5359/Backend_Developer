@@ -3,77 +3,71 @@
 **Pathway:** Python Backend Developer Career Pathway (Django)  
 **Phase:** 3 — Django Fundamentals  
 **Related class notes:** [Day 37 notes](day_37_notes.md)  
-**Approved mini-project:** Employee Query Explorer
+**Mini-project:** Employee Query Explorer
 
-## 1. Core questions
+## 1. Technical questions with model answers
 
-### Q1. Explain today's topic.
-**Answer:** The Django ORM lets a developer work with database records through Python models and QuerySets rather than writing SQL for every operation. A QuerySet represents a database query. Many QuerySets are lazy: Django builds the query first and sends it to the database when results are needed. The ORM does not remove the need to understand SQL, indexes or query performance.
+### Q1. What is the Django ORM?
 
-**Follow-up:** Explain how you would query Employee records using the Django ORM.
+**Model answer:** It maps Python model operations to database queries. Developers use managers and QuerySets to create, retrieve, update and delete records.
 
-### Q2. Which files or commands are involved?
-**Answer:** `profiles/models.py`, `Django shell via manage.py`. Explain what each does and how the components connect.
+### Q2. What is a QuerySet?
 
-**Follow-up:** What would you inspect if the feature is missing or fails?
+**Model answer:** It is a lazy, chainable representation of a database query. It can represent zero, one or many rows.
 
-### Q3. What does Django do automatically?
-**Answer:** Django supplies the framework mechanisms, ORM/admin integration and command behavior. Developers still define business rules, choose field relationships, configure the app and verify results.
+### Q3. What is the difference between filter() and get()?
 
-### Q4. How do you verify the feature?
-**Answer:** Run `python manage.py check`, execute the relevant commands and inspect the real admin/database/shell result. Test an edge case.
+**Model answer:** filter() returns a QuerySet and can return zero or many rows. get() expects exactly one row and raises DoesNotExist or MultipleObjectsReturned otherwise.
 
-## 2. Scenario-based questions
+### Q4. What does QuerySet laziness mean?
 
-### Q5. The command succeeds but the expected record or behavior is missing. What do you inspect?
-**Suggested answer:** Confirm the correct project and database, inspect the model/registration/query, check migration state, review constraints and reproduce the operation in shell or browser.
+**Model answer:** Django generally builds a query first and executes it when the result is evaluated, such as by iteration, list(), bool(), count() or exists().
 
-### Q6. Why is it risky to change or delete migration files without a plan?
-**Suggested answer:** Migration files are shared schema history. Other developers and deployed databases may already have applied them. Deleting or rewriting history can make database state inconsistent.
+### Q5. What is the difference between count() and exists()?
 
-### Q7. A user requests access to an admin function they do not need. What should the developer do?
-**Suggested answer:** Apply least privilege. Grant only the permissions needed for the user's role; do not make every staff user a superuser.
+**Model answer:** count() returns the number of matching rows. exists() answers whether at least one row matches and is preferable when only existence is needed.
 
-## 3. Practical coding discussion
+### Q6. Why should delete() be used carefully?
 
-Be ready to:
-- Identify the correct file.
-- Explain the important field/query/admin setting.
-- Run the management command.
-- Demonstrate the actual result.
-- Explain a constraint or exception.
-- Test a missing/duplicate/invalid case.
-- Explain a safe correction.
+**Model answer:** It permanently removes selected records and may cascade to related rows depending on relationship rules. Confirm the queryset and deletion behavior first.
 
-## 4. Mini-project viva — Product Query Explorer
+## 2. Scenario-based interview question
 
-1. What problem does it solve?
-2. What is the data requirement?
-3. Which models or admin classes are involved?
-4. Which commands or queries did you execute?
-5. What output did you verify?
-6. What happens for invalid or duplicate data?
-7. Which test cases did you perform?
-8. What error did you encounter?
-9. How did you fix it?
-10. What would you improve?
+**Scenario:** A page only needs to show whether any active employees exist. Should it call count() or exists()? Explain.
 
-## 5. Rapid revision
+**Model answer:** Use exists() when only a yes/no answer is required. count() asks the database for the number of matching rows and does unnecessary work if the count is not displayed.
 
-- Explain the topic in simple language.
-- Identify the model, command or query.
-- Explain the database effect.
-- Demonstrate the project.
-- Test one edge case.
-- Explain a common exception or integrity concern.
+**What the interviewer is checking:** Whether you can connect the concept to a real project, identify the relevant file or command, verify the result and explain the reason for your debugging steps.
 
-## 6. Interview readiness
+## 3. Practical demonstration
 
-- [ ] I can define the concept.
-- [ ] I can explain the file and code.
-- [ ] I can run the commands.
-- [ ] I can show real database behavior.
-- [ ] I can explain an edge case.
-- [ ] I can present Product Query Explorer.
+Create two employees, query all/filter/order_by, test get with a unique and missing code, update and re-query a record, and explain QuerySet laziness.
 
-**Self-practice:** Ask yourself to predict the database result before executing a query or changing a relationship. Use the actual query result to check your reasoning rather than memorizing syntax.
+Before the interview, be able to:
+- Explain the feature without reading the notes.
+- Identify the exact file or command involved.
+- Demonstrate the behavior in a terminal or browser.
+- Predict one result before running the code.
+- Explain one common failure and how to fix it.
+
+## 4. Mini-project viva — Employee Query Explorer
+
+1. What user or business problem does this project solve?
+2. What did you build and what did you deliberately leave out?
+3. Which files and commands were required?
+4. Explain the execution flow from input to output.
+5. What result did you verify?
+6. What was the most useful debugging check?
+7. What would you improve if this became a production feature?
+
+**Model viva answer structure:** State the requirement → explain the design → identify the files → describe the implementation → show the observed result → explain one limitation or improvement. Use your own project evidence; do not invent results.
+
+## 5. Self-check
+
+- [ ] I can answer all six technical questions without memorizing paragraphs.
+- [ ] I can explain the scenario and justify each debugging step.
+- [ ] I can demonstrate the feature from a fresh terminal/browser session.
+- [ ] I can explain one alternative design and why I did not choose it.
+- [ ] I can present Employee Query Explorer with real evidence.
+
+**Readiness rule:** If you cannot reproduce the demonstration, return to the corresponding class notes, repeat the steps and record the output.
