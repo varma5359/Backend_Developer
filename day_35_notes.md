@@ -943,3 +943,20 @@ Your response must include:
 
 Do not run destructive migration commands on important data.
 
+
+## 57. Migration handover questions
+
+Before a migration is merged, answer:
+1. Which model change caused it?
+2. Which database operations will run?
+3. Which migration does it depend on?
+4. Does it affect existing records?
+5. Is it reversible?
+6. Does it need a data migration?
+7. Has it been tested on a clean database?
+8. Has it been tested against an existing database copy?
+9. Is a backup required?
+10. How will failure be detected?
+
+Keep the answers with the pull request or change record.
+
