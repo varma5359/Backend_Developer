@@ -71,3 +71,29 @@ Before the interview, be able to:
 - [ ] I can present Personal Profile Django Project with real evidence.
 
 **Readiness rule:** If you cannot reproduce the demonstration, return to the corresponding section in [Day 28 class notes](day_28_notes.md), repeat the steps and record the output.
+## Additional technical and scenario questions
+
+### Q5. What is the difference between startproject and startapp?
+**Answer:** startproject creates the overall website configuration package and manage.py. startapp creates a feature package containing models, views, admin, tests and app configuration files.
+
+### Q6. What does the dot mean in startproject config .?
+**Answer:** It tells Django to create the project package in the current directory rather than creating another outer folder.
+
+### Q7. Why is INSTALLED_APPS important?
+**Answer:** It tells Django which built-in, third-party and local applications to load. App registration helps Django discover app functionality, models and migrations.
+
+### Q8. What does manage.py do?
+**Answer:** It sets the project settings module and delegates commands to Django's management command system.
+
+### Q9. Why should manage.py not be copied from another project?
+**Answer:** It may point to a different settings module. The generated file is specific to the project package name.
+
+### Q10. Scenario: startapp cannot find manage.py.
+**Answer:** The terminal is not in the project root. Use Get-Location and locate manage.py, then change to that directory.
+
+### Q11. Scenario: two apps have a models.py file. Is that a problem?
+**Answer:** No. Each app is a Python package and can own its own models.py. The app package keeps feature code organized.
+
+### Q12. Scenario: a new app exists but Django ignores its models.
+**Answer:** Confirm its AppConfig path is included in INSTALLED_APPS and run the system check.
+
