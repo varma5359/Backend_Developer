@@ -851,3 +851,92 @@ Build a form that:
 - Does not allow the browser to choose internal owner or approval fields.
 
 Record the result of valid and invalid submissions.
+
+---
+
+# Practice Workbook — Form Validation Scenarios
+
+## 43. Scenario: required field is missing
+
+A learner submits the form without a full name.
+
+Expected:
+- is_valid() returns False.
+- The required-field error is stored on the field.
+- The same bound form is rendered.
+- No model save occurs.
+
+## 44. Scenario: duplicate unique value
+
+A learner submits an email address already used by another record.
+
+Expected:
+- ModelForm uniqueness validation should report the conflict when the model field is unique.
+- The form is rendered with the error.
+- The database remains unchanged.
+
+The database constraint remains the final protection against concurrent writes.
+
+## 45. Scenario: update creates a second record
+
+The developer writes:
+
+~~~python
+form = StudentModelForm(request.POST)
+~~~
+
+but intended to update an existing student.
+
+The missing piece is instance=student.
+
+Correct:
+
+~~~python
+form = StudentModelForm(
+    request.POST,
+    instance=student,
+)
+~~~
+
+## 46. Scenario: user can change owner
+
+The form includes created_by.
+
+This is unsafe when ownership must come from the authenticated user.
+
+Remove created_by from the form and assign it in the view using request.user.
+
+## 47. Scenario: ModelForm uses commit=False
+
+If the form contains many-to-many fields:
+1. Call save(commit=False).
+2. Assign server-controlled fields.
+3. Save the instance.
+4. Call save_m2m() to save many-to-many selections.
+
+Understand why the instance must exist before the many-to-many table can store the relationship.
+
+## 48. Final form review
+
+Before saving:
+- Check form class.
+- Check bound/unbound state.
+- Check request method.
+- Check is_valid().
+- Check cleaned_data.
+- Check field errors.
+- Check non-field errors.
+- Check server-controlled fields.
+- Check whether instance is passed.
+- Check whether save_m2m() is needed.
+
+## 49. Final workbook submission
+
+Submit:
+- Valid form screenshot.
+- Invalid form screenshot.
+- Field-level validation code.
+- Cross-field validation code.
+- Create test.
+- Update test.
+- Ownership field explanation.
