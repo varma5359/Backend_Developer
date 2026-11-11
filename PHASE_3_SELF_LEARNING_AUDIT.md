@@ -108,12 +108,31 @@ The following revisions have been applied on `phase-3-self-learning-audit` after
 ### Revised content status
 
 - Day 27: **Revised — not runtime-verified**.
-- Days 28–35: **Targeted audit completed; further detailed consistency checks remain**.
-- Days 36–37: **Coherence revisions applied — not runtime-verified**.
+- Days 28–35: **Independent learner checks retained; expected-result, troubleshooting and continuity sections reviewed**.
+- Days 36–37: **Employee example continuity corrected; admin and ORM expected results added — not runtime-verified**.
 - Day 38: **Substantially rewritten — not runtime-verified**.
-- Days 39–41: **Self-learning and code-block revisions applied — not runtime-verified**.
-- Interview guides: **Trainer-only language removed where found — answer-key quality review remains**.
+- Days 39–41: **Self-learning and code-block revisions applied; Day 41 now explicitly reuses the Student model from Day 38 — not runtime-verified**.
+- Interview guides 27–41: **Rewritten with topic-specific technical model answers, scenario answers, practical demonstrations, project viva and learner self-checks**.
+- Static documentation quality gate: **GitHub Actions passed** on commit `b01339c091efb7e3af66df6fdc860a887588e400` (balanced code fences, required files, local Markdown links and section-presence checks). See [workflow run](https://github.com/varma5359/Backend_Developer/actions/runs/42970546832). This is documentation validation only, not Django runtime validation.
 
-## 9. Current decision
+## 9. Project continuity clarified
 
-Phase 3 remains **not approved for a mentor-free readiness claim** until the integrated Student Portal is run from a clean setup and all daily acceptance checks can be completed by a beginner using only the notes. Static improvements are meaningful progress, but they are not a substitute for runtime testing or a real beginner usability test.
+The lessons use a deliberate progression of examples rather than pretending every early concept already has a database-backed Student Portal:
+
+- Days 27–31: environment, project structure, settings, URL routing and basic views.
+- Days 32–33: employee-page template examples to teach template variables, inheritance and static assets.
+- Days 34–37: the Employee model, admin registration and ORM queries in the existing `profiles` app.
+- Day 38: Student, Department, Course and StudentProfile are introduced as a second domain specifically to teach all three relationship types. The Employee model is retained.
+- Days 39–41: Student registration, validation and integrated Student Management Website use the Student model introduced on Day 38.
+
+The change of domain at Day 38 is explicitly explained in the lesson. Do not remove the Employee model or create duplicate Student models when continuing to Day 41.
+
+## 10. Current decision
+
+**Documentation gate:** Passed on the current branch. The automated workflow checked all 15 class-note files and 15 interview guides for required files, balanced Markdown code fences and valid local links. The interview guides were rewritten with topic-specific model answers and self-checks.
+
+**Runtime gate:** Not yet executed. The repository contains the learning manuscripts rather than a complete checked-in Django project, so the workflow does not prove that `manage.py`, migrations, views or browser submissions run. No runtime pass is claimed.
+
+**Beginner usability gate:** Not yet executed. A true mentor-free claim requires a beginner to complete the daily exercises and capstone using only the notes, without verbal intervention.
+
+Phase 3 therefore remains **not approved for a final mentor-free readiness claim**. The documentation revision is materially improved and its static gate passes; the remaining work is a clean-project Django execution and a beginner usability test.
