@@ -181,9 +181,9 @@ If you change AUTH_USER_MODEL later:
 
 ## 11. The rule for this lesson
 
-The main student_portal project has already applied migrations.
+The main student_portal project has already applied migrations. It also already has a StudentProfile model linked to the Student domain model from Day 38. That existing StudentProfile must remain unchanged for the college relationship exercises.
 
-Do not change its AUTH_USER_MODEL.
+Do not change its AUTH_USER_MODEL or repurpose StudentProfile.
 
 We will create a separate fresh practice project named custom_user_demo.
 
@@ -734,7 +734,7 @@ Before adding a model:
 4. Do not create duplicate classes.
 5. Choose a model name that matches the approved pathway design.
 
-## 44. Add a StudentProfile model only if it does not already exist
+## 44. Add a UserProfile model only if it does not already exist
 
 Example:
 
@@ -743,11 +743,11 @@ from django.conf import settings
 from django.db import models
 
 
-class StudentProfile(models.Model):
+class UserProfile(models.Model):
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        related_name="student_profile",
+        related_name="user_profile",
     )
     phone_number = models.CharField(
         max_length=20,
@@ -807,12 +807,12 @@ In profiles/forms.py, add or merge:
 
 ~~~python
 from django import forms
-from .models import StudentProfile
+from .models import UserProfile
 
 
-class StudentProfileForm(forms.ModelForm):
+class UserProfileForm(forms.ModelForm):
     class Meta:
-        model = StudentProfile
+        model = UserProfile
         fields = [
             "phone_number",
             "city",
@@ -839,18 +839,18 @@ In profiles/views.py, add:
 ~~~python
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
-from .forms import StudentProfileForm
-from .models import StudentProfile
+from .forms import UserProfileForm
+from .models import UserProfile
 
 
 @login_required
-def edit_student_profile(request):
-    profile, created = StudentProfile.objects.get_or_create(
+def edit_user_profile(request):
+    profile, created = UserProfile.objects.get_or_create(
         user=request.user
     )
 
     if request.method == "POST":
-        form = StudentProfileForm(
+        form = UserProfileForm(
             request.POST,
             instance=profile,
         )
@@ -859,11 +859,11 @@ def edit_student_profile(request):
             form.save()
             return redirect("account_summary")
     else:
-        form = StudentProfileForm(instance=profile)
+        form = UserProfileForm(instance=profile)
 
     return render(
         request,
-        "profiles/edit_student_profile.html",
+        "profiles/edit_user_profile.html",
         {"form": form},
     )
 ~~~
@@ -892,7 +892,7 @@ With an instance, the form updates the existing profile.
 
 ## 53. Create the profile template
 
-Create profiles/templates/profiles/edit_student_profile.html:
+Create profiles/templates/profiles/edit_user_profile.html:
 
 ~~~html
 <!DOCTYPE html>
@@ -932,8 +932,8 @@ In profiles/urls.py:
 ~~~python
 path(
     "account/profile/edit/",
-    views.edit_student_profile,
-    name="edit_student_profile",
+    views.edit_user_profile,
+    name="edit_user_profile",
 ),
 ~~~
 
@@ -944,7 +944,7 @@ Keep all earlier routes.
 In the account summary template:
 
 ~~~html
-<a href="{% url 'edit_student_profile' %}">
+<a href="{% url 'edit_user_profile' %}">
     Edit my profile
 </a>
 ~~~
@@ -960,7 +960,7 @@ The view is protected by login_required.
 Unsafe idea:
 
 ~~~python
-profile = StudentProfile.objects.get(
+profile = UserProfile.objects.get(
     user_id=request.POST["user_id"]
 )
 ~~~
@@ -1053,17 +1053,17 @@ python manage.py test accounts
 
 ## 61. Test profile ownership in the main project
 
-In student_portal/profiles/tests.py, add tests after confirming StudentProfile exists:
+In student_portal/profiles/tests.py, add tests after confirming UserProfile exists:
 
 ~~~python
 from django.contrib.auth import get_user_model
 from django.test import TestCase
-from .models import StudentProfile
+from .models import UserProfile
 
 User = get_user_model()
 
 
-class StudentProfileOwnershipTests(TestCase):
+class UserProfileOwnershipTests(TestCase):
     def setUp(self):
         self.user_a = User.objects.create_user(
             username="profile_user_a",
@@ -1075,11 +1075,11 @@ class StudentProfileOwnershipTests(TestCase):
         )
 
     def test_each_user_can_have_separate_profile(self):
-        profile_a = StudentProfile.objects.create(
+        profile_a = UserProfile.objects.create(
             user=self.user_a,
             city="Hyderabad",
         )
-        profile_b = StudentProfile.objects.create(
+        profile_b = UserProfile.objects.create(
             user=self.user_b,
             city="Vijayawada",
         )
@@ -1181,7 +1181,7 @@ Check:
 - Is the view accepting user_id from POST?
 - Does the query filter by the current user?
 
-## 70. ImportError for StudentProfile
+## 70. ImportError for UserProfile
 
 Check:
 - Is the class defined?
@@ -1216,7 +1216,7 @@ The project should demonstrate:
 
 **Track B — Profile management in the existing pathway**
 - Keep student_portal's existing user model.
-- Add or reuse StudentProfile.
+- Add or reuse UserProfile.
 - Connect profile to request.user.
 - Let the user update only their own profile.
 - Test ownership.
@@ -1383,7 +1383,7 @@ Draw:
 - AbstractUser extension.
 - Custom user admin.
 - Main student_portal with its existing user model.
-- Separate StudentProfile.
+- Separate UserProfile.
 - OneToOneField to settings.AUTH_USER_MODEL.
 - Ownership through request.user.
 
