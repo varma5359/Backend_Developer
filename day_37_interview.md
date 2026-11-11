@@ -3,7 +3,7 @@
 **Pathway:** Python Backend Developer Career Pathway (Django)  
 **Phase:** 3 — Django Fundamentals  
 **Related class notes:** [Day 37 notes](day_37_notes.md)  
-**Approved mini-project:** Product Query Explorer
+**Approved mini-project:** Employee Query Explorer
 
 ## 1. Core questions
 
