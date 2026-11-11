@@ -942,3 +942,21 @@ Before marking the lesson complete:
 - Confirm autoescaping.
 - Confirm the page works with zero records.
 - Confirm no sensitive data is exposed.
+
+## 55. Final independent template assessment
+
+Build a template with one heading, one paragraph, one list, one empty state and one named link.
+
+Explain the data flow from view context to rendered HTML.
+
+Test:
+1. Missing optional value.
+2. Empty QuerySet.
+3. Text containing angle brackets.
+4. Incorrect route name.
+5. Missing static file.
+
+For each case, record the visible result and the file that needs correction.
+
+Do not solve a template error by moving complex database logic into HTML.
+
