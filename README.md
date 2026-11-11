@@ -72,15 +72,15 @@ The initial Phase 3 audit and revision log are maintained in [PHASE_3_SELF_LEARN
 
 ## Django Phase 3 quality revision
 
-Phase 3 (Days 27–41) is undergoing a self-learning quality revision. The initial audit found trainer-dependent wording, inconsistent project examples, weak coverage in Day 38 and code-formatting issues in the forms lessons. Revisions are being applied on the `phase-3-self-learning-audit` branch. Day 38 has been substantially rewritten; Days 27–41 have had self-practice language and targeted continuity fixes applied. The existing Employee model exercises (Days 34–37) and the Student / Department / Course relationship workflow (Days 38–41) are being made explicit within the same `profiles` app.
+Phase 3 (Days 27–41) has received a first complete documentation revision pass. Day 27 is self-paced; Days 28–35 include independent verification steps; Days 36–37 use a consistent Employee model example with expected results; Day 38 is substantially expanded; Days 39–41 provide a connected Student registration and validation workflow. Interview guides for all 15 days have topic-specific model answers, scenario responses and self-checks. The examples deliberately progress from basic routing/views to Employee model practice, then introduce Student / Department / Course relationships on Day 38; the Employee model is retained in the same `profiles` app.
 
-**Readiness status:** Not yet approved for a mentor-free claim. The integrated project still requires clean-environment runtime verification and a beginner usability test. See [PHASE_3_SELF_LEARNING_AUDIT.md](PHASE_3_SELF_LEARNING_AUDIT.md) for the day-by-day findings and revision log.
+**Readiness status:** The automated documentation quality gate passed. Full Django runtime verification in a clean environment and a beginner usability test have not yet been completed, so Phase 3 is not yet certified as mentor-free. See [PHASE_3_SELF_LEARNING_AUDIT.md](PHASE_3_SELF_LEARNING_AUDIT.md) for the day-by-day findings and validation limits.
 
 ## Remaining phases
 
 | Phase | Days | Module | Authoring status |
 |---|---:|---|---|
-| 3 | 27–41 | Django fundamentals | Revision in progress — runtime verification pending |
+| 3 | 27–41 | Django fundamentals | Documentation revised; static gate passed; runtime and beginner tests pending |
 | 4 | 42–54 | Django ORM, forms and authentication | Existing files; quality review and revision pending |
 | 5 | 55–69 | REST API development with Django REST Framework | Existing files; quality review and revision pending |
 | 6 | 70–81 | Advanced backend development | Existing files; quality review and revision pending |
