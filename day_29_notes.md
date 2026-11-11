@@ -491,3 +491,376 @@ Do not mark the day complete just because code exists. Complete every check your
 5. Diagnose and fix one controlled mistake, such as a misspelled URL, setting or file path.
 
 **Next lesson:** Day 30 — URL Routing, Path Converters and URL Patterns
+
+---
+
+# Extended Beginner Lab — Settings, Apps and Middleware
+
+## 19. What is a setting?
+
+A Django setting is a configuration value used by the project.
+
+Examples:
+- Installed applications.
+- Middleware.
+- Database connection.
+- Template configuration.
+- Static file configuration.
+- Security options.
+- Language and time zone.
+
+A setting changes how Django runs the application. It is not the same as a model field or a normal view variable.
+
+## 20. Why settings.py matters
+
+Django loads the settings module when the project starts.
+
+The settings module tells Django:
+- Which apps to load.
+- Which middleware to run.
+- Which database to connect to.
+- Where templates are located.
+- Which URL configuration to use.
+- How static files are handled.
+
+A typo in a setting can prevent the project from starting.
+
+## 21. Understand DEBUG
+
+DEBUG controls whether Django displays detailed debugging information for certain errors.
+
+During local development, DEBUG is commonly True.
+
+In production, DEBUG must be False.
+
+Why?
+- Debug pages can reveal settings and internal code details.
+- Error pages may expose paths, installed apps and configuration.
+- Production users should receive a safe error response.
+
+Do not set DEBUG=True on a public production site.
+
+## 22. Understand ALLOWED_HOSTS
+
+ALLOWED_HOSTS is a list of host/domain values that the application is allowed to serve.
+
+Example for local development:
+
+~~~python
+ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
+~~~
+
+The correct values depend on how the application is accessed.
+
+A production deployment must include its real host names.
+
+Do not blindly use a wildcard for production.
+
+## 23. Understand SECRET_KEY
+
+SECRET_KEY is a secret used by Django for cryptographic signing.
+
+It must be kept private.
+
+Do not:
+- Publish it in GitHub.
+- Paste it into screenshots.
+- Share it in a public issue.
+- Reuse a development key for a public production system.
+
+For a real deployment, load secrets from protected environment configuration or a secret manager.
+
+## 24. Understand INSTALLED_APPS
+
+INSTALLED_APPS tells Django which applications to load.
+
+An entry can be:
+- A Django built-in app.
+- A third-party app.
+- A local app.
+
+Example:
+
+~~~python
+INSTALLED_APPS = [
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "profiles.apps.ProfilesConfig",
+]
+~~~
+
+Do not remove built-in apps because you do not yet understand them. Later lessons use admin, auth, sessions and messages.
+
+## 25. What happens if an app is not installed?
+
+Django may not discover its models and migrations as expected.
+
+Templates and static file discovery may also be affected by app configuration.
+
+When an app does not behave as expected:
+1. Confirm the folder exists.
+2. Confirm apps.py.
+3. Confirm INSTALLED_APPS.
+4. Run check.
+5. Inspect the traceback.
+
+## 26. Understand middleware
+
+Middleware is a component that processes requests and responses around the view.
+
+~~~text
+Browser request
+    |
+    v
+Middleware 1
+    |
+    v
+Middleware 2
+    |
+    v
+URL resolver and view
+    |
+    v
+Middleware 2 response processing
+    |
+    v
+Middleware 1 response processing
+    |
+    v
+Browser response
+~~~
+
+Middleware can handle:
+- Security headers.
+- Sessions.
+- Authentication.
+- CSRF protection.
+- Common request/response behavior.
+- Messages.
+
+## 27. Middleware ordering matters
+
+Some middleware depends on another middleware.
+
+For example:
+- SessionMiddleware must run before AuthenticationMiddleware.
+- AuthenticationMiddleware uses the session to identify the current user.
+- MessageMiddleware commonly uses session support.
+
+Do not reorder middleware randomly.
+
+If you remove a middleware entry, later features may stop working.
+
+## 28. Understand MIDDLEWARE versus INSTALLED_APPS
+
+| INSTALLED_APPS | MIDDLEWARE |
+|---|---|
+| Registers application packages | Defines request/response processing components |
+| Helps Django discover models and app functionality | Runs around each request/response |
+| Example: django.contrib.auth | Example: AuthenticationMiddleware |
+| App configuration | Request lifecycle configuration |
+
+An app may require a middleware component, but the app and middleware are different configuration items.
+
+## 29. Understand TEMPLATES
+
+The TEMPLATES setting configures Django's template engine.
+
+Important values include:
+- BACKEND.
+- DIRS.
+- APP_DIRS.
+- OPTIONS.
+- context_processors.
+
+APP_DIRS=True allows Django to search templates directories inside installed apps.
+
+## 30. Understand context processors
+
+A context processor adds common values to template context.
+
+Examples:
+- request.
+- authenticated user.
+- messages.
+
+The auth context processor makes user-related context available to templates when configured.
+
+The messages context processor makes messages available to templates.
+
+Do not confuse a context processor with a view context dictionary. A view context is passed for one render call; context processors provide common values.
+
+## 31. Understand DATABASES
+
+The DATABASES setting defines database connections.
+
+The generated project commonly uses SQLite for beginner development.
+
+A database configuration includes:
+- ENGINE.
+- NAME.
+- USER.
+- PASSWORD.
+- HOST.
+- PORT.
+
+Not every database engine needs every field.
+
+Do not paste database passwords into public settings files.
+
+## 32. Understand TIME_ZONE and USE_TZ
+
+TIME_ZONE defines the project's default time zone.
+
+USE_TZ controls timezone-aware datetime handling.
+
+Time zone configuration matters when:
+- Recording creation timestamps.
+- Displaying dates to users.
+- Scheduling events.
+- Comparing timestamps across locations.
+
+Do not assume the server's local time zone is the same as every user's time zone.
+
+## 33. Understand STATIC_URL
+
+STATIC_URL defines the URL prefix used to serve static files.
+
+Static files include:
+- CSS.
+- JavaScript.
+- Images used by the application interface.
+
+A template uses the static template tag to generate a static asset URL.
+
+Static files are different from user-uploaded media files.
+
+## 34. Understand DEFAULT_AUTO_FIELD
+
+DEFAULT_AUTO_FIELD sets the default primary key field type for models that do not define one.
+
+The generated project commonly uses BigAutoField.
+
+A primary key uniquely identifies each database row.
+
+Do not manually add a primary key to every model unless there is a reason.
+
+## 35. Local versus production settings
+
+| Setting | Local development | Production |
+|---|---|---|
+| DEBUG | Usually True | False |
+| ALLOWED_HOSTS | Local host names | Real deployment host names |
+| SECRET_KEY | Private development value | Protected secret |
+| Database | SQLite may be used | Production database |
+| Static files | Development server can serve them | Collected and served through deployment infrastructure |
+| Email | Console backend may be used | Trusted email provider |
+| Cookies | Local testing values | HTTPS and secure cookie configuration |
+
+This is a conceptual comparison. Deployment is covered in a later phase.
+
+## 36. Safe configuration exercise
+
+Open config/settings.py.
+
+For each of these settings, write:
+1. What it controls.
+2. Which lesson uses it.
+3. Whether it is safe to expose publicly.
+4. What can happen if it is incorrect.
+
+Settings:
+- DEBUG.
+- SECRET_KEY.
+- ALLOWED_HOSTS.
+- INSTALLED_APPS.
+- MIDDLEWARE.
+- TEMPLATES.
+- DATABASES.
+- STATIC_URL.
+- TIME_ZONE.
+- USE_TZ.
+
+## 37. Common configuration mistakes
+
+| Symptom | Likely cause | Inspection |
+|---|---|---|
+| App models not discovered | App missing from INSTALLED_APPS | Check app config path |
+| request.user missing | AuthenticationMiddleware missing | Inspect MIDDLEWARE |
+| Sessions unavailable | Session app or middleware missing | Inspect sessions config |
+| Template not found | Incorrect DIRS or APP_DIRS | Check template location |
+| Static CSS not loaded | Wrong static path or static tag | Inspect browser network request |
+| Host validation error | Host missing from ALLOWED_HOSTS | Check requested host |
+| Debug page exposed | DEBUG left enabled | Use safe production settings |
+| Secret exposed | Secret committed to repository | Rotate the secret and protect configuration |
+
+## 38. Diagnose a middleware problem
+
+1. Read the error message.
+2. Open MIDDLEWARE.
+3. Confirm the middleware class path.
+4. Confirm spelling.
+5. Confirm ordering.
+6. Run python manage.py check.
+7. Reproduce the affected request.
+
+Do not add every middleware class from the internet. Use the generated project's supported configuration.
+
+## 39. Diagnose a missing template
+
+Check:
+- Template folder exists.
+- Template filename matches render().
+- App is registered.
+- APP_DIRS is enabled.
+- DIRS includes any project-level template folder if used.
+- Template path uses the correct app namespace.
+
+## 40. Practical settings review
+
+Answer these:
+1. Why should DEBUG be False in production?
+2. Why should SECRET_KEY remain private?
+3. Why does ALLOWED_HOSTS exist?
+4. What is the difference between apps and middleware?
+5. Why does middleware order matter?
+6. What does APP_DIRS do?
+7. What does a context processor provide?
+8. Why are static files different from media files?
+
+## 41. Answers
+
+1. To avoid exposing debug details to public users.
+2. It is used for cryptographic signing and must remain confidential.
+3. It limits which host headers the application accepts.
+4. Apps register functionality; middleware processes requests and responses.
+5. Middleware may depend on state created by earlier middleware.
+6. It enables app-level template discovery.
+7. Common values for templates.
+8. Static files are application assets; media files are user-uploaded content.
+
+## 42. Independent challenge — Configuration Review
+
+Create a table in your own notes with every major setting in config/settings.py.
+
+For each setting:
+- Copy the setting name.
+- Explain it in one or two sentences.
+- Record the current development value.
+- Identify a production consideration.
+- State one symptom of a wrong value.
+
+Do not paste SECRET_KEY or database passwords into your notes.
+
+## 43. Completion evidence
+
+Submit:
+- A screenshot of INSTALLED_APPS.
+- A screenshot of MIDDLEWARE.
+- Output of python manage.py check.
+- Your settings review table.
+- A short explanation of why secrets should not be committed.
