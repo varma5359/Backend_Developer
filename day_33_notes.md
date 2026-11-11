@@ -794,3 +794,168 @@ Evidence:
 - Browser network result for the CSS file.
 - Output from findstatic.
 - Explanation of inheritance and static-file discovery.
+
+---
+
+# Deep Practice Workbook — Static Assets and Shared Layout
+
+## 41. Static asset versus uploaded media
+
+Static asset:
+- Belongs to the application source.
+- Example: site.css, logo.svg, navigation.js.
+
+Uploaded media:
+- Submitted by a user.
+- Example: profile photo, resume, attachment.
+
+They have different storage, validation and security requirements.
+
+## 42. Static directory structure
+
+~~~text
+profiles/
+└── static/
+    └── profiles/
+        ├── css/
+        │   ├── site.css
+        │   └── forms.css
+        ├── js/
+        │   └── navigation.js
+        └── images/
+            └── institute-logo.svg
+~~~
+
+The repeated app name creates a namespace and reduces filename collisions.
+
+## 43. Load multiple assets
+
+~~~django
+{% load static %}
+
+<link rel="stylesheet"
+      href="{% static 'profiles/css/site.css' %}">
+
+<script src="{% static 'profiles/js/navigation.js' %}"
+        defer></script>
+~~~
+
+The defer attribute allows the browser to download the script without blocking HTML parsing and execute it after parsing.
+
+## 44. Static file verification checklist
+
+1. File exists.
+2. Folder path is correct.
+3. App is installed.
+4. Static tag library is loaded.
+5. Template path is correct.
+6. Browser URL matches expected static URL.
+7. Network response is successful.
+8. CSS selector matches the HTML.
+9. Browser cache is refreshed if necessary.
+
+## 45. What collectstatic does
+
+In deployment workflows, collectstatic gathers static files from configured locations into STATIC_ROOT.
+
+It does not:
+- Create your CSS.
+- Fix wrong paths.
+- Replace static-file configuration.
+- Upload user media automatically.
+
+It is a collection step used before production static serving.
+
+## 46. Why not use STATIC_ROOT as the source folder?
+
+STATIC_ROOT is the collection destination.
+
+STATICFILES_DIRS and app static directories are source locations.
+
+Keep source and collection destinations separate to avoid confusing discovery and collection behavior.
+
+## 47. Shared layout exercise
+
+Create a base template with:
+- HTML document structure.
+- Header.
+- Navigation.
+- Main content block.
+- Footer.
+- Static CSS reference.
+
+Create two child templates:
+- Student list.
+- Course list.
+
+Change the header once and verify both pages update.
+
+## 48. Include exercise
+
+Create a navigation fragment and include it in the base template.
+
+Then change one navigation label.
+
+Verify that all pages using the base template show the change.
+
+## 49. Common browser inspection steps
+
+Open browser developer tools.
+
+Use the Network tab:
+1. Reload the page.
+2. Find the CSS request.
+3. Check the request URL.
+4. Check status code.
+5. Inspect response content.
+6. Check whether the browser loaded the latest version.
+
+Use the Elements/Inspector tab:
+- Confirm the link element exists.
+- Confirm the CSS selector matches.
+- Confirm no later rule overrides the style.
+
+## 50. Production warning
+
+The Django development server's static handling is not a production architecture.
+
+Production requires a deliberate static-file serving strategy such as a web server, object storage or a suitable static-file service.
+
+This lesson only teaches source layout and discovery. Deployment configuration belongs to the deployment phase.
+
+## 51. Knowledge check
+
+1. What is a static file?
+2. What is uploaded media?
+3. Why use an app namespace in the static folder?
+4. What does collectstatic do?
+5. What is STATIC_ROOT?
+6. What is STATICFILES_DIRS?
+7. Why does a CSS file return 404?
+8. Why might the browser show old CSS?
+9. What is the benefit of a shared base template?
+10. What is the difference between extends and include?
+
+## 52. Answers
+
+1. An application asset such as CSS, JavaScript or a logo.
+2. A file uploaded by a user.
+3. To avoid naming collisions between apps.
+4. Collects static assets into the configured destination.
+5. Destination for collected files.
+6. Additional source directories for static assets.
+7. Wrong path, app discovery or static configuration.
+8. Browser cache.
+9. It avoids repeating shared page structure.
+10. extends inherits a layout; include inserts a fragment.
+
+## 53. Final asset audit
+
+Before completing:
+- Confirm all child templates extend the correct base.
+- Confirm block names match.
+- Confirm include paths.
+- Confirm static files use the static tag.
+- Confirm findstatic locates the assets.
+- Confirm the browser loads the CSS.
+- Explain what additional work is required in production.
