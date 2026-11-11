@@ -199,3 +199,50 @@ class AdminRegistrationTests(TestCase):
     def test_admin_login_page_is_available(self):
         response = self.client.get("/admin/login/")
         self.assertEqual(response.status_code, 200)
+
+
+class RoutingAndTemplateTests(TestCase):
+    def test_home_page_uses_base_template(self):
+        response = self.client.get("/")
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "profiles/home.html")
+        self.assertTemplateUsed(response, "profiles/base.html")
+        self.assertContains(response, "Phase 3 Django Reference")
+        self.assertContains(response, "/static/profiles/css/site.css")
+
+    def test_about_page_uses_inherited_layout(self):
+        response = self.client.get("/about/")
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "profiles/base.html")
+        self.assertContains(response, "About this project")
+
+    def test_integer_path_converter(self):
+        response = self.client.get("/profile/25/")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Profile ID: 25")
+
+    def test_string_path_converter(self):
+        response = self.client.get("/member/asha/")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Member: asha")
+
+    def test_query_string_is_passed_to_template(self):
+        response = self.client.get("/welcome/?name=asha")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Welcome, Asha")
+
+    def test_query_string_uses_default_when_missing(self):
+        response = self.client.get("/welcome/")
+        self.assertContains(response, "Welcome, Guest")
+
+    def test_employee_template_variables_tags_and_filters(self):
+        response = self.client.get("/employee/")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "ASHA RAO")
+        self.assertContains(response, "Backend Developer")
+        self.assertContains(response, "Python")
+        self.assertContains(response, "Skills are available.")
+
+    def test_request_method_is_available_to_view(self):
+        response = self.client.get("/request-info/")
+        self.assertContains(response, "Method: GET")
