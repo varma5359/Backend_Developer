@@ -3,12 +3,12 @@
 **Pathway:** Python Backend Developer Career Pathway (Django)  
 **Phase:** 3 — Django Fundamentals  
 **Duration:** 2–3 hours | **Level:** Beginner to Intermediate  
-**Prerequisites:** Days 27–40 as relevant; project setup, URL routing, views, templates, models, migrations and forms  
+**Prerequisites:** Days 27–40 — project setup, URL routing, views, templates, models, migrations, ORM, relationships, ModelForms and validation  
 **Environment:** Windows, VS Code, PowerShell, Python virtual environment, Django 5.2.19  
 **Continuous project:** `student_portal` / `config` / `profiles`  
 **Approved mini-project:** Django Student Management Website
 
-> **Trainer standard:** This is an integration lesson. Students must understand the journey from the browser request to the database and back to the browser. Do not let them copy the complete files without tracing each step.
+> **Self-paced method:** Follow the request from the browser to the view, form, model and database, then back to the browser. Create each file exactly where named. Run each check before continuing, and use the expected results to decide whether your implementation is correct.
 
 ## 1. Learning objectives
 
@@ -157,8 +157,9 @@ Open list, register a student, confirm redirect and confirm the new record appea
 
 The code is split by filename. Create or update the correct file. Do not paste HTML into Python files.
 
+**File 1 — `profiles/urls.py`**. Replace or complete the app's URL patterns with these two routes.
+
 ```python
-# profiles/urls.py
 from django.urls import path
 from . import views
 
@@ -166,11 +167,15 @@ urlpatterns = [
     path("students/", views.student_list, name="student_list"),
     path("students/register/", views.student_register, name="student_register"),
 ]
+```
 
-# profiles/views.py
+**File 2 — `profiles/views.py`**. Add or update these views. Keep any unrelated views already used in the project.
+
+```python
 from django.shortcuts import render, redirect
 from .models import Student
 from .forms import StudentRegistrationForm
+
 
 def student_list(request):
     students = Student.objects.order_by("full_name")
@@ -179,6 +184,7 @@ def student_list(request):
         "profiles/student_list.html",
         {"students": students},
     )
+
 
 def student_register(request):
     if request.method == "POST":
@@ -194,8 +200,11 @@ def student_register(request):
         "profiles/student_form.html",
         {"form": form},
     )
+```
 
-# config/urls.py
+**File 3 — `config/urls.py`**. The root URL configuration must include the app routes. Preserve the admin route.
+
+```python
 from django.contrib import admin
 from django.urls import path, include
 
@@ -203,11 +212,17 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("profiles.urls")),
 ]
+```
 
-<!-- profiles/templates/profiles/student_list.html -->
+**File 4 — `profiles/templates/profiles/student_list.html`**. Create this HTML template.
+
+```html
 <!doctype html>
 <html lang="en">
-<head><meta charset="utf-8"><title>Student Directory</title></head>
+<head>
+    <meta charset="utf-8">
+    <title>Student Directory</title>
+</head>
 <body>
     <h1>Student Directory</h1>
     <a href="{% url 'student_register' %}">Register student</a>
@@ -220,11 +235,17 @@ urlpatterns = [
     </ul>
 </body>
 </html>
+```
 
-<!-- profiles/templates/profiles/student_form.html -->
+**File 5 — `profiles/templates/profiles/student_form.html`**. Create or update this HTML template.
+
+```html
 <!doctype html>
 <html lang="en">
-<head><meta charset="utf-8"><title>Student Registration</title></head>
+<head>
+    <meta charset="utf-8">
+    <title>Student Registration</title>
+</head>
 <body>
     <h1>Register Student</h1>
     <form method="post">
