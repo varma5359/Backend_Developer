@@ -1,7 +1,46 @@
+from django.http import HttpResponse
 from django.shortcuts import redirect, render
 
 from .forms import StudentRegistrationForm
 from .models import Student
+
+
+def home(request):
+    return render(request, "profiles/home.html")
+
+
+def about(request):
+    return render(request, "profiles/about.html")
+
+
+def profile_detail(request, profile_id):
+    return HttpResponse(f"Profile ID: {profile_id}")
+
+
+def member_detail(request, username):
+    return HttpResponse(f"Member: {username}")
+
+
+def welcome(request):
+    name = request.GET.get("name", "Guest")
+    return render(request, "profiles/welcome.html", {"name": name})
+
+
+def request_info(request):
+    return HttpResponse(f"Method: {request.method}")
+
+
+def employee_demo(request):
+    employee = {
+        "name": "Asha Rao",
+        "role": "Backend Developer",
+        "skills": ["Python", "Django", "SQL"],
+    }
+    return render(
+        request,
+        "profiles/employee_profile.html",
+        {"employee": employee},
+    )
 
 
 def student_list(request):
