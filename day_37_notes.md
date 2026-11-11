@@ -131,6 +131,15 @@ employee = Employee.objects.create(
     joining_date="2026-11-01",
 )
 
+second_employee = Employee.objects.create(
+    employee_code="EMP1002",
+    full_name="Rahul Kumar",
+    email="rahul@example.com",
+    salary="48000.00",
+    joining_date="2026-10-15",
+    is_active=False,
+)
+
 # READ
 all_employees = Employee.objects.all()
 active_employees = Employee.objects.filter(is_active=True)
