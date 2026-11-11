@@ -894,3 +894,157 @@ For each route:
 5. Explain what happens for invalid input.
 
 Do not implement a route that exposes private student information without an access check.
+
+---
+
+# Practice Workbook — URL Routing
+
+## 44. Route design table
+
+Design routes for an institute portal.
+
+| Feature | Example path | Converter | Route name |
+|---|---|---|---|
+| Student list | /students/ | None | student_list |
+| Student detail | /students/25/ | int | student_detail |
+| Member profile | /members/asha/ | str | member_detail |
+| Article detail | /articles/django-routing/ | slug | article_detail |
+| Order detail | /orders/UUID/ | uuid | order_detail |
+
+The route name should describe the purpose, not the HTML file name.
+
+## 45. Match route and view arguments
+
+URL pattern:
+
+~~~python
+path(
+    "students/<int:student_id>/",
+    views.student_detail,
+    name="student_detail",
+)
+~~~
+
+View:
+
+~~~python
+def student_detail(request, student_id):
+    ...
+~~~
+
+The converter name and view parameter must match.
+
+If the route captures student_id but the view expects pk, Django cannot pass the argument as intended.
+
+## 46. Reverse lookup exercise
+
+Given a named route, write:
+- Template URL tag.
+- Python reverse() call.
+- redirect() call.
+
+Example:
+
+~~~python
+reverse("student_detail", kwargs={"student_id": 25})
+~~~
+
+The route must accept the supplied argument.
+
+## 47. URL namespace exercise
+
+Imagine profiles and courses both define a route named detail.
+
+A namespace can distinguish them:
+- profiles:detail.
+- courses:detail.
+
+Explain why this avoids route-name collisions.
+
+## 48. Route ordering exercise
+
+Given:
+- /articles/archive/
+- /articles/<slug:slug>/
+
+Place the specific archive route before the broad slug route.
+
+Explain what happens if the broad route is matched first.
+
+## 49. Query-string exercise
+
+For:
+
+~~~text
+/search/?q=django&page=3
+~~~
+
+Identify:
+- Path.
+- Search term.
+- Page number.
+- Python expression to read q.
+- Python expression to read page.
+
+Expected:
+- Path is /search/.
+- q is django.
+- page is 3.
+- Use request.GET.get("q", "").
+- Use request.GET.get("page", "1").
+
+## 50. 404 versus 405 exercise
+
+Scenario A:
+- Browser requests a path that has no URL pattern.
+
+Expected: 404.
+
+Scenario B:
+- Browser requests a valid POST-only URL using GET.
+
+Expected: 405.
+
+Explain why the responses are different.
+
+## 51. Common URL debugging routine
+
+1. Copy the exact browser URL.
+2. Identify the path and query string.
+3. Open the root URL configuration.
+4. Follow include() entries.
+5. Find the matching app pattern.
+6. Check converter names.
+7. Check view function parameters.
+8. Check route name.
+9. Run the request again.
+10. Record the expected response.
+
+## 52. Independent challenge — Course Portal URL Map
+
+Create a route map for:
+- Course list.
+- Course detail.
+- Course category.
+- Course search.
+- Student's own course registrations.
+
+For the final route, identify the authentication and ownership check needed. A route alone does not provide security.
+
+## 53. Answer key prompts
+
+- Why use named routes? To avoid hard-coded URL strings.
+- Why use include()? To delegate route matching to an app URL configuration.
+- Why use converters? To capture and convert path values.
+- Why use request.GET? To read query-string values.
+- Why order specific routes first? To prevent broad patterns capturing intended routes.
+
+## 54. Final workbook submission
+
+Submit:
+- URL design table.
+- Route/view argument matching example.
+- Reverse lookup examples.
+- Namespace explanation.
+- 404/405 comparison.
+- Course Portal URL map.
