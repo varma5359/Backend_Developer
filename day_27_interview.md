@@ -1,93 +1,73 @@
-# Day 27: Interview Questions — Introduction to Django, Features, Architecture and Installation
+# Day 27: Interview Guide — Introduction to Django, Features, Architecture and Installation
 
 **Pathway:** Python Backend Developer Career Pathway (Django)  
 **Phase:** 3 — Django Fundamentals  
 **Related class notes:** [Day 27 notes](day_27_notes.md)  
-**Approved mini-project:** Django Environment Setup
+**Mini-project:** Django Environment Setup
 
-## 1. Core technical questions
+## 1. Technical questions with model answers
 
-### Q1. Explain introduction to django, features, architecture and installation.
-**Answer:** Django is a high-level Python web framework. It provides URL routing, views, templates, an ORM, forms, authentication and security features. It helps developers build web applications without writing every common web feature from scratch.
+### Q1. What is Django?
 
-**Follow-up:** Give one example from a Django project.
+**Model answer:** Django is a high-level Python web framework. It supplies common web-application components such as URL routing, views, templates, ORM, forms, authentication and security protections. It does not remove the need to understand HTTP, databases or Python.
 
-### Q2. Why is this concept important for a backend developer?
-**Answer:** It helps a developer build, configure, understand or troubleshoot a Django application. Explain the practical example from the class notes rather than giving only a definition.
+### Q2. Explain Django's request-response flow.
 
-### Q3. Which command or file is important in this lesson?
-**Answer:** Identify the relevant command or file from the lesson. Explain where it belongs, what it does and how you verified it.
+**Model answer:** A browser sends an HTTP request. Django middleware processes it. The URL resolver selects a view. The view runs application logic and may query the ORM or render a template. Django returns an HTTP response to the browser.
 
-### Q4. What is one common beginner mistake?
-**Answer:** A common mistake is skipping environment, folder or configuration checks. Read the complete error and verify one step at a time.
+### Q3. What is the difference between a project and an app?
 
-### Q5. How would you verify the result?
-**Answer:** Run the command, check Django's system output and verify the browser or application behavior. Capture reproducible evidence.
+**Model answer:** A project contains site-wide configuration and URL entry points. An app groups a feature or domain, such as profiles or billing. One project can contain multiple apps.
 
-## 2. Scenario-based question
+### Q4. Why use a virtual environment?
 
-**Scenario:** A junior developer is completing Django Environment Setup. The command appears to work, but the expected application result is not visible.
+**Model answer:** It isolates project dependencies from other Python projects. This makes versions reproducible and reduces conflicts.
 
-**Suggested answer:**
-1. Confirm the active virtual environment.
-2. Confirm the current project directory.
-3. Check the command and file names.
-4. Read the full error or server output.
-5. Verify the expected file or setting.
-6. Rerun the system check.
-7. Verify the result in the browser or terminal.
+### Q5. What is the purpose of manage.py?
 
-**Follow-up:** What evidence would you provide to another developer?
+**Model answer:** It is the project's command-line utility. It sets the Django settings module and exposes management commands such as check, runserver, migrate and createsuperuser.
 
-## 3. Practical discussion
+### Q6. Why is runserver not a production server?
 
-Be prepared to:
-- Explain the purpose of each command.
-- Identify the relevant Django file.
-- Explain why the configuration is needed.
-- Demonstrate a successful run.
-- Describe one error and its fix.
-- Explain one production consideration.
+**Model answer:** It is intended for local development and debugging. Production needs a suitable WSGI or ASGI server, secure settings, static-file handling, monitoring and deployment configuration.
+
+## 2. Scenario-based interview question
+
+**Scenario:** A beginner installs Django globally, then the project cannot import it in VS Code. Explain how you would debug it.
+
+**Model answer:** Check which interpreter VS Code selected, activate the project's virtual environment, run python -m pip show django and python -c "import sys; print(sys.executable)" in the same terminal. Install the required version using that interpreter, then rerun the import and manage.py check.
+
+**What the interviewer is checking:** Whether you can connect the concept to a real project, identify the relevant file or command, verify the result and explain the reason for your debugging steps.
+
+## 3. Practical demonstration
+
+Explain the purpose of the framework, draw the request flow, create and activate .venv, install the pinned Django version, verify the interpreter and Django version, and write reproducible setup commands in README.
+
+Before the interview, be able to:
+- Explain the feature without reading the notes.
+- Identify the exact file or command involved.
+- Demonstrate the behavior in a terminal or browser.
+- Predict one result before running the code.
+- Explain one common failure and how to fix it.
 
 ## 4. Mini-project viva — Django Environment Setup
 
-1. What was the objective?
-2. What prerequisites did you need?
-3. Which commands did you execute?
-4. Which files did Django create or use?
-5. How did you verify the result?
-6. What error did you encounter, if any?
-7. How did you solve it?
-8. What is not included in this learning exercise?
-9. What would you improve next?
-10. How would you explain the project to a teammate?
+1. What user or business problem does this project solve?
+2. What did you build and what did you deliberately leave out?
+3. Which files and commands were required?
+4. Explain the execution flow from input to output.
+5. What result did you verify?
+6. What was the most useful debugging check?
+7. What would you improve if this became a production feature?
 
-## 5. Common incorrect answers
+**Model viva answer structure:** State the requirement → explain the design → identify the files → describe the implementation → show the observed result → explain one limitation or improvement. Use your own project evidence; do not invent results.
 
-| Incorrect statement | Better answer |
-|---|---|
-| Django is a database | Django is a Python web framework |
-| A successful command proves the full feature works | Verify the browser, configuration or application behavior |
-| The development server is production-ready | Use a production deployment stack |
-| All project settings are safe to publish | Keep secrets and environment-specific configuration protected |
-| A Django project and app are identical | A project is the overall configuration; apps group features |
+## 5. Self-check
 
-## 6. Rapid revision
+- [ ] I can answer all six technical questions without memorizing paragraphs.
+- [ ] I can explain the scenario and justify each debugging step.
+- [ ] I can demonstrate the feature from a fresh terminal/browser session.
+- [ ] I can explain one alternative design and why I did not choose it.
+- [ ] I can present Django Environment Setup with real evidence.
 
-- **Step 1:** Check Python is installed with python --version.
-- **Step 2:** Create a new project folder and open it in VS Code.
-- **Step 3:** Create and activate a virtual environment.
-- **Step 4:** Install Django using python -m pip install django.
-- **Step 5:** Verify installation and record the installed version.
-- **Step 6:** Create a short README with setup commands and troubleshooting notes.
-
-## 7. Interview readiness checklist
-
-- [ ] Explain the topic in simple language.
-- [ ] Explain the main command and its output.
-- [ ] Identify the relevant file or folder.
-- [ ] Describe a common failure and how to debug it.
-- [ ] Present Django Environment Setup and its evidence.
-- [ ] Explain one production consideration.
-
-**Trainer note:** Ask the learner to explain the command and file locations without looking at the notes. If they cannot, ask them to rerun the demonstration and explain each step.
+**Readiness rule:** If you cannot reproduce the demonstration, return to the corresponding section in [Day 27 class notes](day_27_notes.md), repeat the steps and record the output.

@@ -3,90 +3,71 @@
 **Pathway:** Python Backend Developer Career Pathway (Django)  
 **Phase:** 3 — Django Fundamentals  
 **Related class notes:** [Day 28 notes](day_28_notes.md)  
-**Approved mini-project:** Personal Profile Django Project
+**Mini-project:** Personal Profile Django Project
 
-## 1. Core technical questions
+## 1. Technical questions with model answers
 
-### Q1. What is the central purpose of this lesson?
-**Answer:** Think of a Django project as the whole website and an app as one feature area inside it. A college portal might have separate apps for profiles, courses, attendance and fees. Each app owns a related set of models, views, templates and tests. The project package owns site-wide configuration and root URL routing. A project may contain many apps; an app is not a separate server by default.
+### Q1. What does startproject create?
 
-**Follow-up:** Explain this using the Student Portal example.
+**Model answer:** It creates the project package and manage.py. The package includes settings, root URLs, ASGI and WSGI entry points.
 
-### Q2. Which files are responsible for the implementation?
-**Answer:** The files are manage.py, config/__init__.py, config/settings.py, config/urls.py, config/asgi.py, config/wsgi.py, profiles/apps.py, profiles/models.py, profiles/views.py, profiles/admin.py, profiles/tests.py, profiles/migrations/. Describe the responsibility of each file, rather than only listing names.
+### Q2. What does startapp create?
 
-**Follow-up:** Explain this using the Student Portal example.
+**Model answer:** It creates an app package with files such as models.py, views.py, admin.py, apps.py, tests.py and migrations/.
 
-### Q3. How would you verify the feature?
-**Answer:** Run the required commands, inspect the output, test the browser behavior and verify an edge case. Use the exact checks in Day 28 class notes.
+### Q3. Why use django-admin startproject config .?
 
-**Follow-up:** Explain this using the Student Portal example.
+**Model answer:** The dot tells Django to create the project package in the current directory instead of nesting another project folder.
 
-### Q4. What mistakes commonly affect beginners?
-**Answer:** Common causes include an incorrect working directory, wrong Python environment, spelling errors, incorrect imports, a missing app registration or a route/file path mismatch. Read the traceback and correct one cause at a time.
+### Q4. Why add profiles to INSTALLED_APPS?
 
-**Follow-up:** Explain this using the Student Portal example.
+**Model answer:** Django must load the app so it can discover its models, admin integration, migrations and app configuration.
 
-## 2. Scenario-based questions
+### Q5. What is the role of apps.py?
 
-### Q5. The code exists, but the expected behavior is not visible. How do you debug it?
-**Suggested answer:**
-1. Reproduce the problem.
-2. Read the complete error or terminal output.
-3. Confirm the current directory and active virtual environment.
-4. Inspect the file and line mentioned in the traceback.
-5. Check imports, names, configuration and route connections.
-6. Run `python manage.py check`.
-7. Test the browser behavior again.
+**Model answer:** It contains the AppConfig class, which describes the app and can define startup configuration.
 
-### Q6. A student says, "The command completed, so the feature is done." Is that enough?
-**Suggested answer:** No. A command may create a file or start a server without proving the required user behavior. Demonstrate the result, test an edge case and explain the implementation.
+### Q6. Why should .venv and secrets not be committed?
 
-### Q7. How would you explain your implementation to another developer?
-**Suggested answer:** State the requirement, name the files, explain the data or request flow, demonstrate the commands, show expected output and describe one failure and its fix.
+**Model answer:** The virtual environment is machine-specific generated dependency state. Secrets such as passwords and API keys must remain private; commit a safe example configuration instead.
 
-## 3. Practical coding discussion
+## 2. Scenario-based interview question
 
-Be ready to:
-- Identify the exact file path.
-- Explain the important imports and statements.
-- Run the relevant management command.
-- Demonstrate the browser or terminal result.
-- Modify one small part and predict the outcome.
-- Test one invalid or unexpected case.
-- Diagnose one common error.
+**Scenario:** The runserver command says no module named profiles after the app folder was created. What do you check?
+
+**Model answer:** Confirm the app folder is beside manage.py, the package contains apps.py and __init__.py, the app name is correctly listed in INSTALLED_APPS, and the command is being run from the project root with the correct environment.
+
+**What the interviewer is checking:** Whether you can connect the concept to a real project, identify the relevant file or command, verify the result and explain the reason for your debugging steps.
+
+## 3. Practical demonstration
+
+Create the project in the intended workspace, create profiles, inspect the file tree, register the app, run check, and explain the purpose of manage.py and the config package.
+
+Before the interview, be able to:
+- Explain the feature without reading the notes.
+- Identify the exact file or command involved.
+- Demonstrate the behavior in a terminal or browser.
+- Predict one result before running the code.
+- Explain one common failure and how to fix it.
 
 ## 4. Mini-project viva — Personal Profile Django Project
 
-1. What problem does the project solve?
-2. What are the functional requirements?
-3. Which files did you create or update?
-4. What commands did you execute?
-5. What does the main code do?
-6. How did you test the normal case?
-7. Which edge case did you test?
-8. What error did you encounter?
-9. How did you resolve it?
-10. What would you improve next?
+1. What user or business problem does this project solve?
+2. What did you build and what did you deliberately leave out?
+3. Which files and commands were required?
+4. Explain the execution flow from input to output.
+5. What result did you verify?
+6. What was the most useful debugging check?
+7. What would you improve if this became a production feature?
 
-## 5. Rapid revision
+**Model viva answer structure:** State the requirement → explain the design → identify the files → describe the implementation → show the observed result → explain one limitation or improvement. Use your own project evidence; do not invent results.
 
-- Explain the concept in one minute.
-- Identify the exact files and their responsibilities.
-- Trace the relevant execution flow.
-- Demonstrate the mini-project.
-- Run the required checks.
-- Explain an edge case.
-- Describe a safe debugging process.
+## 5. Self-check
 
-## 6. Readiness checklist
+- [ ] I can answer all six technical questions without memorizing paragraphs.
+- [ ] I can explain the scenario and justify each debugging step.
+- [ ] I can demonstrate the feature from a fresh terminal/browser session.
+- [ ] I can explain one alternative design and why I did not choose it.
+- [ ] I can present Personal Profile Django Project with real evidence.
 
-- [ ] I can define the topic.
-- [ ] I can explain the relevant files.
-- [ ] I can reproduce the implementation.
-- [ ] I can explain the important code.
-- [ ] I can verify the expected behavior.
-- [ ] I can explain an edge case.
-- [ ] I can present Personal Profile Django Project without reading the notes.
-
-**Trainer note:** Ask the learner to predict the result of a small code or configuration change. Reward reasoning and evidence, not memorized definitions.
+**Readiness rule:** If you cannot reproduce the demonstration, return to the corresponding section in [Day 28 class notes](day_28_notes.md), repeat the steps and record the output.

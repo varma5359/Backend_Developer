@@ -3,12 +3,12 @@
 **Pathway:** Python Backend Developer Career Pathway (Django)  
 **Phase:** 3 — Django Fundamentals  
 **Duration:** 2–3 hours | **Level:** Beginner to Intermediate  
-**Prerequisites:** Days 27–37 as relevant; Django project, models, migrations and ORM basics  
+**Prerequisites:** Days 27–36 — Django setup, models, migrations and the admin demonstration  
 **Environment:** Windows, VS Code, PowerShell, Python virtual environment, Django 5.2.19  
 **Continuous project:** `student_portal` / `config` / `profiles`  
-**Approved mini-project:** Product Query Explorer
+**Approved mini-project:** Employee Query Explorer
 
-> **Trainer standard:** Explain the database/business requirement first. Show the exact file. Type one component at a time. Run checks and migrations. Verify actual records. Do not ask students to memorize ORM syntax without understanding the relationship or query.
+> **Self-paced method:** Read the query requirement, run one ORM operation at a time in the Django shell, inspect the returned value and compare it with the expected result. Use the troubleshooting section whenever the output differs.
 
 ## 1. Learning objectives
 
@@ -19,6 +19,8 @@
 
 ## 2. Start from the business requirement
 
+The Employee model created on Day 34 is the data source for today's ORM practice. The approved mini-project is Employee Query Explorer. Day 38 introduces the separate Student, Department, Course and StudentProfile relationship schema.
+
 The Django ORM lets a developer work with database records through Python models and QuerySets rather than writing SQL for every operation. A QuerySet represents a database query. Many QuerySets are lazy: Django builds the query first and sends it to the database when results are needed. The ORM does not remove the need to understand SQL, indexes or query performance.
 
 A junior developer must understand both the Python code and the underlying relational data. Django makes database work convenient, but it does not remove the need to reason about keys, constraints and data integrity.
@@ -26,7 +28,7 @@ A junior developer must understand both the Python code and the underlying relat
 ## 3. Mental model
 
 ```text
-Student Portal requirement
+Employee Portal requirement
         |
         v
 Django model / admin / ORM
@@ -129,6 +131,15 @@ employee = Employee.objects.create(
     joining_date="2026-11-01",
 )
 
+second_employee = Employee.objects.create(
+    employee_code="EMP1002",
+    full_name="Rahul Kumar",
+    email="rahul@example.com",
+    salary="48000.00",
+    joining_date="2026-10-15",
+    is_active=False,
+)
+
 # READ
 all_employees = Employee.objects.all()
 active_employees = Employee.objects.filter(is_active=True)
@@ -139,9 +150,9 @@ latest_first = Employee.objects.order_by("-joining_date")
 # GET exactly one record
 employee = Employee.objects.get(employee_code="EMP1001")
 
-# UPDATE
-employee.is_active = False
-employee.save(update_fields=["is_active"])
+# UPDATE — run this only after checking the initial query results
+# employee.is_active = False
+# employee.save(update_fields=["is_active"])
 
 # DELETE only after confirming the target
 # employee.delete()
@@ -231,7 +242,42 @@ System check identified no issues (0 silenced).
 
 A system check does not prove every query or relationship is correct. Run the shell/admin exercises above.
 
-## 11. Troubleshooting
+
+## 10A. Expected shell results
+
+The following output assumes a fresh database or that the two sample employees are the only matching records. If you already have records, your totals will be different; use the filtered query to inspect the sample records.
+
+After creating Asha and Rahul, run:
+
+```python
+print(list(Employee.objects.order_by("employee_code").values_list("employee_code", "full_name")))
+print(Employee.objects.filter(is_active=True).count())
+print(list(Employee.objects.filter(full_name__icontains="asha").values_list("full_name", flat=True)))
+```
+
+Expected:
+
+```python
+[('EMP1001', 'Asha Rao'), ('EMP1002', 'Rahul Kumar')]
+1
+['Asha Rao']
+```
+
+The first query orders by employee code so the output order is predictable. The second counts active employees; Asha is active by default and Rahul is created as inactive. The third searches for the text asha without case sensitivity.
+
+After recording the initial count, run the update:
+
+```python
+employee.is_active = False
+employee.save(update_fields=["is_active"])
+print(Employee.objects.filter(is_active=True).count())
+```
+
+Expected after this update: `0` active employees among these two sample records. Do not assume an update worked just because save() returned without an error; query the record again.
+
+If you repeat the create example, choose new unique employee codes and emails or use get_or_create after inspecting existing records. Employee code and email are unique fields.
+
+## 12. Troubleshooting
 
 | Symptom | Likely reason | What to inspect |
 |---|---|---|
@@ -244,21 +290,20 @@ A system check does not prove every query or relationship is correct. Run the sh
 | RelatedObjectDoesNotExist | One-to-one object not created | Create the related profile before accessing it |
 | Query returns unexpected data | Wrong lookup or relationship | Inspect filters and actual records |
 
-## 12. Industry scenario
+## 13. Industry scenario
 
-A college portal stores students, departments, courses and student-specific profiles. The institute needs reliable links between records. A relationship design error can allow orphaned records, duplicate data or invalid associations.
+An HR team needs to answer questions about employee records: how many employees are active, who joined most recently, and whether a particular employee code exists. ORM queries let the backend answer these questions without manually writing SQL for every operation.
 
 Discuss:
-- Which record owns the foreign key?
-- Can one student belong to multiple departments?
-- Can a course contain many students?
-- What should happen if a department is deleted?
-- What constraints should the database enforce?
+- Which query should return zero or more rows?
+- When is get() safer than filter()?
+- Why should a query be ordered before displaying it?
+- Why should a developer inspect the database after an update?
 
-## 13. Approved mini-project — Product Query Explorer
+## 14. Approved mini-project — Employee Query Explorer
 
 ### Objective
-Build the relationship/query/admin feature described in today's lesson using the existing Student Portal.
+Build the admin/query feature described in today's lesson using the existing Employee model in the profiles app.
 
 ### Tasks
 
@@ -293,7 +338,7 @@ Build the relationship/query/admin feature described in today's lesson using the
 ### Optional extension
 Add a small query or admin improvement and explain the data behavior before and after.
 
-## 14. AI-assisted learning prompts
+## 15. AI-assisted learning prompts
 
 **Planning**
 ```text
@@ -313,7 +358,7 @@ Here is my model, migration state, exact ORM query and complete traceback.
 Explain the likely cause and smallest safe correction. Do not delete migrations.
 ```
 
-## 15. Daily MCQs
+## 16. Daily MCQs
 
 ### Q1. What is the Django ORM?
 
@@ -360,12 +405,12 @@ D. Only in templates
 
 **Answer: B.** QuerySets are lazy and defer database work until evaluation.
 
-## 16. Interview preparation
+## 17. Interview preparation
 
 ### Q1. Explain today's concept.
 **Answer:** The Django ORM lets a developer work with database records through Python models and QuerySets rather than writing SQL for every operation. A QuerySet represents a database query. Many QuerySets are lazy: Django builds the query first and sends it to the database when results are needed. The ORM does not remove the need to understand SQL, indexes or query performance.
 
-**Follow-up:** Explain it using the Student Portal example.
+**Follow-up:** Explain it using the Employee model example from Day 34.
 
 ### Q2. Which model, field, command or query is important?
 **Answer:** `profiles/models.py`, `Django shell via manage.py`. Describe the responsibility and the data behavior.
@@ -379,7 +424,7 @@ D. Only in templates
 
 **Answer:** System checks do not execute every data operation or prove the business relationship is correct.
 
-## 17. Completion checklist
+## 18. Completion checklist
 
 - [ ] I can explain the business rule.
 - [ ] I can explain the model/query/relationship.
@@ -391,8 +436,12 @@ D. Only in templates
 - [ ] I submitted code and evidence.
 - [ ] I can explain one data integrity concern.
 
-## 18. Trainer validation
+## 19. Independent completion test
 
-Ask the student to create or query records independently. Change one relationship or filter and ask them to predict the outcome. Do not mark complete based only on copied model code.
+1. Create or query records without copying the entire example.
+2. Explain the file and data flow in your own words.
+3. Change one admin setting or query filter and predict the result before running it.
+4. Compare the actual result with your prediction.
+5. Diagnose and fix one controlled mistake. Do not mark the lesson complete based only on copied code.
 
 **Next lesson:** Day 38 — Model Relationships: One-to-One, One-to-Many and Many-to-Many

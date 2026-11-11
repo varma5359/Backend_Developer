@@ -2,7 +2,7 @@
 
 **Pathway:** Python Backend Developer Career Pathway (Django)  
 **Phase:** 3 — Django Fundamentals  
-**Estimated time:** 2–3 hours (trainer-led explanation and guided practice)  
+**Estimated time:** 2–3 hours (self-paced reading, hands-on setup and independent verification)  
 **Level:** Beginner  
 **Prerequisites:** Days 1–26 — Python, OOP, HTTP, SQL and Git fundamentals  
 **Tools:** Windows 10/11, Python, VS Code, PowerShell, Git and internet access  
@@ -58,7 +58,7 @@ That server-side work is called **backend development**.
 
 The user may see a page like this:
 
-\`\`\`text
+```text
 -----------------------------------------
               EMPLOYEE PORTAL
 -----------------------------------------
@@ -70,7 +70,7 @@ Email       : asha@example.com
 
 [View Profile]  [Apply Leave]  [Logout]
 -----------------------------------------
-\`\`\`
+```
 
 This is only an example of a user interface. The page is not the entire application.
 
@@ -97,13 +97,13 @@ Python is the programming language.
 
 We write application logic using Python syntax:
 
-\`\`\`python
+```python
 employee_name = "Asha"
 department = "Data Science"
 
 print(employee_name)
 print(department)
-\`\`\`
+```
 
 Python provides the language features: variables, conditions, loops, functions, classes, exceptions and modules.
 
@@ -145,7 +145,7 @@ Django provides tools for:
 
 ### 3.4 Put the meaning together
 
-\`\`\`text
+```text
 Python
   |
   | Programming language
@@ -160,7 +160,7 @@ Web application
   +--> Runs backend logic
   +--> Reads/writes database records
   +--> Returns HTML or other responses
-\`\`\`
+```
 
 **Remember:** Django does not replace Python. Django is written in Python and we use Python to build applications with Django.
 
@@ -234,13 +234,13 @@ A programming language defines syntax and rules used to write instructions.
 
 Example: Python.
 
-\`\`\`python
+```python
 def calculate_total(price, quantity):
     return price * quantity
 
 total = calculate_total(500, 3)
 print(total)
-\`\`\`
+```
 
 Python tells us how to write the function, pass arguments and return a result.
 
@@ -248,9 +248,9 @@ Python tells us how to write the function, pass arguments and return a result.
 
 A library is reusable code that your program can call when it needs a particular capability.
 
-Example: Python's \`json\` library.
+Example: Python's `json` library.
 
-\`\`\`python
+```python
 import json
 
 employee = {"name": "Asha", "department": "IT"}
@@ -258,9 +258,9 @@ employee = {"name": "Asha", "department": "IT"}
 json_text = json.dumps(employee)
 
 print(json_text)
-\`\`\`
+```
 
-Here, our code decides when to call \`json.dumps()\`.
+Here, our code decides when to call `json.dumps()`.
 
 ### 5.3 Framework
 
@@ -286,7 +286,7 @@ This phrase may sound difficult. Understand it with a simple comparison.
 
 **When using a library:**
 
-\`\`\`text
+```text
 Your Python code
       |
       v
@@ -294,11 +294,11 @@ Calls a library function
       |
       v
 Gets the result
-\`\`\`
+```
 
 **When using a framework:**
 
-\`\`\`text
+```text
 Django receives a request
       |
       v
@@ -312,7 +312,7 @@ Your view returns a response
       |
       v
 Django completes response processing
-\`\`\`
+```
 
 The framework calls your code as part of its lifecycle. This is one important idea behind inversion of control.
 
@@ -345,11 +345,11 @@ URL routing connects a requested URL to the code that should handle it.
 
 For example:
 
-\`\`\`text
+```text
 /employees/       -> employee list page
 /employees/101/   -> employee detail page
 /about/           -> about page
-\`\`\`
+```
 
 Django uses URL configuration to map paths to views.
 
@@ -376,12 +376,12 @@ Templates help generate HTML using data supplied by the backend.
 
 For example, the backend may provide:
 
-\`\`\`python
+```python
 employee = {
     "name": "Asha",
     "department": "IT"
 }
-\`\`\`
+```
 
 A template can display the employee's name and department in an HTML page.
 
@@ -407,7 +407,7 @@ We will study models, migrations and ORM in Days 34, 35 and 37.
 
 A migration records a database schema change.
 
-Suppose we add a \`department\` field to an Employee model. The Python model has changed, but the database table also needs to be updated.
+Suppose we add a `department` field to an Employee model. The Python model has changed, but the database table also needs to be updated.
 
 Django migrations provide a controlled way to apply schema changes.
 
@@ -495,7 +495,7 @@ This is important because beginners sometimes think a framework handles everythi
 
 Imagine a user opens:
 
-\`http://127.0.0.1:8000/employees/\`
+`http://127.0.0.1:8000/employees/`
 
 The browser sends an HTTP request to the local Django development server.
 
@@ -503,7 +503,7 @@ Django processes that request and eventually returns a response.
 
 Let's understand the high-level flow before writing code.
 
-\`\`\`text
+```text
                  USER
                   |
                   | Opens /employees/
@@ -548,7 +548,7 @@ Let's understand the high-level flow before writing code.
                   |
                   v
              USER SEES PAGE
-\`\`\`
+```
 
 This diagram is simplified. Not every request uses a database or template. A view can return a plain text response, JSON, a redirect or another response type.
 
@@ -594,7 +594,7 @@ The URL resolver examines the requested path and finds a matching URL pattern.
 
 For example:
 
-\`\`\`text
+```text
 Requested path: /employees/
           |
           v
@@ -602,7 +602,7 @@ URL configuration
           |
           v
 Matching view is selected
-\`\`\`
+```
 
 If no pattern matches, Django normally returns a 404 response.
 
@@ -702,14 +702,14 @@ The model describes data.
 
 Example concept:
 
-\`\`\`text
+```text
 Employee
   |
   +-- employee_id
   +-- name
   +-- email
   +-- department
-\`\`\`
+```
 
 ### 12.2 Template
 
@@ -717,11 +717,11 @@ The template controls how information is presented.
 
 Example concept:
 
-\`\`\`html
+```html
 <h1>Employee Details</h1>
 <p>Name: Asha</p>
 <p>Department: IT</p>
-\`\`\`
+```
 
 This is a simple HTML illustration, not a complete Django template implementation.
 
@@ -731,7 +731,7 @@ The view coordinates the request and response.
 
 Conceptually:
 
-\`\`\`text
+```text
 Request
    |
    v
@@ -743,7 +743,7 @@ View
    |
    v
 Response
-\`\`\`
+```
 
 ### 12.4 Is Django exactly the same as MVC?
 
@@ -771,13 +771,13 @@ Think of it as the complete website workspace.
 
 Example:
 
-\`\`\`text
+```text
 employee_portal/
     project configuration
     employee feature
     leave feature
     accounts feature
-\`\`\`
+```
 
 ### 13.2 Django application
 
@@ -840,10 +840,10 @@ Before installing Django, understand where Python packages are installed.
 
 Imagine you have two projects:
 
-\`\`\`text
+```text
 Project A -> Django 5.2
 Project B -> Flask
-\`\`\`
+```
 
 If every package is installed into one shared Python environment, projects can interfere with one another.
 
@@ -857,37 +857,37 @@ A virtual environment isolates the packages for a project.
 
 ## 16. What is pip?
 
-\`pip\` is Python's package installer.
+`pip` is Python's package installer.
 
 It installs packages from package indexes or other supported package sources.
 
 Example:
 
-\`\`\`powershell
+```powershell
 python -m pip install django
-\`\`\`
+```
 
 Meaning:
 
-- \`python\` selects the Python interpreter.
-- \`-m\` asks Python to run a module as a script.
-- \`pip\` is the module being run.
-- \`install\` is the pip operation.
-- \`django\` is the package name.
+- `python` selects the Python interpreter.
+- `-m` asks Python to run a module as a script.
+- `pip` is the module being run.
+- `install` is the pip operation.
+- `django` is the package name.
 
 ### 16.1 Why use python -m pip instead of only pip?
 
-On a machine with multiple Python installations, the \`pip\` command may point to a different Python interpreter than the \`python\` command.
+On a machine with multiple Python installations, the `pip` command may point to a different Python interpreter than the `python` command.
 
 Using:
 
-\`\`\`powershell
+```powershell
 python -m pip --version
-\`\`\`
+```
 
 helps show which Python installation is running pip.
 
-After activating a virtual environment, \`python -m pip\` uses that environment's interpreter.
+After activating a virtual environment, `python -m pip` uses that environment's interpreter.
 
 This reduces package-installation confusion.
 
@@ -901,24 +901,24 @@ It contains:
 - An environment-specific package installation location.
 - Scripts used to activate the environment.
 
-The environment folder is commonly named \`.venv\`.
+The environment folder is commonly named `.venv`.
 
 ### 17.1 Without a virtual environment
 
-\`\`\`text
+```text
 Computer Python installation
         |
         +--> Django
         +--> Flask
         +--> Requests
         +--> Other packages
-\`\`\`
+```
 
 All projects may share the same packages.
 
 ### 17.2 With virtual environments
 
-\`\`\`text
+```text
 Computer
   |
   +--> Project A
@@ -934,15 +934,15 @@ Computer
                 |
                 +--> Flask
                 +--> Project B packages
-\`\`\`
+```
 
 Each project can manage its own dependencies.
 
 ### 17.3 Is .venv part of the application source code?
 
-The \`.venv\` folder is a local development environment. It is not normally committed to Git.
+The `.venv` folder is a local development environment. It is not normally committed to Git.
 
-Instead, we record package dependencies in a file such as \`requirements.txt\`.
+Instead, we record package dependencies in a file such as `requirements.txt`.
 
 Another developer can create their own virtual environment and install the same dependencies from that file.
 
@@ -993,7 +993,7 @@ If your Python version is outside the supported range:
 - Install a compatible Python version or use the appropriate Django release.
 - Keep the classroom version consistent.
 
-Django 6.1 has a newer Python compatibility requirement. Do not install Django 6.1 for this course while following examples that are pinned to Django 5.2 unless the trainer has deliberately migrated the course.
+Django 6.1 has a newer Python compatibility requirement. Do not install Django 6.1 for this course while following examples that are pinned to Django 5.2 unless the course baseline has deliberately been migrated and tested.
 
 ---
 
@@ -1011,9 +1011,9 @@ We will use Windows PowerShell for the main classroom instructions.
 
 You should see a prompt similar to:
 
-\`\`\`text
+```text
 PS C:\Users\Student>
-\`\`\`
+```
 
 Your username and path will be different. That is normal.
 
@@ -1021,41 +1021,41 @@ Your username and path will be different. That is normal.
 
 A Python prompt looks like:
 
-\`\`\`text
+```text
 >>>
-\`\`\`
+```
 
-If you see \`>>>\`, you are inside Python. Type \`exit()\` and press Enter to return to PowerShell.
+If you see `>>>`, you are inside Python. Type `exit()` and press Enter to return to PowerShell.
 
 ## 20. Step 2: Check Python is installed
 
 Run:
 
-\`\`\`powershell
+```powershell
 python --version
-\`\`\`
+```
 
 Possible output:
 
-\`\`\`text
+```text
 Python 3.12.8
-\`\`\`
+```
 
 Your patch version may be different.
 
 ### 20.1 What does this command do?
 
-- \`python\` asks the operating system to run Python.
-- \`--version\` asks Python to display its version.
+- `python` asks the operating system to run Python.
+- `--version` asks Python to display its version.
 - The command does not install or update Python.
 
 ### 20.2 If python is not recognized
 
 You may see:
 
-\`\`\`text
+```text
 python : The term 'python' is not recognized...
-\`\`\`
+```
 
 Possible causes:
 
@@ -1066,13 +1066,13 @@ Possible causes:
 
 Try:
 
-\`\`\`powershell
+```powershell
 py --version
-\`\`\`
+```
 
-The Windows Python launcher may be available even when the \`python\` command is not.
+The Windows Python launcher may be available even when the `python` command is not.
 
-If \`py --version\` works, you can use \`py\` for the initial environment creation.
+If `py --version` works, you can use `py` for the initial environment creation.
 
 If neither command works, install Python from the official Python website and reopen the terminal:
 
@@ -1084,15 +1084,15 @@ Do not continue until one intended Python installation can be run.
 
 Run:
 
-\`\`\`powershell
+```powershell
 where.exe python
-\`\`\`
+```
 
 Possible output:
 
-\`\`\`text
+```text
 C:\Users\Student\AppData\Local\Programs\Python\Python312\python.exe
-\`\`\`
+```
 
 This command shows executable paths found through PATH.
 
@@ -1102,24 +1102,24 @@ That is not automatically a problem. You must be consistent about which interpre
 
 You can also run:
 
-\`\`\`powershell
+```powershell
 python -c "import sys; print(sys.executable)"
-\`\`\`
+```
 
 Possible output:
 
-\`\`\`text
+```text
 C:\Users\Student\AppData\Local\Programs\Python\Python312\python.exe
-\`\`\`
+```
 
-This command prints the exact Python executable used by the current \`python\` command.
+This command prints the exact Python executable used by the current `python` command.
 
 ### 21.1 Understand the command
 
-- \`-c\` tells Python to execute the code supplied as a string.
-- \`import sys\` imports Python's system-related module.
-- \`sys.executable\` contains the path to the current Python executable.
-- \`print()\` displays that path.
+- `-c` tells Python to execute the code supplied as a string.
+- `import sys` imports Python's system-related module.
+- `sys.executable` contains the path to the current Python executable.
+- `print()` displays that path.
 
 ## 22. Step 4: Create the course workspace
 
@@ -1127,29 +1127,29 @@ Choose a location where you can keep your backend learning projects.
 
 Example:
 
-\`\`\`text
+```text
 D:\TechPhile\Backend_Developer
-\`\`\`
+```
 
 If the D drive does not exist on your computer, use another location.
 
 Create the folder:
 
-\`\`\`powershell
+```powershell
 New-Item -ItemType Directory -Force -Path "D:\TechPhile\Backend_Developer"
-\`\`\`
+```
 
 Change into it:
 
-\`\`\`powershell
+```powershell
 Set-Location "D:\TechPhile\Backend_Developer"
-\`\`\`
+```
 
 Verify:
 
-\`\`\`powershell
+```powershell
 Get-Location
-\`\`\`
+```
 
 Expected output should show the folder you selected.
 
@@ -1159,23 +1159,23 @@ The current working directory is the folder where a command runs by default.
 
 When we create a virtual environment using:
 
-\`\`\`powershell
+```powershell
 python -m venv .venv
-\`\`\`
+```
 
-the \`.venv\` folder is created inside the current working directory.
+the `.venv` folder is created inside the current working directory.
 
 If you run the command from the wrong folder, you may create the environment in the wrong place.
 
-**Trainer checkpoint:** Ask the learner to show the output of \`Get-Location\` before continuing.
+**Self-check:** Run `Get-Location`. Confirm that PowerShell shows the workspace folder you created for this lesson. If it shows a different folder, use `Set-Location` to move into the correct workspace before creating `.venv`. Do not continue until the current folder is correct.
 
 ## 23. Step 5: Open the folder in VS Code
 
-If the \`code\` command is available, run:
+If the `code` command is available, run:
 
-\`\`\`powershell
+```powershell
 code .
-\`\`\`
+```
 
 The dot means the current folder.
 
@@ -1197,15 +1197,15 @@ Make sure the terminal is inside the workspace.
 
 Run:
 
-\`\`\`powershell
+```powershell
 python -m venv .venv
-\`\`\`
+```
 
 If you are using the Windows Python launcher instead:
 
-\`\`\`powershell
+```powershell
 py -m venv .venv
-\`\`\`
+```
 
 ### 24.1 Understand every part
 
@@ -1220,50 +1220,50 @@ py -m venv .venv
 
 Python creates a folder similar to:
 
-\`\`\`text
+```text
 Backend_Developer/
     .venv/
         Include/
         Lib/
         Scripts/
         pyvenv.cfg
-\`\`\`
+```
 
 The exact contents can vary by operating system and Python version.
 
-You do not need to edit the files inside \`.venv\`.
+You do not need to edit the files inside `.venv`.
 
 ### 24.3 Verify that the folder exists
 
 Run:
 
-\`\`\`powershell
+```powershell
 Get-ChildItem -Force
-\`\`\`
+```
 
-You should see a \`.venv\` directory.
+You should see a `.venv` directory.
 
-The \`-Force\` option includes hidden items.
+The `-Force` option includes hidden items.
 
 ## 25. Step 7: Activate the virtual environment
 
 For Windows PowerShell:
 
-\`\`\`powershell
+```powershell
 .\.venv\Scripts\Activate.ps1
-\`\`\`
+```
 
 After activation, the prompt normally starts with:
 
-\`\`\`text
+```text
 (.venv) PS D:\TechPhile\Backend_Developer>
-\`\`\`
+```
 
-The \`(.venv)\` label indicates that the environment is active.
+The `(.venv)` label indicates that the environment is active.
 
 ### 25.1 What does activation mean?
 
-Activation adjusts the current shell session so that commands such as \`python\` and \`pip\` resolve to the virtual environment first.
+Activation adjusts the current shell session so that commands such as `python` and `pip` resolve to the virtual environment first.
 
 It does not install Django.
 
@@ -1277,15 +1277,15 @@ It affects the terminal session where you activated it.
 
 Run:
 
-\`\`\`powershell
+```powershell
 python -c "import sys; print(sys.executable)"
-\`\`\`
+```
 
 Expected path should point inside your workspace:
 
-\`\`\`text
+```text
 D:\TechPhile\Backend_Developer\.venv\Scripts\python.exe
-\`\`\`
+```
 
 If it points to a global Python installation, stop and check activation.
 
@@ -1293,9 +1293,9 @@ If it points to a global Python installation, stop and check activation.
 
 You may see an error similar to:
 
-\`\`\`text
+```text
 ...Activate.ps1 cannot be loaded because running scripts is disabled...
-\`\`\`
+```
 
 This is a PowerShell execution policy restriction.
 
@@ -1305,15 +1305,15 @@ For a classroom machine, follow the organization's approved IT policy.
 
 If your organization permits it, a temporary policy for the current PowerShell process can be considered:
 
-\`\`\`powershell
+```powershell
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
-\`\`\`
+```
 
 Then retry activation:
 
-\`\`\`powershell
+```powershell
 .\.venv\Scripts\Activate.ps1
-\`\`\`
+```
 
 The Process scope applies to the current PowerShell process and is discarded when that process closes. It does not change the machine-wide policy.
 
@@ -1323,33 +1323,33 @@ If your organization does not permit this, use Command Prompt activation or ask 
 
 Open Command Prompt (cmd.exe), change into the project folder, and run:
 
-\`\`\`cmd
+```cmd
 .venv\Scripts\activate.bat
-\`\`\`
+```
 
 The prompt should show:
 
-\`\`\`text
+```text
 (.venv) D:\TechPhile\Backend_Developer>
-\`\`\`
+```
 
 ### 25.5 Activate using Git Bash
 
 If using Git Bash:
 
-\`\`\`bash
+```bash
 source .venv/Scripts/activate
-\`\`\`
+```
 
 Use the activation command that matches your terminal. Do not paste PowerShell activation syntax into Git Bash.
 
 ## 26. Step 8: Upgrade pip inside the environment
 
-With \`.venv\` active, run:
+With `.venv` active, run:
 
-\`\`\`powershell
+```powershell
 python -m pip install --upgrade pip
-\`\`\`
+```
 
 ### Why do we upgrade pip?
 
@@ -1357,28 +1357,28 @@ pip is the package installer. An older installer may have compatibility or packa
 
 ### Understand the command
 
-- \`python -m pip\` runs pip using the active Python interpreter.
-- \`install\` tells pip to install a package.
-- \`--upgrade\` requests a newer version if one is available.
-- \`pip\` is the package being upgraded.
+- `python -m pip` runs pip using the active Python interpreter.
+- `install` tells pip to install a package.
+- `--upgrade` requests a newer version if one is available.
+- `pip` is the package being upgraded.
 
 The exact version number shown in the terminal can change over time.
 
 Verify:
 
-\`\`\`powershell
+```powershell
 python -m pip --version
-\`\`\`
+```
 
-The displayed path should point inside \`.venv\`.
+The displayed path should point inside `.venv`.
 
 ## 27. Step 9: Install the course Django version
 
 We will install the pinned course version:
 
-\`\`\`powershell
+```powershell
 python -m pip install "Django==5.2.19"
-\`\`\`
+```
 
 ### 27.1 Why do we pin the version?
 
@@ -1386,9 +1386,9 @@ A version pin makes the classroom environment reproducible.
 
 Without a pin:
 
-\`\`\`powershell
+```powershell
 python -m pip install django
-\`\`\`
+```
 
 pip installs the latest compatible release available at that time.
 
@@ -1396,9 +1396,9 @@ The version may change between student installations.
 
 With a pin:
 
-\`\`\`powershell
+```powershell
 python -m pip install "Django==5.2.19"
-\`\`\`
+```
 
 we explicitly request version 5.2.19.
 
@@ -1406,8 +1406,8 @@ we explicitly request version 5.2.19.
 
 In a package version requirement:
 
-- \`==\` means an exact version match.
-- \`5.2.19\` is the version requested.
+- `==` means an exact version match.
+- `5.2.19` is the version requested.
 
 The quotation marks protect the requirement as one command argument in PowerShell and other shells.
 
@@ -1431,15 +1431,15 @@ The exact dependency list and terminal output may vary.
 
 Run:
 
-\`\`\`powershell
+```powershell
 python -m django --version
-\`\`\`
+```
 
 Expected output:
 
-\`\`\`text
+```text
 5.2.19
-\`\`\`
+```
 
 If the output is 5.2.19, the Django command is available to the active Python interpreter.
 
@@ -1447,25 +1447,25 @@ If the output is 5.2.19, the Django command is available to the active Python in
 
 Run:
 
-\`\`\`powershell
+```powershell
 python -c "import django; print(django.get_version())"
-\`\`\`
+```
 
 Expected output:
 
-\`\`\`text
+```text
 5.2.19
-\`\`\`
+```
 
 ### 28.2 Verify the Django package location
 
 Run:
 
-\`\`\`powershell
+```powershell
 python -c "import django; print(django.__file__)"
-\`\`\`
+```
 
-The output should point inside the \`.venv\` directory.
+The output should point inside the `.venv` directory.
 
 This is a useful debugging check when a computer has multiple Python installations.
 
@@ -1473,9 +1473,9 @@ This is a useful debugging check when a computer has multiple Python installatio
 
 Run:
 
-\`\`\`powershell
+```powershell
 python -m pip show Django
-\`\`\`
+```
 
 Look for:
 
@@ -1492,21 +1492,21 @@ A project should record the packages it depends on.
 
 Run:
 
-\`\`\`powershell
+```powershell
 python -m pip freeze
-\`\`\`
+```
 
 This displays installed packages and versions.
 
 For the current environment, create a requirements file:
 
-\`\`\`powershell
+```powershell
 python -m pip freeze > requirements.txt
-\`\`\`
+```
 
-The \`>\` operator redirects command output into a file.
+The `>` operator redirects command output into a file.
 
-Open \`requirements.txt\` in VS Code.
+Open `requirements.txt` in VS Code.
 
 You should see Django and its installed dependencies listed with versions.
 
@@ -1518,15 +1518,15 @@ They do not need to guess which Django version you used.
 
 They can create a virtual environment and install the recorded requirements:
 
-\`\`\`powershell
+```powershell
 python -m pip install -r requirements.txt
-\`\`\`
+```
 
 This installs the listed dependencies into the active environment.
 
 ### 29.2 Important note about pip freeze
 
-\`pip freeze\` records installed packages in the environment. If you have installed unrelated packages in the same environment, they may also appear in the file.
+`pip freeze` records installed packages in the environment. If you have installed unrelated packages in the same environment, they may also appear in the file.
 
 For this course, keep the environment dedicated to the Backend Developer project.
 
@@ -1534,7 +1534,7 @@ For this course, keep the environment dedicated to the Backend Developer project
 
 Run these commands one by one:
 
-\`\`\`powershell
+```powershell
 python --version
 python -m pip --version
 python -m django --version
@@ -1542,15 +1542,15 @@ python -c "import sys; print(sys.executable)"
 python -c "import django; print(django.__file__)"
 Get-Location
 Get-ChildItem -Force
-\`\`\`
+```
 
 You should be able to confirm:
 
 1. The intended Python version is active.
 2. pip belongs to the active environment.
 3. Django reports version 5.2.19.
-4. The Python executable is inside \`.venv\`.
-5. Django's package path is inside \`.venv\`.
+4. The Python executable is inside `.venv`.
+5. Django's package path is inside `.venv`.
 6. The current folder is the intended workspace.
 7. The environment folder and requirements file exist.
 
@@ -1566,36 +1566,36 @@ The following sequence is for cmd.exe.
 
 Create and enter the workspace using File Explorer or:
 
-\`\`\`cmd
+```cmd
 mkdir D:\TechPhile\Backend_Developer
 cd /d D:\TechPhile\Backend_Developer
-\`\`\`
+```
 
 Create the environment:
 
-\`\`\`cmd
+```cmd
 py -m venv .venv
-\`\`\`
+```
 
 Activate:
 
-\`\`\`cmd
+```cmd
 .venv\Scripts\activate.bat
-\`\`\`
+```
 
 Install:
 
-\`\`\`cmd
+```cmd
 python -m pip install --upgrade pip
 python -m pip install "Django==5.2.19"
-\`\`\`
+```
 
 Verify:
 
-\`\`\`cmd
+```cmd
 python -m django --version
 python -m pip freeze > requirements.txt
-\`\`\`
+```
 
 The commands are similar, but the activation command is different.
 
@@ -1603,36 +1603,36 @@ The commands are similar, but the activation command is different.
 
 Create a workspace and enter it:
 
-\`\`\`bash
+```bash
 mkdir -p ~/TechPhile/Backend_Developer
 cd ~/TechPhile/Backend_Developer
-\`\`\`
+```
 
 Create a virtual environment:
 
-\`\`\`bash
+```bash
 python3 -m venv .venv
-\`\`\`
+```
 
 Activate it:
 
-\`\`\`bash
+```bash
 source .venv/bin/activate
-\`\`\`
+```
 
 Install:
 
-\`\`\`bash
+```bash
 python -m pip install --upgrade pip
 python -m pip install "Django==5.2.19"
-\`\`\`
+```
 
 Verify:
 
-\`\`\`bash
+```bash
 python -m django --version
 python -m pip freeze > requirements.txt
-\`\`\`
+```
 
 The environment's executable paths differ from Windows.
 
@@ -1640,11 +1640,11 @@ The environment's executable paths differ from Windows.
 
 When you finish working, run:
 
-\`\`\`powershell
+```powershell
 deactivate
-\`\`\`
+```
 
-The \`(.venv)\` label should disappear from the terminal prompt.
+The `(.venv)` label should disappear from the terminal prompt.
 
 This does not delete the environment. It only deactivates it for the current terminal session.
 
@@ -1661,21 +1661,21 @@ For example:
 - Package installation was interrupted.
 - The environment was created with an incompatible Python version.
 
-If you have confirmed that you are in the correct project folder and have no important data stored inside \`.venv\`, you can remove the environment and recreate it.
+If you have confirmed that you are in the correct project folder and have no important data stored inside `.venv`, you can remove the environment and recreate it.
 
 PowerShell:
 
-\`\`\`powershell
+```powershell
 deactivate
 Remove-Item -Recurse -Force .venv
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install -r requirements.txt
-\`\`\`
+```
 
 **Warning:** The Remove-Item command deletes the .venv folder. Check the current directory before running it. Do not use it on a folder whose path you have not verified.
 
-The project source code and requirements file should be outside \`.venv\`.
+The project source code and requirements file should be outside `.venv`.
 
 ---
 
@@ -1685,9 +1685,9 @@ The project source code and requirements file should be outside \`.venv\`.
 
 Example:
 
-\`\`\`text
+```text
 ModuleNotFoundError: No module named 'django'
-\`\`\`
+```
 
 ### Meaning
 
@@ -1705,22 +1705,22 @@ The Python interpreter running your command cannot find Django in its installed 
 
 Run:
 
-\`\`\`powershell
+```powershell
 python -c "import sys; print(sys.executable)"
 python -m pip show Django
-\`\`\`
+```
 
 If pip cannot find Django, install it after confirming the correct environment:
 
-\`\`\`powershell
+```powershell
 python -m pip install "Django==5.2.19"
-\`\`\`
+```
 
 Then verify:
 
-\`\`\`powershell
+```powershell
 python -m django --version
-\`\`\`
+```
 
 Do not solve this by installing Django globally without understanding which interpreter is being used.
 
@@ -1728,55 +1728,55 @@ Do not solve this by installing Django globally without understanding which inte
 
 Suppose you expected:
 
-\`\`\`text
+```text
 5.2.19
-\`\`\`
+```
 
 but the command shows another version.
 
 ### Check installed metadata
 
-\`\`\`powershell
+```powershell
 python -m pip show Django
-\`\`\`
+```
 
 ### Check the executable
 
-\`\`\`powershell
+```powershell
 python -c "import sys; print(sys.executable)"
-\`\`\`
+```
 
 ### Reinstall the course version in the active environment
 
-\`\`\`powershell
+```powershell
 python -m pip install --force-reinstall "Django==5.2.19"
-\`\`\`
+```
 
-The \`--force-reinstall\` option tells pip to reinstall the requested package even if it is already installed.
+The `--force-reinstall` option tells pip to reinstall the requested package even if it is already installed.
 
 Use this only after confirming that the active interpreter is the intended virtual environment.
 
 Verify again:
 
-\`\`\`powershell
+```powershell
 python -m django --version
-\`\`\`
+```
 
 ## 37. Problem: pip is not recognized
 
 Instead of:
 
-\`\`\`text
+```text
 pip is not recognized as an internal or external command
-\`\`\`
+```
 
 use:
 
-\`\`\`powershell
+```powershell
 python -m pip --version
-\`\`\`
+```
 
-If that works, use \`python -m pip\` for installation.
+If that works, use `python -m pip` for installation.
 
 If Python cannot import pip, repair or install pip for the selected Python installation using the official Python guidance. Do not download random pip executables.
 
@@ -1792,11 +1792,11 @@ Possible causes:
 
 Check:
 
-\`\`\`powershell
+```powershell
 python --version
 python -m pip --version
 python -m pip config list
-\`\`\`
+```
 
 Then compare the Python version with the official Django compatibility table.
 
@@ -1806,9 +1806,9 @@ Do not randomly switch between Django releases until the compatibility issue is 
 
 Check the current policy:
 
-\`\`\`powershell
+```powershell
 Get-ExecutionPolicy -List
-\`\`\`
+```
 
 Use the organization's approved approach.
 
@@ -1829,15 +1829,15 @@ Steps:
 1. Open the workspace folder in VS Code.
 2. Open the Command Palette.
 3. Search for **Python: Select Interpreter**.
-4. Select the interpreter inside the project's \`.venv\`.
+4. Select the interpreter inside the project's `.venv`.
 5. Open a new terminal.
 6. Run the verification commands again.
 
 The selected interpreter should point to:
 
-\`\`\`text
+```text
 <workspace>\.venv\Scripts\python.exe
-\`\`\`
+```
 
 on Windows.
 
@@ -1847,15 +1847,15 @@ Activation does not install packages.
 
 Run:
 
-\`\`\`powershell
+```powershell
 python -m pip list
-\`\`\`
+```
 
 If Django is absent, install it:
 
-\`\`\`powershell
+```powershell
 python -m pip install "Django==5.2.19"
-\`\`\`
+```
 
 Then verify the version.
 
@@ -1876,10 +1876,10 @@ Do not disable TLS certificate verification as a quick fix. That weakens the sec
 
 Run:
 
-\`\`\`powershell
+```powershell
 Get-Location
 Get-ChildItem -Force
-\`\`\`
+```
 
 If the environment was created in the wrong location:
 
@@ -1900,13 +1900,13 @@ Avoid moving an existing virtual environment between folders. Recreating it in t
 
 At the end of Day 27, the workspace may look like:
 
-\`\`\`text
+```text
 Backend_Developer/
 │
 ├── .venv/
 │
 └── requirements.txt
-\`\`\`
+```
 
 We have not created a Django project yet. That is Day 28.
 
@@ -1935,9 +1935,9 @@ This separation lets beginners understand one new idea at a time.
 
 A virtual environment should not normally be committed to Git.
 
-Create a file named \`.gitignore\` in the workspace:
+Create a file named `.gitignore` in the workspace:
 
-\`\`\`gitignore
+```gitignore
 # Python bytecode
 __pycache__/
 *.py[cod]
@@ -1956,7 +1956,7 @@ venv/
 .pytest_cache/
 .coverage
 htmlcov/
-\`\`\`
+```
 
 ### Understand why .venv is ignored
 
@@ -1973,7 +1973,7 @@ Committing it:
 
 ### Understand why .env is ignored
 
-A future Django application may store private configuration in environment variables or a local \`.env\` file.
+A future Django application may store private configuration in environment variables or a local `.env` file.
 
 A private configuration file can contain secrets. It should not be committed.
 
@@ -1985,21 +1985,21 @@ It is a text file that records Python package requirements.
 
 Example for this lesson:
 
-\`\`\`text
+```text
 Django==5.2.19
-\`\`\`
+```
 
-The actual \`pip freeze\` output may contain additional packages required by Django.
+The actual `pip freeze` output may contain additional packages required by Django.
 
 ### Install from requirements.txt
 
 A new developer can run:
 
-\`\`\`powershell
+```powershell
 python -m pip install -r requirements.txt
-\`\`\`
+```
 
-The \`-r\` option tells pip to read package requirements from a file.
+The `-r` option tells pip to read package requirements from a file.
 
 ### Why is it useful in a team?
 
@@ -2097,7 +2097,7 @@ At the end of the project, another learner should be able to follow the README a
 
 ### 49.4 Required folder structure
 
-\`\`\`text
+```text
 day_27_django_environment/
 │
 ├── .venv/
@@ -2107,9 +2107,9 @@ day_27_django_environment/
 ├── .gitignore
 │
 └── README.md
-\`\`\`
+```
 
-Do not upload the \`.venv\` directory as part of the project submission.
+Do not upload the `.venv` directory as part of the project submission.
 
 ### 49.5 Implementation tasks
 
@@ -2117,10 +2117,10 @@ Do not upload the \`.venv\` directory as part of the project submission.
 
 Run:
 
-\`\`\`powershell
+```powershell
 python --version
 python -c "import sys; print(sys.executable)"
-\`\`\`
+```
 
 Write down the version and executable path.
 
@@ -2130,53 +2130,53 @@ Create the project folder and open it in VS Code.
 
 **Task 3 — Create the environment**
 
-\`\`\`powershell
+```powershell
 python -m venv .venv
-\`\`\`
+```
 
 **Task 4 — Activate**
 
-\`\`\`powershell
+```powershell
 .\.venv\Scripts\Activate.ps1
-\`\`\`
+```
 
 **Task 5 — Upgrade pip**
 
-\`\`\`powershell
+```powershell
 python -m pip install --upgrade pip
-\`\`\`
+```
 
 **Task 6 — Install Django**
 
-\`\`\`powershell
+```powershell
 python -m pip install "Django==5.2.19"
-\`\`\`
+```
 
 **Task 7 — Verify**
 
-\`\`\`powershell
+```powershell
 python -m django --version
 python -c "import django; print(django.get_version())"
 python -c "import sys; print(sys.executable)"
-\`\`\`
+```
 
 **Task 8 — Record dependencies**
 
-\`\`\`powershell
+```powershell
 python -m pip freeze > requirements.txt
-\`\`\`
+```
 
 **Task 9 — Create .gitignore**
 
 Add:
 
-\`\`\`gitignore
+```gitignore
 .venv/
 __pycache__/
 *.py[cod]
 .env
 .pytest_cache/
-\`\`\`
+```
 
 **Task 10 — Write README**
 
@@ -2194,7 +2194,7 @@ The README must contain:
 
 ### 49.6 How to verify the project
 
-The trainer should ask the learner to demonstrate:
+Before marking the project complete, demonstrate the following to yourself and capture the output in your README or evidence file: 
 
 1. The active terminal.
 2. The active virtual environment.
@@ -2245,26 +2245,24 @@ This is intentional. We want a clean foundation before building the application.
 
 # PART 9 — GUIDED LEARNING AND INDEPENDENT PRACTICE
 
-## 50. Trainer demonstration sequence
+## 50. Self-paced demonstration sequence
 
-The trainer should not paste all commands at once.
+Do not run every command as one large block. Run one step, inspect its result, and explain what changed before continuing.
 
-Use this teaching sequence:
-
-| Step | Trainer demonstrates | Student explains |
+| Step | You do | Ask yourself / verify |
 |---:|---|---|
-| 1 | Check Python version | Which Python is installed? |
+| 1 | Check Python version | Which Python version is installed? |
 | 2 | Print Python executable | Which interpreter is running? |
 | 3 | Create workspace | Where will project files be stored? |
 | 4 | Create virtual environment | Why isolate dependencies? |
 | 5 | Activate environment | What changes in this terminal? |
-| 6 | Check pip path | Which environment will receive packages? |
-| 7 | Install Django | Which version is being installed? |
-| 8 | Verify Django | How do we know it is installed correctly? |
-| 9 | Create requirements file | How can another developer reproduce this setup? |
-| 10 | Create .gitignore | Which files should not be committed? |
+| 6 | Check pip path | Will packages install inside this environment? |
+| 7 | Install Django | Which exact version is being installed? |
+| 8 | Verify Django | Does the reported version match the course baseline? |
+| 9 | Create requirements file | Can another learner reproduce this setup? |
+| 10 | Create .gitignore | Which generated or secret files must not be committed? |
 
-Do not move to the next step until students can explain the current one.
+If a check fails, stop and use the troubleshooting section. Do not copy the next command in the hope that the problem disappears.
 
 ## 51. Questions to ask during the lesson
 
@@ -2620,25 +2618,25 @@ A student should be able to check every item below.
 - [ ] I can explain how another developer recreates the environment.
 - [ ] I can troubleshoot a missing Django installation.
 
-## 61. Trainer quality checklist
+## 61. Independent completion checklist
 
-Before marking Day 27 complete, the trainer should verify:
+Mark each item only after you personally perform it and inspect the result:
 
-| Area | Verification |
+| Area | Evidence you must see |
 |---|---|
 | Python | Correct interpreter and supported version |
-| Virtual environment | Created in the correct workspace |
-| Activation | Environment active in the terminal |
-| pip | Uses the active interpreter |
-| Django | Version 5.2.19 installed |
-| Import | Django imports successfully |
-| Package path | Django installed inside .venv |
-| Dependencies | requirements.txt created |
-| Git hygiene | .venv and .env ignored |
-| Understanding | Student explains commands and architecture |
-| Troubleshooting | Student can diagnose at least one environment error |
+| Virtual environment | .venv exists inside the intended workspace |
+| Activation | PowerShell prompt shows the active environment |
+| pip | `python -m pip --version` points inside .venv |
+| Django | Version 5.2.19 is reported |
+| Import | `python -c \"import django; print(django.get_version())\"` succeeds |
+| Package path | Django module path is inside .venv |
+| Dependencies | requirements.txt contains the pinned Django requirement |
+| Git hygiene | .venv and .env are ignored |
+| Understanding | You can explain each command without reading the explanation aloud |
+| Troubleshooting | You can diagnose one deliberately introduced environment error |
 
-Do not mark a learner complete only because the terminal screenshot looks correct.
+A screenshot alone is not proof. Re-run the commands and explain the output in your own words.
 
 ## 62. Suggested assessment rubric
 
@@ -2679,13 +2677,13 @@ Today we installed Django. We did not create the Django project yet.
 
 In Day 28, we will:
 
-1. Create a Django project using \`django-admin startproject\`.
+1. Create a Django project using `django-admin startproject`.
 2. Understand the generated folder structure.
-3. Understand the role of \`manage.py\`.
+3. Understand the role of `manage.py`.
 4. Understand the project package.
-5. Create a Django application using \`startapp\`.
+5. Create a Django application using `startapp`.
 6. Understand the files generated inside an application.
-7. Register an application in \`INSTALLED_APPS\`.
+7. Register an application in `INSTALLED_APPS`.
 8. Understand the difference between project-level and app-level files.
 9. Build the approved **Personal Profile Django Project**.
 
@@ -2704,7 +2702,7 @@ Use documentation that matches the version used in class.
 5. Python virtual environments: https://docs.python.org/3/library/venv.html
 6. Python package installation guide: https://packaging.python.org/en/latest/tutorials/installing-packages/
 
-**Version note:** This lesson pins Django 5.2.19 for a consistent classroom environment. Before a new student cohort begins, the trainer should check the official Django release and security information and update the course baseline deliberately. If the baseline changes, test the commands and lesson examples against that version before publishing the update.
+**Version note:** This lesson pins Django 5.2.19 for a consistent classroom environment. Before a new cohort begins, the course owner should check the official Django release and security information and update the course baseline deliberately. If the baseline changes, test the commands and lesson examples against that version before publishing the update.
 
 ---
 

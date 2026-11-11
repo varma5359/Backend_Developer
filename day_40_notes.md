@@ -3,12 +3,12 @@
 **Pathway:** Python Backend Developer Career Pathway (Django)  
 **Phase:** 3 — Django Fundamentals  
 **Duration:** 2–3 hours | **Level:** Beginner to Intermediate  
-**Prerequisites:** Days 27–40 as relevant; project setup, URL routing, views, templates, models, migrations and forms  
+**Prerequisites:** Days 27–39 — project setup, URL routing, views, templates, models, migrations, ORM, relationships and ModelForms  
 **Environment:** Windows, VS Code, PowerShell, Python virtual environment, Django 5.2.19  
 **Continuous project:** `student_portal` / `config` / `profiles`  
 **Approved mini-project:** Secure Form Validation Application
 
-> **Trainer standard:** This is an integration lesson. Students must understand the journey from the browser request to the database and back to the browser. Do not let them copy the complete files without tracing each step.
+> **Self-paced method:** Follow the request from the browser to the view, form, model and database, then back to the browser. Create each file exactly where named. Run each check before continuing, and use the expected results to decide whether your implementation is correct.
 
 ## 1. Learning objectives
 
@@ -150,10 +150,12 @@ The template token works with CsrfViewMiddleware. Do not remove middleware or tu
 
 The code is split by filename. Create or update the correct file. Do not paste HTML into Python files.
 
+**File 1 — `profiles/forms.py`**. Update the existing StudentRegistrationForm from Day 39.
+
 ```python
-# profiles/forms.py
 from django import forms
 from .models import Student
+
 
 class StudentRegistrationForm(forms.ModelForm):
     class Meta:
@@ -173,21 +175,46 @@ class StudentRegistrationForm(forms.ModelForm):
         full_name = cleaned_data.get("full_name")
         email = cleaned_data.get("email")
 
-        if full_name and email and full_name.casefold() in email.casefold():
-            self.add_error(
-                "email",
-                "Email should not contain the full student name.",
+        if full_name and email:
+            # Compare a normalized name with the email's local part.
+            # Example: "Asha Rao" becomes "asharao"; "asha.rao@example.com"
+            # becomes "asharao", so the rule catches common punctuation.
+            normalized_name = "".join(full_name.casefold().split())
+            email_local_part = email.casefold().split("@", 1)[0]
+            normalized_email = (
+                email_local_part
+                .replace(".", "")
+                .replace("_", "")
+                .replace("-", "")
             )
-        return cleaned_data
 
-<!-- profiles/templates/profiles/student_form.html -->
-<h1>Register Student</h1>
-<form method="post">
-    {% csrf_token %}
-    {{ form.non_field_errors }}
-    {{ form.as_p }}
-    <button type="submit">Register</button>
-</form>
+            if normalized_name and normalized_name in normalized_email:
+                self.add_error(
+                    "email",
+                    "Email should not contain the full student name.",
+                )
+        return cleaned_data
+```
+
+**File 2 — `profiles/templates/profiles/student_form.html`**. Update the HTML template so both field errors and form-wide errors are visible.
+
+```html
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Student Registration</title>
+</head>
+<body>
+    <h1>Register Student</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        {{ form.as_p }}
+        <button type="submit">Register</button>
+    </form>
+</body>
+</html>
 ```
 
 ### Read before typing
@@ -436,8 +463,12 @@ D. Disable CSRF
 - [ ] I completed Secure Form Validation Application.
 - [ ] I can explain the application without reading the notes.
 
-## 17. Trainer validation
+## 17. Independent completion test
 
-Ask the student to register a new record without following the exact code line by line. Ask them to predict what happens for an invalid email, duplicate code, missing route or missing template. They should locate the relevant component and explain the fix.
+1. Register a new record without following the exact code line by line.
+2. Predict what happens for an invalid email, duplicate code, missing route or missing template.
+3. Test one case at a time and compare the result with your prediction.
+4. Locate the responsible component and explain the correction.
+5. Confirm that invalid data was not saved and valid data appears in the student list.
 
 **Next phase:** Phase 4 — Day 42: CRUD Operations: Create, Read, Update and Delete.

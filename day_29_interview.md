@@ -3,90 +3,71 @@
 **Pathway:** Python Backend Developer Career Pathway (Django)  
 **Phase:** 3 — Django Fundamentals  
 **Related class notes:** [Day 29 notes](day_29_notes.md)  
-**Approved mini-project:** Django Configuration Explorer
+**Mini-project:** Django Configuration Explorer
 
-## 1. Core technical questions
+## 1. Technical questions with model answers
 
-### Q1. What is the central purpose of this lesson?
-**Answer:** Django needs configuration before it can load apps, middleware, databases and templates. The settings module tells Django which applications are active and how the project should behave. The development server is a local testing tool. It is deliberately not a production server.
+### Q1. What is settings.py?
 
-**Follow-up:** Explain this using the Student Portal example.
+**Model answer:** It is the project's configuration module. It defines installed apps, middleware, URL configuration, templates, database, static files, security settings and other project-wide options.
 
-### Q2. Which files are responsible for the implementation?
-**Answer:** The files are config/settings.py, config/urls.py, profiles/apps.py. Describe the responsibility of each file, rather than only listing names.
+### Q2. What does INSTALLED_APPS control?
 
-**Follow-up:** Explain this using the Student Portal example.
+**Model answer:** It lists Django and third-party/local apps that Django should load. App registration enables features such as model discovery and migrations.
 
-### Q3. How would you verify the feature?
-**Answer:** Run the required commands, inspect the output, test the browser behavior and verify an edge case. Use the exact checks in Day 29 class notes.
+### Q3. What is middleware?
 
-**Follow-up:** Explain this using the Student Portal example.
+**Model answer:** Middleware is a request/response processing layer. Middleware components can inspect or modify requests before the view and responses after the view.
 
-### Q4. What mistakes commonly affect beginners?
-**Answer:** Common causes include an incorrect working directory, wrong Python environment, spelling errors, incorrect imports, a missing app registration or a route/file path mismatch. Read the traceback and correct one cause at a time.
+### Q4. What does DEBUG=True mean?
 
-**Follow-up:** Explain this using the Student Portal example.
+**Model answer:** It enables detailed development diagnostics. It must not be enabled in production because error pages can reveal sensitive implementation details.
 
-## 2. Scenario-based questions
+### Q5. What is ALLOWED_HOSTS?
 
-### Q5. The code exists, but the expected behavior is not visible. How do you debug it?
-**Suggested answer:**
-1. Reproduce the problem.
-2. Read the complete error or terminal output.
-3. Confirm the current directory and active virtual environment.
-4. Inspect the file and line mentioned in the traceback.
-5. Check imports, names, configuration and route connections.
-6. Run `python manage.py check`.
-7. Test the browser behavior again.
+**Model answer:** It lists host/domain values that Django accepts for the Host header when DEBUG is False. It is not a substitute for network security.
 
-### Q6. A student says, "The command completed, so the feature is done." Is that enough?
-**Suggested answer:** No. A command may create a file or start a server without proving the required user behavior. Demonstrate the result, test an edge case and explain the implementation.
+### Q6. How do you run the development server on another port?
 
-### Q7. How would you explain your implementation to another developer?
-**Suggested answer:** State the requirement, name the files, explain the data or request flow, demonstrate the commands, show expected output and describe one failure and its fix.
+**Model answer:** Use python manage.py runserver 8001. The server listens on the selected local development port until stopped with Ctrl+C.
 
-## 3. Practical coding discussion
+## 2. Scenario-based interview question
 
-Be ready to:
-- Identify the exact file path.
-- Explain the important imports and statements.
-- Run the relevant management command.
-- Demonstrate the browser or terminal result.
-- Modify one small part and predict the outcome.
-- Test one invalid or unexpected case.
-- Diagnose one common error.
+**Scenario:** The project runs locally but a developer wants to deploy it with DEBUG=True and ALLOWED_HOSTS=['*']. Explain the risk and safer approach.
+
+**Model answer:** DEBUG can expose detailed tracebacks and configuration information. A wildcard host setting is overly broad. Use environment-specific settings, DEBUG=False in production, an explicit host list, protected SECRET_KEY and production server configuration.
+
+**What the interviewer is checking:** Whether you can connect the concept to a real project, identify the relevant file or command, verify the result and explain the reason for your debugging steps.
+
+## 3. Practical demonstration
+
+Inspect each required setting, run check, start the server, open the local page, test a second port, stop with Ctrl+C and explain which settings must change before deployment.
+
+Before the interview, be able to:
+- Explain the feature without reading the notes.
+- Identify the exact file or command involved.
+- Demonstrate the behavior in a terminal or browser.
+- Predict one result before running the code.
+- Explain one common failure and how to fix it.
 
 ## 4. Mini-project viva — Django Configuration Explorer
 
-1. What problem does the project solve?
-2. What are the functional requirements?
-3. Which files did you create or update?
-4. What commands did you execute?
-5. What does the main code do?
-6. How did you test the normal case?
-7. Which edge case did you test?
-8. What error did you encounter?
-9. How did you resolve it?
-10. What would you improve next?
+1. What user or business problem does this project solve?
+2. What did you build and what did you deliberately leave out?
+3. Which files and commands were required?
+4. Explain the execution flow from input to output.
+5. What result did you verify?
+6. What was the most useful debugging check?
+7. What would you improve if this became a production feature?
 
-## 5. Rapid revision
+**Model viva answer structure:** State the requirement → explain the design → identify the files → describe the implementation → show the observed result → explain one limitation or improvement. Use your own project evidence; do not invent results.
 
-- Explain the concept in one minute.
-- Identify the exact files and their responsibilities.
-- Trace the relevant execution flow.
-- Demonstrate the mini-project.
-- Run the required checks.
-- Explain an edge case.
-- Describe a safe debugging process.
+## 5. Self-check
 
-## 6. Readiness checklist
+- [ ] I can answer all six technical questions without memorizing paragraphs.
+- [ ] I can explain the scenario and justify each debugging step.
+- [ ] I can demonstrate the feature from a fresh terminal/browser session.
+- [ ] I can explain one alternative design and why I did not choose it.
+- [ ] I can present Django Configuration Explorer with real evidence.
 
-- [ ] I can define the topic.
-- [ ] I can explain the relevant files.
-- [ ] I can reproduce the implementation.
-- [ ] I can explain the important code.
-- [ ] I can verify the expected behavior.
-- [ ] I can explain an edge case.
-- [ ] I can present Django Configuration Explorer without reading the notes.
-
-**Trainer note:** Ask the learner to predict the result of a small code or configuration change. Reward reasoning and evidence, not memorized definitions.
+**Readiness rule:** If you cannot reproduce the demonstration, return to the corresponding section in [Day 29 class notes](day_29_notes.md), repeat the steps and record the output.

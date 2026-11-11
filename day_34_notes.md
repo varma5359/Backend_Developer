@@ -309,7 +309,7 @@ Make one small change, predict its result, run it and explain the difference.
 
 ## 14. AI-assisted implementation
 
-Use the AI mentor to learn incrementally:
+First attempt each step using the lesson. If you are still stuck, use an optional AI learning assistant for hints and explanations; do not ask it to hide the implementation from you.
 
 **Planning prompt**
 ```text
@@ -411,8 +411,13 @@ D. Register the app
 - [ ] I submitted reproducible evidence.
 - [ ] I can answer the interview questions.
 
-## 18. Trainer validation
+## 18. Independent completion test
 
-Do not mark the day complete merely because a file contains code. Ask the learner to demonstrate the result, explain the flow, modify one small part independently and diagnose one controlled mistake.
+Do not mark the day complete merely because a file contains code. Complete every check yourself:
+1. Demonstrate the result in the browser or terminal.
+2. Explain the execution flow without reading the notes.
+3. Modify one small part independently and predict the result before running it.
+4. Compare the actual result with your prediction.
+5. Diagnose and fix one controlled mistake, such as a misspelled variable, template path or setting.
 
 **Next lesson:** Day 35 — Django Migrations: makemigrations and migrate

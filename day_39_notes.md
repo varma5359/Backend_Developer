@@ -3,12 +3,12 @@
 **Pathway:** Python Backend Developer Career Pathway (Django)  
 **Phase:** 3 — Django Fundamentals  
 **Duration:** 2–3 hours | **Level:** Beginner to Intermediate  
-**Prerequisites:** Days 27–40 as relevant; project setup, URL routing, views, templates, models, migrations and forms  
+**Prerequisites:** Days 27–38 — project setup, URL routing, views, templates, models, migrations, admin, ORM and model relationships  
 **Environment:** Windows, VS Code, PowerShell, Python virtual environment, Django 5.2.19  
 **Continuous project:** `student_portal` / `config` / `profiles`  
 **Approved mini-project:** Student Registration Form
 
-> **Trainer standard:** This is an integration lesson. Students must understand the journey from the browser request to the database and back to the browser. Do not let them copy the complete files without tracing each step.
+> **Self-paced method:** Follow the request from the browser to the view, form, model and database, then back to the browser. Create each file exactly where named. Run each check before continuing, and use the expected results to decide whether your implementation is correct.
 
 ## 1. Learning objectives
 
@@ -155,19 +155,25 @@ If the form is invalid, the bound form is rendered again and its validation erro
 
 The code is split by filename. Create or update the correct file. Do not paste HTML into Python files.
 
+**File 1 — `profiles/forms.py`**. Create this Python file beside `models.py` and `views.py`.
+
 ```python
-# profiles/forms.py
 from django import forms
 from .models import Student
+
 
 class StudentRegistrationForm(forms.ModelForm):
     class Meta:
         model = Student
         fields = ["student_code", "full_name", "email"]
+```
 
-# profiles/views.py
+**File 2 — `profiles/views.py`**. Add this view. Keep other views already used by earlier lessons.
+
+```python
 from django.shortcuts import render, redirect
 from .forms import StudentRegistrationForm
+
 
 def student_register(request):
     if request.method == "POST":
@@ -183,14 +189,25 @@ def student_register(request):
         "profiles/student_form.html",
         {"form": form},
     )
+```
 
-# profiles/urls.py — add:
+**File 3 — `profiles/urls.py`**. Add this route inside the existing `urlpatterns` list. Do not create a second `urlpatterns` variable.
+
+```python
 path("students/register/", views.student_register, name="student_register"),
+```
 
-<!-- profiles/templates/profiles/student_form.html -->
+The file must already import `path` and `views`, as shown in the earlier URL-routing lesson.
+
+**File 4 — `profiles/templates/profiles/student_form.html`**. This is an HTML template, not Python. Create the folders if they do not exist.
+
+```html
 <!doctype html>
 <html lang="en">
-<head><meta charset="utf-8"><title>Student Registration</title></head>
+<head>
+    <meta charset="utf-8">
+    <title>Student Registration</title>
+</head>
 <body>
     <h1>Register Student</h1>
     <form method="post">
@@ -446,8 +463,12 @@ D. To generate URL routes
 - [ ] I completed Student Registration Form.
 - [ ] I can explain the application without reading the notes.
 
-## 17. Trainer validation
+## 17. Independent completion test
 
-Ask the student to register a new record without following the exact code line by line. Ask them to predict what happens for an invalid email, duplicate code, missing route or missing template. They should locate the relevant component and explain the fix.
+1. Register a new record without following the exact code line by line.
+2. Predict what happens for an invalid email, duplicate code, missing route or missing template.
+3. Test one case at a time and compare the result with your prediction.
+4. Locate the responsible component and explain the correction.
+5. Confirm that invalid data was not saved and valid data appears in the student list.
 
 **Next phase:** Phase 4 — Day 42: CRUD Operations: Create, Read, Update and Delete.

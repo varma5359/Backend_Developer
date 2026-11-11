@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Student Directory</title>
+</head>
+<body>
+    <h1>Student Directory</h1>
+    <a href="{% url 'student_register' %}">Register student</a>
+    <ul>
+    {% for student in students %}
+        <li>{{ student.student_code }} — {{ student.full_name }} — {{ student.email }}</li>
+    {% empty %}
+        <li>No students registered yet.</li>
+    {% endfor %}
+    </ul>
+</body>
+</html>

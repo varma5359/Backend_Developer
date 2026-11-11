@@ -3,80 +3,71 @@
 **Pathway:** Python Backend Developer Career Pathway (Django)  
 **Phase:** 3 — Django Fundamentals  
 **Related class notes:** [Day 41 notes](day_41_notes.md)  
-**Approved mini-project:** Django Student Management Website
+**Mini-project:** Django Student Management Website
 
-## 1. Core technical questions
+## 1. Technical questions with model answers
 
-### Q1. Explain today's topic.
-**Answer:** A working Django feature is not one file. It is a connected system. The root URL configuration includes the app URL configuration. The app URL selects a view. The view queries a model or validates a form. The model communicates with the database. A template renders the data and Django returns an HTTP response. When the form is valid, the view saves and redirects.
+### Q1. Trace a GET request to the student list.
 
-**Follow-up:** Explain it using the Student Portal.
+**Model answer:** The browser requests /students/. The root URLconf includes profiles.urls. The app route selects student_list. The view queries Student records, passes them in context to student_list.html and returns the rendered HTTP response.
 
-### Q2. Which files are involved?
-**Answer:** `config/urls.py`, `profiles/urls.py`, `profiles/views.py`, `profiles/forms.py`, `profiles/models.py`, `profiles/templates/profiles/student_list.html`, `profiles/templates/profiles/student_form.html`. Explain the responsibility of each and how they connect.
+### Q2. Trace a valid registration POST.
 
-**Follow-up:** What happens if one of these components is missing or incorrectly configured?
+**Model answer:** The browser posts form data and CSRF token. The URL selects student_register. The view binds StudentRegistrationForm(request.POST), is_valid() runs validation, save() writes the record, and redirect sends the browser to the named student list route.
 
-### Q3. What does Django do automatically, and what does the developer implement?
-**Answer:** Django provides URL resolution, request objects, middleware processing, ORM mechanisms, template rendering and response construction. The developer defines the application routes, models, views, form rules, templates and business behavior.
+### Q3. What happens on an invalid POST?
 
-### Q4. How do you verify this feature?
-**Answer:** Run the system check, test the browser flow, submit invalid and valid values, inspect the database record and verify the redirect.
+**Model answer:** The form remains bound, is_valid() returns False, the view does not save and re-renders the form with errors and submitted values.
 
-## 2. Scenario-based questions
+### Q4. Why should the template not query the database directly?
 
-### Q5. The registration form is displayed, but the record is not saved. What do you inspect?
-**Suggested answer:** Confirm the request is POST, inspect form.errors, check is_valid(), ensure save() is inside the valid branch, inspect model constraints and database migration state.
+**Model answer:** The view should prepare data and pass it through context. This keeps database/business logic in Python and presentation in templates.
 
-### Q6. The save succeeds, but the redirect fails. What do you inspect?
-**Suggested answer:** Check that the named route exists, that its name is spelled correctly and that the root URLconf includes the app URLconf.
+### Q5. Why use named URL reversing?
 
-### Q7. Why should the form not save invalid data?
-**Suggested answer:** Invalid data can violate business rules and database constraints. Server-side validation must succeed before persistence.
+**Model answer:** It avoids hardcoding route strings in redirects and templates. Renaming a route path does not require changing every reference when its name remains stable.
 
-## 3. Practical coding discussion
+### Q6. What does the final capstone need to prove?
 
-Be ready to:
-- Trace a GET request to the list view.
-- Trace a GET request to the registration form.
-- Trace a valid POST request to the database and redirect.
-- Trace an invalid POST request to the error display.
-- Identify the files involved.
-- Verify the saved record in the admin.
-- Explain the boundary between this lesson and full CRUD.
+**Model answer:** That models, migrations, URL routing, views, forms, validation, templates and database persistence work together, and that the learner can explain and verify the complete flow.
+
+## 2. Scenario-based interview question
+
+**Scenario:** The registration form displays a success message but the student is missing from the list. How do you debug the complete path?
+
+**Model answer:** Check the POST status and form.is_valid(), confirm save() is reached, inspect the returned model instance and query the same configured database. Verify the redirect route and list view queryset. Check that the list template iterates the same context key passed by the view.
+
+**What the interviewer is checking:** Whether you can connect the concept to a real project, identify the relevant file or command, verify the result and explain the reason for your debugging steps.
+
+## 3. Practical demonstration
+
+Run the Student Management Website, verify list and registration routes, submit valid and invalid records, inspect the database/admin and demonstrate the request-response path without reading the notes.
+
+Before the interview, be able to:
+- Explain the feature without reading the notes.
+- Identify the exact file or command involved.
+- Demonstrate the behavior in a terminal or browser.
+- Predict one result before running the code.
+- Explain one common failure and how to fix it.
 
 ## 4. Mini-project viva — Django Student Management Website
 
-1. What business problem does it solve?
-2. Which routes are implemented?
-3. Which view handles each route?
-4. Which model and form are used?
-5. How does GET differ from POST?
-6. How are invalid errors displayed?
-7. How is a valid record saved?
-8. Why is a redirect used after saving?
-9. How did you verify the database record?
-10. Which feature is deferred to Day 42?
+1. What user or business problem does this project solve?
+2. What did you build and what did you deliberately leave out?
+3. Which files and commands were required?
+4. Explain the execution flow from input to output.
+5. What result did you verify?
+6. What was the most useful debugging check?
+7. What would you improve if this became a production feature?
 
-## 5. Rapid revision
+**Model viva answer structure:** State the requirement → explain the design → identify the files → describe the implementation → show the observed result → explain one limitation or improvement. Use your own project evidence; do not invent results.
 
-- Browser request enters the root URLconf.
-- Root URLconf includes the app URLconf.
-- App URL selects the view.
-- View uses the form and model.
-- ORM interacts with the database.
-- Template renders the response.
-- Valid POST redirects to the list.
-- Invalid POST redisplays the form with errors.
+## 5. Self-check
 
-## 6. Interview readiness checklist
+- [ ] I can answer all six technical questions without memorizing paragraphs.
+- [ ] I can explain the scenario and justify each debugging step.
+- [ ] I can demonstrate the feature from a fresh terminal/browser session.
+- [ ] I can explain one alternative design and why I did not choose it.
+- [ ] I can present Django Student Management Website with real evidence.
 
-- [ ] I can explain the complete request-response lifecycle.
-- [ ] I can identify all involved files.
-- [ ] I can explain GET and POST separately.
-- [ ] I can explain validation before saving.
-- [ ] I can verify the database record.
-- [ ] I can explain the Post/Redirect/Get pattern.
-- [ ] I can present Django Student Management Website independently.
-
-**Trainer note:** Ask the learner to trace an actual browser request and locate the exact file for each step. Accept no vague answer such as "Django handles it" without explaining which component does what.
+**Readiness rule:** If you cannot reproduce the demonstration, return to the corresponding class notes, repeat the steps and record the output.

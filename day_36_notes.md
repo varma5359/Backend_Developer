@@ -3,12 +3,12 @@
 **Pathway:** Python Backend Developer Career Pathway (Django)  
 **Phase:** 3 — Django Fundamentals  
 **Duration:** 2–3 hours | **Level:** Beginner to Intermediate  
-**Prerequisites:** Days 27–37 as relevant; Django project, models, migrations and ORM basics  
+**Prerequisites:** Days 27–35 — Django setup, project structure, settings, routing, views, templates, models and applied migrations  
 **Environment:** Windows, VS Code, PowerShell, Python virtual environment, Django 5.2.19  
 **Continuous project:** `student_portal` / `config` / `profiles`  
-**Approved mini-project:** Admin-Based Inventory Manager
+**Approved mini-project:** Employee Admin Manager
 
-> **Trainer standard:** Explain the database/business requirement first. Show the exact file. Type one component at a time. Run checks and migrations. Verify actual records. Do not ask students to memorize ORM syntax without understanding the relationship or query.
+> **Self-paced method:** Read the business requirement, inspect the named file, make one change at a time, run the check and compare the actual admin page with the verification list. Do not continue when a step fails; use the troubleshooting section.
 
 ## 1. Learning objectives
 
@@ -19,6 +19,8 @@
 
 ## 2. Start from the business requirement
 
+The existing Employee model from Day 34 is the model used in today's admin demonstration. The mini-project is to create a safe internal Employee Admin Manager, not an unrelated inventory system.
+
 Django admin is an internal data-management interface generated from registered models. It helps trusted staff inspect and manage records without building every management screen from scratch. It is not intended to replace the customer-facing application. The admin site requires authentication and permissions; only authorized staff should access it.
 
 A junior developer must understand both the Python code and the underlying relational data. Django makes database work convenient, but it does not remove the need to reason about keys, constraints and data integrity.
@@ -26,7 +28,7 @@ A junior developer must understand both the Python code and the underlying relat
 ## 3. Mental model
 
 ```text
-Student Portal requirement
+Employee Portal requirement
         |
         v
 Django model / admin / ORM
@@ -189,7 +191,25 @@ System check identified no issues (0 silenced).
 
 A system check does not prove every query or relationship is correct. Run the shell/admin exercises above.
 
-## 11. Troubleshooting
+
+## 11. Expected browser and terminal result
+
+After createsuperuser, Django asks for a username, email address and password. When the prompts complete successfully, the terminal reports that the superuser was created. The password is not displayed.
+
+After runserver, the terminal reports that the development server is running at http://127.0.0.1:8000/. Open http://127.0.0.1:8000/admin/ and sign in with the superuser you just created.
+
+Expected browser observations:
+
+1. The admin home page loads after sign-in.
+2. The Profiles app section contains the Employee model.
+3. Opening Employee shows the columns configured in list_display: employee code, full name, email, salary and active status.
+4. Search finds an employee when you search for a known code, name or email fragment.
+5. The active-status filter narrows the list when both active and inactive records exist.
+6. The Add Employee form allows a new record to be entered and saved.
+
+If there are no Employee rows yet, the list is empty; that is not an admin registration failure. Add a sample record to verify the list.
+
+## 12. Troubleshooting
 
 | Symptom | Likely reason | What to inspect |
 |---|---|---|
@@ -202,21 +222,21 @@ A system check does not prove every query or relationship is correct. Run the sh
 | RelatedObjectDoesNotExist | One-to-one object not created | Create the related profile before accessing it |
 | Query returns unexpected data | Wrong lookup or relationship | Inspect filters and actual records |
 
-## 12. Industry scenario
+## 13. Industry scenario
 
-A college portal stores students, departments, courses and student-specific profiles. The institute needs reliable links between records. A relationship design error can allow orphaned records, duplicate data or invalid associations.
+An HR team maintains employee records. Authorized HR staff must search employees, filter active and inactive employees, and update records without granting every staff member unrestricted access.
 
 Discuss:
-- Which record owns the foreign key?
-- Can one student belong to multiple departments?
-- Can a course contain many students?
-- What should happen if a department is deleted?
-- What constraints should the database enforce?
+- Which employee fields should appear in the list?
+- Which fields are useful for search?
+- Which fields are useful for filters?
+- Why should an HR assistant not automatically become a superuser?
+- What should happen when a required field or unique email is invalid?
 
-## 13. Approved mini-project — Admin-Based Inventory Manager
+## 14. Approved mini-project — Employee Admin Manager
 
 ### Objective
-Build the relationship/query/admin feature described in today's lesson using the existing Student Portal.
+Build the admin/query feature described in today's lesson using the existing Employee model in the profiles app.
 
 ### Tasks
 
@@ -248,7 +268,7 @@ Build the relationship/query/admin feature described in today's lesson using the
 ### Optional extension
 Add a small query or admin improvement and explain the data behavior before and after.
 
-## 14. AI-assisted learning prompts
+## 15. AI-assisted learning prompts
 
 **Planning**
 ```text
@@ -268,7 +288,7 @@ Here is my model, migration state, exact ORM query and complete traceback.
 Explain the likely cause and smallest safe correction. Do not delete migrations.
 ```
 
-## 15. Daily MCQs
+## 16. Daily MCQs
 
 ### Q1. Why register a model with admin?
 
@@ -315,12 +335,12 @@ D. Only when they can search
 
 **Answer: B.** Least privilege limits the impact of mistakes or compromised accounts.
 
-## 16. Interview preparation
+## 17. Interview preparation
 
 ### Q1. Explain today's concept.
 **Answer:** Django admin is an internal data-management interface generated from registered models. It helps trusted staff inspect and manage records without building every management screen from scratch. It is not intended to replace the customer-facing application. The admin site requires authentication and permissions; only authorized staff should access it.
 
-**Follow-up:** Explain it using the Student Portal example.
+**Follow-up:** Explain it using the Employee model example from Day 34.
 
 ### Q2. Which model, field, command or query is important?
 **Answer:** `profiles/admin.py`, `profiles/models.py`, `config/urls.py (admin route is generated by startproject)`. Describe the responsibility and the data behavior.
@@ -334,7 +354,7 @@ D. Only when they can search
 
 **Answer:** System checks do not execute every data operation or prove the business relationship is correct.
 
-## 17. Completion checklist
+## 18. Completion checklist
 
 - [ ] I can explain the business rule.
 - [ ] I can explain the model/query/relationship.
@@ -346,8 +366,12 @@ D. Only when they can search
 - [ ] I submitted code and evidence.
 - [ ] I can explain one data integrity concern.
 
-## 18. Trainer validation
+## 19. Independent completion test
 
-Ask the student to create or query records independently. Change one relationship or filter and ask them to predict the outcome. Do not mark complete based only on copied model code.
+1. Create or query records without copying the entire example.
+2. Explain the file and data flow in your own words.
+3. Change one admin setting or query filter and predict the result before running it.
+4. Compare the actual result with your prediction.
+5. Diagnose and fix one controlled mistake. Do not mark the lesson complete based only on copied code.
 
 **Next lesson:** Day 37 — Django ORM Fundamentals and Querying Records

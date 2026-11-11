@@ -3,80 +3,71 @@
 **Pathway:** Python Backend Developer Career Pathway (Django)  
 **Phase:** 3 — Django Fundamentals  
 **Related class notes:** [Day 39 notes](day_39_notes.md)  
-**Approved mini-project:** Student Registration Form
+**Mini-project:** Student Registration Form
 
-## 1. Core technical questions
+## 1. Technical questions with model answers
 
-### Q1. Explain today's topic.
-**Answer:** A form is not just HTML. A Django form knows which fields are expected, converts submitted strings into Python values and validates those values. A ModelForm connects form fields to a model and can create or update a model instance. The browser displays the form, but the server is responsible for validation and persistence.
+### Q1. What is a Django Form?
 
-**Follow-up:** Explain it using the Student Portal.
+**Model answer:** It defines expected input fields, converts submitted values to Python types and validates them. It can be used without a database model.
 
-### Q2. Which files are involved?
-**Answer:** `profiles/forms.py (create)`, `profiles/views.py`, `profiles/urls.py`, `profiles/templates/profiles/student_form.html (create)`. Explain the responsibility of each and how they connect.
+### Q2. What is a ModelForm?
 
-**Follow-up:** What happens if one of these components is missing or incorrectly configured?
+**Model answer:** It is a form tied to a model. Its Meta class selects the model and fields, and save() can create or update a model instance after validation.
 
-### Q3. What does Django do automatically, and what does the developer implement?
-**Answer:** Django provides URL resolution, request objects, middleware processing, ORM mechanisms, template rendering and response construction. The developer defines the application routes, models, views, form rules, templates and business behavior.
+### Q3. What is a bound form?
 
-### Q4. How do you verify this feature?
-**Answer:** Run the system check, test the browser flow, submit invalid and valid values, inspect the database record and verify the redirect.
+**Model answer:** A form instantiated with submitted data, such as StudentRegistrationForm(request.POST). It can be validated and displays submitted values and errors.
 
-## 2. Scenario-based questions
+### Q4. Why must is_valid() be called before save()?
 
-### Q5. The registration form is displayed, but the record is not saved. What do you inspect?
-**Suggested answer:** Confirm the request is POST, inspect form.errors, check is_valid(), ensure save() is inside the valid branch, inspect model constraints and database migration state.
+**Model answer:** It runs field and form validation and populates cleaned_data. Only valid data should be persisted.
 
-### Q6. The save succeeds, but the redirect fails. What do you inspect?
-**Suggested answer:** Check that the named route exists, that its name is spelled correctly and that the root URLconf includes the app URLconf.
+### Q5. What is the GET/POST pattern in a registration view?
 
-### Q7. Why should the form not save invalid data?
-**Suggested answer:** Invalid data can violate business rules and database constraints. Server-side validation must succeed before persistence.
+**Model answer:** GET creates and displays an empty form. POST binds submitted data, validates it, saves if valid and redirects; invalid POST re-renders the bound form with errors.
 
-## 3. Practical coding discussion
+### Q6. Why redirect after a successful POST?
 
-Be ready to:
-- Trace a GET request to the list view.
-- Trace a GET request to the registration form.
-- Trace a valid POST request to the database and redirect.
-- Trace an invalid POST request to the error display.
-- Identify the files involved.
-- Verify the saved record in the admin.
-- Explain the boundary between this lesson and full CRUD.
+**Model answer:** It follows Post/Redirect/Get, reducing accidental duplicate submissions when the user refreshes the resulting page.
+
+## 2. Scenario-based interview question
+
+**Scenario:** The form is visible, but submitting it does not create a Student. What do you inspect?
+
+**Model answer:** Confirm the form uses method=post, includes the CSRF token, the view handles request.method == 'POST', the form is bound to request.POST, is_valid() returns True, save() executes and the database uses the expected model/table. Inspect form.errors and the server traceback.
+
+**What the interviewer is checking:** Whether you can connect the concept to a real project, identify the relevant file or command, verify the result and explain the reason for your debugging steps.
+
+## 3. Practical demonstration
+
+Implement StudentRegistrationForm, GET/POST view, named URL and template. Test one valid record and one invalid submission and verify the database.
+
+Before the interview, be able to:
+- Explain the feature without reading the notes.
+- Identify the exact file or command involved.
+- Demonstrate the behavior in a terminal or browser.
+- Predict one result before running the code.
+- Explain one common failure and how to fix it.
 
 ## 4. Mini-project viva — Student Registration Form
 
-1. What business problem does it solve?
-2. Which routes are implemented?
-3. Which view handles each route?
-4. Which model and form are used?
-5. How does GET differ from POST?
-6. How are invalid errors displayed?
-7. How is a valid record saved?
-8. Why is a redirect used after saving?
-9. How did you verify the database record?
-10. Which feature is deferred to Day 42?
+1. What user or business problem does this project solve?
+2. What did you build and what did you deliberately leave out?
+3. Which files and commands were required?
+4. Explain the execution flow from input to output.
+5. What result did you verify?
+6. What was the most useful debugging check?
+7. What would you improve if this became a production feature?
 
-## 5. Rapid revision
+**Model viva answer structure:** State the requirement → explain the design → identify the files → describe the implementation → show the observed result → explain one limitation or improvement. Use your own project evidence; do not invent results.
 
-- Browser request enters the root URLconf.
-- Root URLconf includes the app URLconf.
-- App URL selects the view.
-- View uses the form and model.
-- ORM interacts with the database.
-- Template renders the response.
-- Valid POST redirects to the list.
-- Invalid POST redisplays the form with errors.
+## 5. Self-check
 
-## 6. Interview readiness checklist
+- [ ] I can answer all six technical questions without memorizing paragraphs.
+- [ ] I can explain the scenario and justify each debugging step.
+- [ ] I can demonstrate the feature from a fresh terminal/browser session.
+- [ ] I can explain one alternative design and why I did not choose it.
+- [ ] I can present Student Registration Form with real evidence.
 
-- [ ] I can explain the complete request-response lifecycle.
-- [ ] I can identify all involved files.
-- [ ] I can explain GET and POST separately.
-- [ ] I can explain validation before saving.
-- [ ] I can verify the database record.
-- [ ] I can explain the Post/Redirect/Get pattern.
-- [ ] I can present Student Registration Form independently.
-
-**Trainer note:** Ask the learner to trace an actual browser request and locate the exact file for each step. Accept no vague answer such as "Django handles it" without explaining which component does what.
+**Readiness rule:** If you cannot reproduce the demonstration, return to the corresponding class notes, repeat the steps and record the output.
