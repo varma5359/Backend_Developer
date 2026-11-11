@@ -90,4 +90,4 @@ Be prepared to:
 - [ ] Present Django Environment Setup and its evidence.
 - [ ] Explain one production consideration.
 
-**Trainer note:** Ask the learner to explain the command and file locations without looking at the notes. If they cannot, ask them to rerun the demonstration and explain each step.
+**Self-practice:** Ask yourself to explain the command and file locations without looking at the notes. If you cannot, ask them to rerun the demonstration and explain each step.
