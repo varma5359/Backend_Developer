@@ -88,8 +88,6 @@ Both Asha and Rahul point to the same department row. This is why the relationsh
 
 ## 3. Understand the three relationship types
 
-<text></text>
-
 ### 3.1 ForeignKey — many-to-one
 
 **Business rule:** One department has many students. Each student points to one department.
@@ -567,7 +565,7 @@ Run each query in the same Django shell.
 ### 10.1 Department to students — reverse ForeignKey
 
 ```python
-list(engineering.students.values_list("full_name", flat=True))
+list(engineering.students.order_by("full_name").values_list("full_name", flat=True))
 ```
 
 Expected:
@@ -595,19 +593,19 @@ The student stores a reference to the department.
 ### 10.3 Student to courses — forward ManyToMany
 
 ```python
-list(asha.courses.values_list("title", flat=True))
+list(asha.courses.order_by("title").values_list("title", flat=True))
 ```
 
 Expected:
 
 ```python
-['Python', 'Django']
+['Django', 'Python']
 ```
 
 ### 10.4 Course to students — reverse ManyToMany
 
 ```python
-list(python_course.students.values_list("full_name", flat=True))
+list(python_course.students.order_by("full_name").values_list("full_name", flat=True))
 ```
 
 Expected:
