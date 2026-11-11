@@ -472,3 +472,333 @@ D. Disable CSRF
 5. Confirm that invalid data was not saved and valid data appears in the student list.
 
 **Next phase:** Phase 4 — Day 42: CRUD Operations: Create, Read, Update and Delete.
+
+---
+
+# Extended Beginner Lab — Validation, CSRF and Error Handling
+
+## 19. Why validation is necessary
+
+A browser form is not a trusted source.
+
+A user can:
+- Remove required attributes.
+- Change input values.
+- Submit unexpected field names.
+- Send a request using a script or API client.
+- Submit values that do not appear in the normal page.
+
+The server must validate every submitted value.
+
+## 20. Three different kinds of validation
+
+| Validation | Purpose | Example |
+|---|---|---|
+| Browser validation | Convenience | required, type=email |
+| Django form validation | Validate request data | EmailField rejects invalid email |
+| Database constraint | Protect stored data | Unique email, non-negative stock |
+
+Browser validation is useful but can be bypassed.
+
+Django form validation is required for safe request processing.
+
+Database constraints protect critical data rules across different write paths.
+
+## 21. Field validation order
+
+A form field normally performs:
+1. Required check.
+2. Input conversion.
+3. Built-in field validation.
+4. Configured validators.
+5. Custom clean_fieldname method.
+
+If a field fails validation, Django records an error.
+
+The view should not save an invalid form.
+
+## 22. clean_fieldname()
+
+Example:
+
+~~~python
+def clean_full_name(self):
+    value = self.cleaned_data["full_name"].strip()
+
+    if len(value) < 3:
+        raise forms.ValidationError(
+            "Name must contain at least three characters."
+        )
+
+    return value
+~~~
+
+This method validates one field.
+
+Return the cleaned value when valid.
+
+## 23. Form-wide clean()
+
+Example:
+
+~~~python
+def clean(self):
+    cleaned_data = super().clean()
+
+    start_date = cleaned_data.get("start_date")
+    end_date = cleaned_data.get("end_date")
+
+    if start_date and end_date and start_date > end_date:
+        raise forms.ValidationError(
+            "Start date must be before end date."
+        )
+
+    return cleaned_data
+~~~
+
+This validates a relationship between fields.
+
+## 24. Raise ValidationError
+
+ValidationError communicates that a value is invalid.
+
+It can be attached to:
+- A field.
+- The whole form.
+- A model validation method.
+
+Do not return a plain string from a clean method when Django expects a cleaned value or ValidationError.
+
+## 25. Display field errors
+
+~~~django
+{{ form.full_name.errors }}
+~~~
+
+This displays errors for one field.
+
+## 26. Display non-field errors
+
+~~~django
+{{ form.non_field_errors }}
+~~~
+
+This displays form-wide errors that do not belong to one field.
+
+## 27. Why keep the bound form?
+
+If a submitted form is invalid, render the same bound form instance.
+
+Correct pattern:
+
+~~~python
+if request.method == "POST":
+    form = StudentForm(request.POST)
+
+    if form.is_valid():
+        form.save()
+        return redirect("student_list")
+else:
+    form = StudentForm()
+
+return render(
+    request,
+    "profiles/student_form.html",
+    {"form": form},
+)
+~~~
+
+If the form is invalid, it still contains the submitted values and errors.
+
+Do not create a fresh empty form after validation fails.
+
+## 28. What is CSRF?
+
+CSRF means Cross-Site Request Forgery.
+
+It is an attack where a browser that is authenticated to a site can be tricked into sending an unwanted request to that site.
+
+Django provides CSRF protection for unsafe browser requests.
+
+## 29. How CSRF protection works at a high level
+
+~~~text
+Browser requests form page
+        |
+        v
+Django provides CSRF token
+        |
+        v
+Template includes token in form
+        |
+        v
+Browser submits POST with token
+        |
+        v
+Django CSRF middleware validates request
+        |
+        +---- Invalid/missing ----> Reject request
+        |
+        +---- Valid -------------> Continue to view
+~~~
+
+This is a simplified description. Django also uses cookie and origin/referrer checks according to its CSRF configuration.
+
+## 30. CSRF token in template
+
+~~~django
+<form method="post">
+    {% csrf_token %}
+    ...
+</form>
+~~~
+
+The tag generates the hidden token input.
+
+Place it inside the form.
+
+## 31. CSRF middleware
+
+Check config/settings.py for CsrfViewMiddleware.
+
+Do not remove it to solve a form submission problem.
+
+If a POST request fails CSRF validation:
+- Check the token tag.
+- Check middleware.
+- Check cookies.
+- Check the request origin.
+- Check whether the form is submitted through the expected browser page.
+
+## 32. GET versus POST and CSRF
+
+GET should not change application state.
+
+POST is commonly used for:
+- Creating a record.
+- Updating a record.
+- Deleting a record.
+- Applying for a job.
+- Adding to a cart.
+
+CSRF protection is important for unsafe methods such as POST.
+
+Do not use GET for a destructive action.
+
+## 33. What is a 403 response?
+
+403 Forbidden means the server refuses the request.
+
+CSRF verification failure commonly results in a forbidden response.
+
+A permission failure can also result in 403.
+
+The reason must be diagnosed from the server logs and request context, not guessed from the status code alone.
+
+## 34. CSRF and API requests
+
+Traditional HTML form submissions include the token through the template tag.
+
+JavaScript requests may need to send the CSRF token in the appropriate header when using session-based authentication.
+
+Django REST Framework has its own authentication and CSRF considerations, which are covered in the API phase.
+
+Do not disable CSRF globally because one JavaScript request is not configured correctly.
+
+## 35. User-facing error messages
+
+Good error:
+- Please correct the highlighted fields.
+- This email address is already registered.
+- The requested record could not be found.
+
+Avoid exposing:
+- Database SQL.
+- Stack traces.
+- Internal paths.
+- Secret values.
+- Session cookies.
+- Password hashes.
+
+## 36. Logging versus displaying errors
+
+A user-facing message should be understandable and safe.
+
+A server log can contain technical details useful to developers, but it must not contain passwords, reset tokens or session secrets.
+
+Use logging with appropriate levels and access controls.
+
+## 37. Common validation and CSRF problems
+
+| Symptom | Likely cause | Fix |
+|---|---|---|
+| Form accepts invalid value | Missing server-side validator | Add field/form validation |
+| Form errors not visible | Template does not render errors | Display field and non-field errors |
+| Invalid form becomes blank | New unbound form rendered | Reuse bound form |
+| CSRF verification failed | Missing token or middleware/cookie issue | Check token, middleware and request origin |
+| POST action triggered by link | State-changing action uses GET | Use POST form |
+| Database rejects value | Constraint violated | Validate in form and handle constraint safely |
+| Internal error exposed | Exception text displayed | Show safe message and log securely |
+
+## 38. Guided validation exercise
+
+Use a Student form.
+
+Test:
+1. Empty required name.
+2. Invalid email.
+3. Duplicate email.
+4. Name with only spaces.
+5. Valid submission.
+6. Invalid update.
+7. POST without CSRF token in a controlled test.
+8. POST with valid CSRF token.
+
+For each test, record:
+- Submitted value.
+- Validation stage.
+- Expected message.
+- Whether a database write should occur.
+
+## 39. Self-check questions
+
+1. Why is browser validation not enough?
+2. What is field-level validation?
+3. What does clean_fieldname() do?
+4. When should clean() be used?
+5. What is ValidationError?
+6. Why should a bound form be rendered after invalid POST?
+7. What does CSRF stand for?
+8. What is the purpose of csrf_token?
+9. Why should CSRF middleware not be disabled?
+10. Why should GET not delete records?
+11. What is the difference between 400 and 403?
+12. Why should technical exceptions not be displayed to users?
+
+## 40. Answers
+
+1. Browser checks can be bypassed.
+2. Validates one field.
+3. Performs custom validation for one field.
+4. For cross-field rules.
+5. Django's validation exception.
+6. It contains submitted values and validation errors.
+7. Cross-Site Request Forgery.
+8. Adds a token used by Django's CSRF protection.
+9. It protects state-changing browser requests.
+10. GET should be safe and not mutate application state.
+11. 400 means bad request; 403 means access is forbidden.
+12. They may reveal internal details or secrets.
+
+## 41. Independent challenge — Safe Student Form
+
+Build a student create/update form that:
+- Validates all required fields.
+- Checks an email format.
+- Displays field errors.
+- Uses CSRF token.
+- Saves only after is_valid().
+- Redirects after success.
+- Does not display internal exceptions.
+
+Test both normal and invalid submissions and submit the evidence.
