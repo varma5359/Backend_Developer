@@ -987,3 +987,19 @@ Include:
 
 A feature is not ready for handover if another developer must guess the setup or expected behavior.
 
+
+## 43. Final release checklist
+
+- [ ] Setup instructions are complete.
+- [ ] Dependencies are pinned.
+- [ ] Environment settings are understood.
+- [ ] Migrations are committed.
+- [ ] System checks pass.
+- [ ] Tests pass.
+- [ ] Normal workflow is demonstrated.
+- [ ] Invalid workflow is demonstrated.
+- [ ] Unauthorized workflow is denied.
+- [ ] Expected browser result is documented.
+- [ ] Known limitations are recorded.
+- [ ] Another developer can reproduce the feature.
+
