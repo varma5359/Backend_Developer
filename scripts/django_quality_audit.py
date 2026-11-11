@@ -53,7 +53,7 @@ def main():
 
         if not re.match(rf"^# Day {day:02d}:", notes.lstrip()):
             failures.append(fail(f"{note_path.name}: incorrect/missing day title"))
-        if not re.match(rf"^# Day {day:02d}:", guide.lstrip())
+        if not re.match(rf"^# Day {day:02d}:", guide.lstrip()):
             failures.append(fail(f"{guide_path.name}: incorrect/missing day title"))
         if note_lines < 300:
             failures.append(fail(f"{note_path.name}: only {note_lines} lines (minimum 300)"))
