@@ -71,3 +71,29 @@ Before the interview, be able to:
 - [ ] I can present Reusable Website Layout with real evidence.
 
 **Readiness rule:** If you cannot reproduce the demonstration, return to the corresponding class notes, repeat the steps and record the output.
+## Additional technical and scenario questions
+
+### Q5. What is template inheritance?
+**Answer:** It lets child templates reuse a base layout and override named blocks.
+
+### Q6. What is the difference between extends and include?
+**Answer:** extends inherits a page layout. include inserts a reusable template fragment.
+
+### Q7. What does block.super do?
+**Answer:** It includes the parent block content inside an overridden child block.
+
+### Q8. What are static files?
+**Answer:** Application assets such as CSS, JavaScript, logos and icons.
+
+### Q9. What does collectstatic do?
+**Answer:** It gathers static files into STATIC_ROOT for a deployment workflow.
+
+### Q10. What is the difference between static and media?
+**Answer:** Static files belong to the application. Media files are uploaded by users.
+
+### Q11. Scenario: CSS returns 404.
+**Answer:** Check static folder nesting, app registration, static tag path and browser network request.
+
+### Q12. Scenario: CSS works locally but not after deployment.
+**Answer:** Check collectstatic, STATIC_ROOT and the production static-file serving configuration.
+
