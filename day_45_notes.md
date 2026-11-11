@@ -832,3 +832,509 @@ Day 46: Authentication — understand users and identity
 ~~~
 
 **Day 45 is complete only when you can demonstrate both Django validation and database-level rejection of invalid data.**
+
+
+---
+
+# PART 14 — DEEPER VALIDATION WORKFLOW
+
+## 82. Understand the validation layers
+
+A backend application should not depend on one validation location.
+
+Use multiple layers for different reasons:
+
+| Layer | Responsibility | Example |
+|---|---|---|
+| Browser input attributes | Convenience for the user | required, min, max |
+| Django form field validation | Validate submitted values | Decimal input is valid |
+| Form clean methods | Cross-field business rules | Minimum price cannot exceed maximum |
+| Model field validators | Reusable field-level rules | Price must be at least 0.01 |
+| Model clean() | Model-wide business validation | Start date must be before end date |
+| Database constraints | Protect stored rows | SKU must be unique; stock cannot be negative |
+
+The browser is not trusted. A user can send a request without using your HTML form.
+
+## 83. Browser validation is not enough
+
+Example:
+
+~~~html
+<input type="number" name="stock" min="0" required>
+~~~
+
+This improves the browser experience.
+
+It does not prevent someone from sending:
+
+~~~text
+stock=-100
+~~~
+
+directly to the server.
+
+The server must validate the value, and the database should enforce important invariants where possible.
+
+## 84. Understand clean_fields()
+
+Django model validation includes field cleaning.
+
+Conceptually, this stage:
+- Runs field-level validation.
+- Converts values to appropriate Python types.
+- Runs validators.
+- Collects field errors.
+
+Most application code should use full_clean() rather than calling individual validation methods manually.
+
+## 85. Understand clean()
+
+A model clean() method is useful for rules that depend on multiple fields.
+
+Example for a model with start_date and end_date:
+
+~~~python
+from django.core.exceptions import ValidationError
+
+def clean(self):
+    if (
+        self.start_date
+        and self.end_date
+        and self.start_date > self.end_date
+    ):
+        raise ValidationError(
+            "Start date cannot be after end date."
+        )
+~~~
+
+This is a model-level validation example. It is not a replacement for a database constraint if the rule can be expressed and supported by the database.
+
+## 86. Understand validate_unique()
+
+Model uniqueness validation checks uniqueness rules defined for the model.
+
+Database uniqueness constraints remain necessary because validation and saving are separate operations. Two concurrent requests can pass an application-level uniqueness check before either insert is committed.
+
+## 87. Understand full_clean()
+
+Example:
+
+~~~python
+product.full_clean()
+product.save()
+~~~
+
+full_clean() runs model validation before saving.
+
+It can raise ValidationError.
+
+Important:
+- save() does not automatically call full_clean().
+- A ModelForm performs validation as part of its form lifecycle.
+- Code paths that save model instances directly need a deliberate validation strategy.
+- Database constraints remain the final protection for supported integrity rules.
+
+## 88. Why a ModelForm is useful
+
+A ModelForm:
+- Builds fields from a model.
+- Runs form field validation.
+- Runs model validation as part of the form validation process.
+- Makes it easier to display field errors.
+- Can save a validated model instance.
+
+Do not expose every model field automatically. Explicitly choose which fields the user is allowed to submit.
+
+## 89. Add a model clean() example
+
+For the Product model, a model-wide validation method can check business rules.
+
+~~~python
+from django.core.exceptions import ValidationError
+
+def clean(self):
+    super().clean()
+
+    if self.name and not self.name.strip():
+        raise ValidationError({
+            "name": "Product name cannot contain only spaces."
+        })
+
+    if self.stock is not None and self.stock < 0:
+        raise ValidationError({
+            "stock": "Stock cannot be negative."
+        })
+~~~
+
+The Product model's database CheckConstraint should also protect the stock rule if the database supports the constraint.
+
+Do not rely on clean() alone for a critical invariant because direct save() does not automatically call full_clean().
+
+## 90. Normalize values deliberately
+
+Some values should be normalized before they are saved.
+
+Examples:
+- SKU: strip surrounding whitespace and convert to uppercase.
+- Email: trim whitespace and apply a consistent normalization policy.
+- Category: use defined choices or a related model.
+
+Normalization should not silently change meaningful data.
+
+Do not uppercase a person's display name unless the business requirement specifically asks for it.
+
+## 91. Avoid duplicate validation logic
+
+If the same rule appears in:
+- Form clean().
+- Model clean().
+- A view.
+- A template.
+
+the rules can drift apart.
+
+Choose the right layer:
+- Field-level reusable rule: validator.
+- Cross-field form feedback: form clean().
+- Model invariant: model clean().
+- Database-enforceable invariant: constraint.
+
+It can be appropriate to have a rule in both application validation and a database constraint, but the purpose should be clear.
+
+---
+
+# PART 15 — DATABASE CONSTRAINTS IN DETAIL
+
+## 92. UniqueConstraint
+
+UniqueConstraint can enforce uniqueness across one or more fields.
+
+Example:
+
+~~~python
+class Meta:
+    constraints = [
+        models.UniqueConstraint(
+            fields=["sku"],
+            name="unique_product_sku",
+        ),
+    ]
+~~~
+
+This ensures no two rows can have the same SKU.
+
+## 93. Multi-field uniqueness
+
+Example:
+
+~~~python
+models.UniqueConstraint(
+    fields=["category", "name"],
+    name="unique_product_name_per_category",
+)
+~~~
+
+This permits the same product name in different categories but prevents a duplicate name within the same category.
+
+Choose this rule only if it matches the business requirement.
+
+## 94. CheckConstraint
+
+Example:
+
+~~~python
+models.CheckConstraint(
+    condition=models.Q(stock__gte=0),
+    name="product_stock_non_negative",
+)
+~~~
+
+This instructs the database to reject a row where stock is negative.
+
+## 95. Constraint naming
+
+Constraint names should:
+- Be unique within the database where required.
+- Describe the business rule.
+- Be stable and readable.
+- Avoid accidental collisions.
+
+Do not use a vague name such as constraint1.
+
+## 96. What happens when a constraint fails?
+
+The database rejects the write.
+
+Django may raise IntegrityError.
+
+The application should:
+1. Catch only expected integrity failures.
+2. Roll back the relevant transaction.
+3. Show a safe message.
+4. Keep technical details in secure logs.
+5. Avoid claiming that the record was saved.
+
+## 97. Use transaction.atomic() around risky writes
+
+Example:
+
+~~~python
+from django.db import IntegrityError, transaction
+
+try:
+    with transaction.atomic():
+        product.save()
+except IntegrityError:
+    # Handle the expected constraint failure.
+    ...
+~~~
+
+The transaction ensures the failed database operation is rolled back.
+
+The ellipsis above represents application-specific handling; do not copy it as a complete view.
+
+## 98. Validation does not eliminate race conditions
+
+Suppose two requests submit the same SKU.
+
+Request A:
+- Checks SKU does not exist.
+- Validation passes.
+
+Request B:
+- Checks SKU does not exist.
+- Validation passes.
+
+Both attempt to save.
+
+The database unique constraint ensures that only one can succeed.
+
+This is why application-level validation alone is not enough.
+
+---
+
+# PART 16 — MIGRATIONS AND EXISTING DATA
+
+## 99. Why adding a constraint can fail
+
+A database constraint must be true for existing rows as well as new rows.
+
+Imagine the database already contains:
+- A negative stock value.
+- Duplicate SKUs.
+- A price of zero.
+
+Adding a new constraint may fail because the existing data violates the rule.
+
+## 100. Inspect existing data first
+
+Use the Django shell:
+
+~~~powershell
+python manage.py shell
+~~~
+
+Example checks:
+
+~~~python
+from catalog.models import Product
+
+Product.objects.filter(stock__lt=0).count()
+Product.objects.filter(price__lte=0).count()
+~~~
+
+For duplicate SKU detection, use aggregation:
+
+~~~python
+from django.db.models import Count
+
+duplicates = (
+    Product.objects
+    .values("sku")
+    .annotate(total=Count("id"))
+    .filter(total__gt=1)
+)
+~~~
+
+If the model already enforces uniqueness, duplicates should not normally exist. This query is useful when auditing legacy data before a migration.
+
+## 101. Safe migration sequence
+
+1. Inspect the existing model.
+2. Identify the new rule.
+3. Inspect existing rows that may violate it.
+4. Decide how invalid legacy rows should be corrected.
+5. Back up important data.
+6. Add the model validator or constraint.
+7. Generate the migration.
+8. Inspect the migration.
+9. Apply it in a development copy.
+10. Run tests.
+11. Apply through the approved deployment process.
+
+Do not delete the database just to make a migration succeed.
+
+## 102. Use makemigrations and migrate
+
+~~~powershell
+python manage.py makemigrations catalog
+python manage.py sqlmigrate catalog 0002
+python manage.py migrate
+python manage.py showmigrations catalog
+~~~
+
+Use the actual migration number created by Django. It may not be 0002 in your project.
+
+## 103. Database backend differences
+
+Database engines can differ in how they implement or enforce constraints.
+
+Before relying on a constraint in production:
+- Confirm the target database supports it.
+- Test the migration against that database.
+- Test invalid writes.
+- Inspect the generated SQL.
+- Do not assume SQLite development behavior proves production PostgreSQL behavior.
+
+## 104. Rollback planning
+
+Before applying a schema change to important data:
+- Know which migration is being applied.
+- Know whether the migration is reversible.
+- Back up data.
+- Test restore procedures.
+- Have a deployment rollback plan.
+
+A migration is not a backup.
+
+---
+
+# PART 17 — ADDITIONAL PRACTICE AND TEST CASES
+
+## 105. Validation test matrix
+
+| Input | Expected result |
+|---|---|
+| Valid SKU | Accepted |
+| Duplicate SKU | Rejected |
+| Empty name | Rejected if required |
+| Name containing only spaces | Rejected by custom validation |
+| Price 0.01 | Accepted |
+| Price 0.00 | Rejected |
+| Negative price | Rejected |
+| Stock 0 | Accepted |
+| Negative stock | Rejected |
+| Minimum price greater than maximum | Rejected |
+| Valid update | Saved |
+| Invalid update | Existing record remains unchanged |
+
+## 106. Test form validation
+
+Example:
+
+~~~python
+from django.test import TestCase
+from catalog.forms import ProductForm
+
+
+class ProductFormValidationTests(TestCase):
+    def test_invalid_price_is_rejected(self):
+        form = ProductForm(data={
+            "sku": "TEST-PRICE-01",
+            "name": "Practice Product",
+            "category": "Testing",
+            "price": "0.00",
+            "stock": 5,
+            "is_active": True,
+        })
+
+        self.assertFalse(form.is_valid())
+~~~
+
+Adapt field values to the exact ProductForm in your project.
+
+## 107. Test database constraints
+
+A database constraint test should attempt to create a row that violates the constraint and assert the expected database error.
+
+Use a transaction-aware test where needed.
+
+Example concept:
+
+~~~python
+from django.db import IntegrityError, transaction
+from django.test import TransactionTestCase
+~~~
+
+A full test must use the actual model fields and constraint name from the project.
+
+Do not catch IntegrityError inside an active broken transaction and continue querying without rolling back to a savepoint or exiting the atomic block.
+
+## 108. Test full_clean()
+
+~~~python
+from django.core.exceptions import ValidationError
+
+product = Product(
+    sku="CLEAN-TEST-01",
+    name="   ",
+    category="Testing",
+    price=Decimal("10.00"),
+    stock=3,
+    is_active=True,
+)
+
+try:
+    product.full_clean()
+except ValidationError as error:
+    print(error.message_dict)
+~~~
+
+Expected: validation reports the name rule if the model clean() method has been added as shown in this lesson.
+
+## 109. Practice: decide the correct validation layer
+
+For each rule, choose the appropriate layer and explain why:
+
+1. Product name cannot be empty.
+2. Product SKU must be unique.
+3. Minimum salary cannot exceed maximum salary.
+4. Product stock cannot be negative.
+5. Email must have a valid format.
+6. A user can edit only their own profile.
+
+Suggested reasoning:
+- Field required/format: form/model field validation.
+- Cross-field rule: form clean() and possibly model clean().
+- Unique or non-negative stored invariant: database constraint.
+- Ownership: authorization check in the view, not a field validator.
+
+## 110. Interview extension
+
+**Question:** Does model.save() call full_clean()?
+
+**Answer:** No. A developer must call full_clean() deliberately or use a form/model workflow that performs validation. Database constraints protect important stored invariants.
+
+**Question:** Why do we need both a form validator and a database constraint?
+
+**Answer:** The form gives a useful error to the user. The database constraint protects the data when another code path or concurrent request bypasses the form.
+
+**Question:** Why can adding a constraint fail on an existing database?
+
+**Answer:** Existing rows may violate the new rule. Inspect and correct legacy data before applying the constraint.
+
+## 111. Final integrity checklist
+
+- [ ] I can explain field validators.
+- [ ] I can explain form clean().
+- [ ] I can explain model clean().
+- [ ] I can explain full_clean().
+- [ ] I know save() does not automatically call full_clean().
+- [ ] I can explain UniqueConstraint.
+- [ ] I can explain CheckConstraint.
+- [ ] I can explain IntegrityError.
+- [ ] I understand race conditions.
+- [ ] I can inspect existing data before adding constraints.
+- [ ] I can review and apply migrations safely.
+- [ ] I can test invalid data through both forms and the database.
+
