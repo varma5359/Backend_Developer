@@ -995,3 +995,7 @@ Without reading the notes, explain:
 8. How Q represents OR conditions.
 9. How F references a database field.
 10. How aggregate differs from annotate.
+
+## 56. Submission reflection
+
+Choose one QuerySet from your project and explain the business question it answers, the SQL work it represents, when it executes and how you verified the returned records.
