@@ -502,3 +502,395 @@ Do not mark the day complete just because code exists. Complete every check your
 5. Diagnose and fix one controlled mistake, such as a misspelled URL, setting or file path.
 
 **Next lesson:** Day 31 — Django Views: Function-Based Views and Request-Response Cycle
+
+---
+
+# Extended Beginner Lab — URL Dispatcher and Route Design
+
+## 19. What is URL dispatching?
+
+URL dispatching is the process of matching an incoming URL path to a configured view.
+
+Django does not search every view by its function name. It checks URL patterns in the URL configuration. The first matching pattern is selected.
+
+## 20. Understand path()
+
+Example:
+
+~~~python
+path("students/", views.student_list, name="student_list")
+~~~
+
+Arguments:
+- students/ is the route pattern.
+- views.student_list is the view callable.
+- name="student_list" is the stable route name.
+
+The route name is used by reverse URL lookup.
+
+## 21. Why route names matter
+
+Avoid writing the same URL path in many templates and views.
+
+Instead of hard-coding a path, use a named route:
+
+~~~python
+return redirect("student_list")
+~~~
+
+If the path changes but the route name stays the same, reverse lookup can generate the new path.
+
+## 22. Path converter: int
+
+Example:
+
+~~~python
+path(
+    "students/<int:student_id>/",
+    views.student_detail,
+    name="student_detail",
+)
+~~~
+
+Django matches an integer segment and passes it to the view as student_id.
+
+Example browser path:
+
+~~~text
+/students/25/
+~~~
+
+The view receives student_id=25 as an integer.
+
+## 23. Path converter: str
+
+Example:
+
+~~~python
+path(
+    "members/<str:username>/",
+    views.member_detail,
+    name="member_detail",
+)
+~~~
+
+The str converter matches a non-empty path segment that does not contain a slash.
+
+Example:
+- /members/asha/
+
+## 24. Path converter: slug
+
+A slug is a URL-friendly string, often containing letters, numbers, hyphens and underscores.
+
+Example:
+
+~~~python
+path(
+    "articles/<slug:slug>/",
+    views.article_detail,
+    name="article_detail",
+)
+~~~
+
+Example:
+- /articles/django-url-routing/
+
+## 25. Path converter: uuid
+
+UUID is a unique identifier format.
+
+Example:
+
+~~~python
+path(
+    "orders/<uuid:order_id>/",
+    views.order_detail,
+    name="order_detail",
+)
+~~~
+
+Use this when the model or API uses UUID identifiers.
+
+## 26. Path converter: path
+
+The path converter can capture a path including slash characters.
+
+Example:
+
+~~~python
+path(
+    "files/<path:file_path>/",
+    views.file_detail,
+    name="file_detail",
+)
+~~~
+
+Be careful with catch-all patterns. They can capture paths intended for more specific routes.
+
+## 27. Compare converters
+
+| Converter | Matches | Example |
+|---|---|---|
+| str | Non-empty segment without slash | asha |
+| int | Positive integer | 25 |
+| slug | URL-safe slug characters | django-routing |
+| uuid | UUID formatted value | UUID string |
+| path | Path including slashes | docs/django/setup |
+
+## 28. What happens when a converter does not match?
+
+If the requested path does not match the route pattern, Django continues checking other patterns.
+
+If no pattern matches, Django returns a 404 response.
+
+Example:
+- Route requires int.
+- Browser requests /students/abc/.
+- The int converter does not match.
+- Another route may match, otherwise 404.
+
+## 29. Understand include()
+
+include() delegates part of URL matching to another URL configuration.
+
+Root config:
+
+~~~python
+path("", include("profiles.urls"))
+~~~
+
+This means Django checks profiles.urls for the remaining path.
+
+A project can keep the root URL configuration small and let each app own its feature routes.
+
+## 30. URL prefixes
+
+Example:
+
+~~~python
+path("profiles/", include("profiles.urls"))
+~~~
+
+If profiles.urls contains:
+
+~~~python
+path("students/", views.student_list, name="student_list")
+~~~
+
+The full path is:
+
+~~~text
+/profiles/students/
+~~~
+
+The prefix and app route are combined.
+
+## 31. Route ordering
+
+Django checks URL patterns in order.
+
+Example:
+
+~~~python
+urlpatterns = [
+    path("articles/archive/", views.archive, name="archive"),
+    path("articles/<slug:slug>/", views.detail, name="detail"),
+]
+~~~
+
+Specific routes should appear before broad patterns when they could overlap.
+
+A broad path converter may capture many possible URLs.
+
+## 32. What is a 404?
+
+404 means the requested resource or route was not found.
+
+Common reasons:
+- Route does not exist.
+- Converter does not match.
+- App URL file is not included.
+- Browser path has a typo.
+- Object lookup returns Http404.
+
+A 404 is different from a Python syntax error or server crash.
+
+## 33. What is a 405?
+
+405 Method Not Allowed means the URL exists but does not accept the HTTP method used by the request.
+
+Example:
+- A view is restricted to POST.
+- Browser sends GET.
+- Django returns 405.
+
+This is not the same as 404.
+
+## 34. Path versus query string
+
+Example:
+
+~~~text
+/search/?q=django&page=2
+~~~
+
+Path:
+- /search/
+
+Query parameters:
+- q=django
+- page=2
+
+Read query parameters in a view using:
+
+~~~python
+request.GET.get("q", "")
+request.GET.get("page", "1")
+~~~
+
+Path converters capture path values. request.GET reads query-string values.
+
+## 35. Reverse URL lookup in Python
+
+Import reverse:
+
+~~~python
+from django.urls import reverse
+
+url = reverse("student_list")
+~~~
+
+This returns the URL for the named route.
+
+For a route with a parameter:
+
+~~~python
+reverse("student_detail", kwargs={"student_id": 25})
+~~~
+
+The route name and keyword argument must match the URL configuration.
+
+## 36. Reverse URL lookup in templates
+
+Use:
+
+~~~django
+<a href="{% url 'student_list' %}">Students</a>
+~~~
+
+For a route with an ID:
+
+~~~django
+<a href="{% url 'student_detail' student.id %}">
+    View student
+</a>
+~~~
+
+This avoids hard-coded paths in templates.
+
+## 37. What is a namespace?
+
+Namespaces help avoid route-name collisions when multiple apps define similar names.
+
+An app URL configuration can define:
+
+~~~python
+app_name = "profiles"
+~~~
+
+Then templates can use a namespaced route such as:
+
+~~~django
+{% url 'profiles:student_list' %}
+~~~
+
+Only add namespaces when the project is ready for the additional naming convention. Keep existing route names consistent.
+
+## 38. Trailing slash
+
+Django projects commonly define routes with trailing slashes.
+
+Example:
+- /students/
+- /students/25/
+
+Be consistent in the URL configuration and links.
+
+CommonMiddleware can redirect some missing trailing-slash requests when configured, but do not rely on automatic redirects instead of defining the intended route.
+
+## 39. Common URL mistakes
+
+| Symptom | Likely cause | Fix |
+|---|---|---|
+| 404 for every app page | App URLs not included | Check root config/urls.py |
+| NoReverseMatch | Route name is wrong | Compare name in path() and reverse() |
+| View argument missing | Converter name differs from view parameter | Match parameter names |
+| Wrong view selected | Route order is too broad | Put specific route first |
+| Integer route rejects text | int converter does not match | Use a different converter if appropriate |
+| Namespace not found | app_name/include namespace setup missing | Check both app and root URL configs |
+| Query parameter is empty | Reading request.POST instead of request.GET | Use request.GET for query strings |
+
+## 40. Practical route tracing
+
+For each request, identify:
+1. Full URL.
+2. Path portion.
+3. Query string.
+4. Root URL pattern.
+5. Included app URL configuration.
+6. Matching route.
+7. Converter values.
+8. View function.
+9. Expected response.
+
+Practice:
+- /students/
+- /students/25/
+- /members/asha/
+- /search/?q=django
+- /students/abc/
+
+## 41. Self-check questions
+
+1. What does path() define?
+2. What does include() do?
+3. What is a path converter?
+4. What is the difference between str and path converters?
+5. Why should specific routes appear before broad patterns?
+6. What is a named URL?
+7. What does reverse() do?
+8. What is a namespace?
+9. What is the difference between a path and query string?
+10. What is the difference between 404 and 405?
+
+## 42. Answers
+
+1. A route pattern, target view and optional route metadata.
+2. It delegates matching to another URL configuration.
+3. It captures and converts a URL path segment.
+4. str excludes slash; path can capture slash characters.
+5. A broad route may match a path intended for a specific view.
+6. A route with a stable name used for reverse lookup.
+7. It generates the URL for a named route.
+8. It separates route names across apps.
+9. The path identifies the route; the query string contains additional GET values.
+10. 404 means no route/resource found; 405 means method not allowed.
+
+## 43. Independent challenge — Course Catalog Routes
+
+Design routes for:
+- Course list.
+- Course detail by integer ID.
+- Course detail by slug.
+- Course search by query parameter.
+- Course category.
+
+For each route:
+1. Choose a converter.
+2. Choose a view name.
+3. Choose a route name.
+4. Write an example URL.
+5. Explain what happens for invalid input.
+
+Do not implement a route that exposes private student information without an access check.
