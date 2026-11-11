@@ -90,3 +90,30 @@ Priority: revise Days 36–41 interview guides alongside their class notes; then
 **Initial decision: Phase 3 is not yet approved for a mentor-free readiness claim.**
 
 The existing notes provide a useful foundation, especially Days 28–35 and the integration work in Days 39–41. However, the inconsistencies and missing self-check support identified above mean TechPhile should not yet promise that a beginner can complete all of Phase 3 independently. Revisions and runtime verification are required before changing that decision.
+
+
+## 8. Revision work completed on the audit branch
+
+The following revisions have been applied on `phase-3-self-learning-audit` after the baseline review:
+
+| Area | Revision made | Remaining verification |
+|---|---|---|
+| Day 27 class notes | Changed the lesson to self-paced setup, replaced trainer demonstration/checkpoint language with learner self-checks, and retained exact environment verification steps. | Check the complete setup in a clean Windows environment. |
+| Day 36 class notes and interview guide | Corrected prerequisite range and aligned the mini-project with the Employee model used in the lesson. Replaced trainer-directed teaching instructions with a self-paced method. | Verify admin registration and permissions against the actual project state. |
+| Day 37 class notes and interview guide | Corrected prerequisite range and aligned the project title to Employee Query Explorer, matching the Employee model used in the ORM examples. | Verify all ORM commands and sample output against the actual database. |
+| Day 38 class notes | Rebuilt the lesson as a detailed beginner walkthrough covering schema reasoning, relationship placement, on_delete, migration steps, repeatable sample data, forward/reverse queries, expected results, troubleshooting and an independent challenge. | Execute the migrations and shell examples in the real project. |
+| Days 39–41 class notes | Corrected circular prerequisite wording, replaced trainer-only instructions with self-paced directions, and separated Python and HTML code into language-specific blocks with exact filenames. | Run the full registration workflow from a clean environment and test invalid/valid cases. |
+| Days 27–41 interview guides | Replaced trainer-only closing instructions with student self-practice instructions. | Continue improving answer keys where a question still requires a more specific technical model answer. |
+
+### Revised content status
+
+- Day 27: **Revised — not runtime-verified**.
+- Days 28–35: **Targeted audit completed; further detailed consistency checks remain**.
+- Days 36–37: **Coherence revisions applied — not runtime-verified**.
+- Day 38: **Substantially rewritten — not runtime-verified**.
+- Days 39–41: **Self-learning and code-block revisions applied — not runtime-verified**.
+- Interview guides: **Trainer-only language removed where found — answer-key quality review remains**.
+
+## 9. Current decision
+
+Phase 3 remains **not approved for a mentor-free readiness claim** until the integrated Student Portal is run from a clean setup and all daily acceptance checks can be completed by a beginner using only the notes. Static improvements are meaningful progress, but they are not a substitute for runtime testing or a real beginner usability test.
