@@ -928,3 +928,24 @@ Do not change the approved project model until the design has been reviewed.
 - [ ] __str__ returns a readable string.
 - [ ] Meta options are intentional.
 - [ ] Migration is reviewed before applying.
+
+## 54. Final independent schema assessment
+
+Design a model for a training batch.
+
+Include:
+- Batch code.
+- Batch title.
+- Start date.
+- End date.
+- Capacity.
+- Fee.
+- Active flag.
+- Course relationship.
+
+For each field explain the chosen field type, required/optional behavior, default, uniqueness and validation.
+
+Then explain which rules should be protected by database constraints.
+
+Do not generate migrations until the schema has been reviewed.
+
