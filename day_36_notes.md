@@ -375,3 +375,286 @@ D. Only when they can search
 5. Diagnose and fix one controlled mistake. Do not mark the lesson complete based only on copied code.
 
 **Next lesson:** Day 37 — Django ORM Fundamentals and Querying Records
+
+---
+
+# Extended Beginner Lab — Django Admin Customization
+
+## 19. What is Django admin?
+
+Django admin is a built-in interface for trusted staff users to manage application records.
+
+It can provide:
+- List pages.
+- Add forms.
+- Change forms.
+- Search.
+- Filters.
+- Read-only fields.
+- Actions.
+- Relationship selection.
+
+It is useful for internal administration. It is not automatically the correct public-facing interface for customers or students.
+
+## 20. Register a model
+
+Example:
+
+~~~python
+from django.contrib import admin
+from .models import Employee
+
+admin.site.register(Employee)
+~~~
+
+This registers Employee with the admin site.
+
+Django uses a default admin interface for the model.
+
+## 21. Use the decorator form
+
+An alternative is:
+
+~~~python
+@admin.register(Employee)
+class EmployeeAdmin(admin.ModelAdmin):
+    pass
+~~~
+
+The decorator registers the model with the custom ModelAdmin class.
+
+Do not register the same model twice.
+
+## 22. list_display
+
+list_display controls which fields appear as columns in the list page.
+
+~~~python
+class EmployeeAdmin(admin.ModelAdmin):
+    list_display = (
+        "employee_code",
+        "full_name",
+        "department",
+        "is_active",
+    )
+~~~
+
+Use fields that help staff identify records.
+
+Avoid displaying sensitive information such as password hashes or private tokens.
+
+## 23. list_filter
+
+list_filter adds sidebar filters.
+
+~~~python
+list_filter = (
+    "department",
+    "is_active",
+)
+~~~
+
+This helps staff narrow a large record list.
+
+## 24. search_fields
+
+search_fields adds a search box.
+
+~~~python
+search_fields = (
+    "employee_code",
+    "full_name",
+    "email",
+)
+~~~
+
+For related fields, Django supports lookup paths using double underscores.
+
+Example:
+
+~~~python
+search_fields = ("department__name",)
+~~~
+
+The related field must exist in the model relationship.
+
+## 25. ordering
+
+ordering controls the default order of records in the admin list.
+
+~~~python
+ordering = ("full_name",)
+~~~
+
+Use a stable ordering where appropriate.
+
+## 26. readonly_fields
+
+readonly_fields displays fields without allowing normal editing through the admin form.
+
+~~~python
+readonly_fields = (
+    "created_at",
+    "updated_at",
+)
+~~~
+
+Use this for timestamps and values that should be managed by the application.
+
+## 27. fieldsets
+
+fieldsets organize fields into sections in the change form.
+
+Example:
+
+~~~python
+fieldsets = (
+    ("Employee details", {
+        "fields": (
+            "employee_code",
+            "full_name",
+            "department",
+        )
+    }),
+    ("Status", {
+        "fields": (
+            "is_active",
+        )
+    }),
+)
+~~~
+
+Every field name must exist on the model.
+
+## 28. list_per_page
+
+list_per_page controls how many records are displayed on one admin page.
+
+Example:
+
+~~~python
+list_per_page = 25
+~~~
+
+This improves usability for large lists.
+
+## 29. Admin actions
+
+An admin action can apply an operation to selected records.
+
+Example:
+
+~~~python
+@admin.action(description="Mark selected employees active")
+def mark_active(modeladmin, request, queryset):
+    queryset.update(is_active=True)
+~~~
+
+Then register the action in the ModelAdmin class.
+
+Only create bulk actions when the business behavior is safe and clear.
+
+## 30. Why admin actions need care
+
+A bulk update may bypass custom model save() methods and signals for each instance.
+
+If business logic must run for every record, use a carefully designed operation rather than blindly calling queryset.update().
+
+Test bulk actions on practice data.
+
+## 31. Admin authentication and permissions
+
+The admin site requires a user with staff access and appropriate permissions.
+
+is_staff allows access to the admin site, subject to permissions.
+
+A superuser has all permissions by default.
+
+Do not make every registered user a staff user or superuser.
+
+## 32. Create a superuser
+
+Run:
+
+~~~powershell
+python manage.py createsuperuser
+~~~
+
+Follow the prompts.
+
+Use a local practice account.
+
+Never share the password or use a real production credential in a screenshot.
+
+## 33. Admin versus custom application pages
+
+| Django admin | Custom application UI |
+|---|---|
+| Internal staff tool | User-facing workflow |
+| Generated from model configuration | Designed for a specific user journey |
+| Fast to set up | More design and code required |
+| Uses Django admin permissions | Uses application-specific access rules |
+| Useful for trusted data maintenance | Useful for students, customers and external users |
+
+## 34. Common admin errors
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| Model missing from admin | Not registered or app not installed | Check admin.py and INSTALLED_APPS |
+| FieldError in list_display | Field name does not exist | Inspect model |
+| Admin login denied | User is not staff or lacks access | Check is_staff and permissions |
+| Duplicate registration error | Model registered twice | Keep one registration |
+| Search fails | search_fields contains invalid path | Verify field names and relationships |
+| Admin page crashes | ModelAdmin configuration invalid | Read traceback and check attributes |
+
+## 35. Guided exercise — Employee Admin
+
+Customize Employee admin with:
+- employee code.
+- full name.
+- department.
+- active status.
+- search by employee code and full name.
+- filter by department and active status.
+- read-only creation timestamp.
+
+Create fictional employees and verify the list page.
+
+## 36. Self-check questions
+
+1. What is Django admin?
+2. What does admin.site.register() do?
+3. What is ModelAdmin?
+4. What does list_display control?
+5. What does list_filter control?
+6. What does search_fields control?
+7. Why use readonly_fields?
+8. What are fieldsets?
+9. What does is_staff mean?
+10. Why should ordinary users not be superusers?
+
+## 37. Answers
+
+1. Built-in internal record management interface.
+2. Registers a model with admin.
+3. Configuration class for a model's admin interface.
+4. List columns.
+5. Sidebar filters.
+6. Searchable fields.
+7. Prevents normal admin editing of selected values.
+8. Groups fields into sections.
+9. Allows access to the admin site subject to permissions.
+10. Superusers have all permissions by default.
+
+## 38. Independent challenge — Admin Quality Review
+
+Create a small admin configuration for one model.
+
+Document:
+- Which columns are displayed.
+- Which fields are searchable.
+- Which filters are useful.
+- Which fields should be read-only.
+- Which actions could be dangerous.
+
+Do not expose sensitive account fields.
