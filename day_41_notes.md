@@ -555,7 +555,7 @@ A training institute needs a simple website to register students and display a s
 2. Configure the app and development settings.
 3. Create root and app URL patterns.
 4. Implement function-based views for listing and registration.
-5. Create a student model and apply migrations.
+5. Confirm the Student model introduced on Day 38 and its migration exist; do not create a duplicate model. Apply any new migration only if you intentionally changed the schema.
 6. Register the model in Django admin.
 7. Use ORM queries to retrieve and order students.
 8. Build a ModelForm and server-side validation.
