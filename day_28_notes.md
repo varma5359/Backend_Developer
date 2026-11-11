@@ -864,3 +864,161 @@ Submit:
 - A short explanation of manage.py.
 - A short explanation of project versus app.
 - A list of commands used and the folder from which each command was run.
+
+---
+
+# Practice Workbook — Project Structure and Commands
+
+## 44. Command prediction exercise
+
+Before running each command, write what you expect it to do.
+
+| Command | Your prediction | What to inspect |
+|---|---|---|
+| python manage.py check |  | Terminal output |
+| python manage.py help |  | Command list |
+| python manage.py help runserver |  | Command options |
+| python manage.py shell |  | Python prompt |
+| python manage.py showmigrations |  | Migration state |
+| python manage.py runserver 8001 |  | Local server URL |
+
+After running the command, compare the actual result with your prediction.
+
+## 45. Command location exercise
+
+For each command, identify the folder from which it should run.
+
+1. python -m venv .venv
+2. django-admin startproject config .
+3. python manage.py startapp profiles
+4. python manage.py check
+5. python manage.py runserver
+
+Answer:
+- The virtual environment is created in the current workspace folder.
+- startproject config . creates the project package in the current directory.
+- manage.py commands run from the folder containing manage.py.
+
+## 46. Project tree verification
+
+A correct basic project tree should have manage.py and the config package at the project root.
+
+Check:
+- Is manage.py at the top level?
+- Is settings.py inside config?
+- Is urls.py inside config?
+- Is profiles beside config?
+- Is the virtual environment outside the Python app packages?
+
+If the project contains student_portal/student_portal/config/config, stop and inspect how the project was created. Do not move folders randomly.
+
+## 47. Explain the dot in startproject
+
+Command:
+
+~~~powershell
+django-admin startproject config .
+~~~
+
+The dot means current directory.
+
+Without the dot, Django creates an outer directory for the project.
+
+Both layouts can work, but the course must use one consistent layout so later commands and file paths match.
+
+## 48. Diagnose an extra nested folder
+
+If the tree looks like:
+
+~~~text
+workspace/
+└── config/
+    ├── manage.py
+    └── config/
+~~~
+
+The outer folder contains manage.py and the inner config package.
+
+This can be valid, but the learner must open the outer folder in VS Code.
+
+The location of manage.py determines the project root for management commands.
+
+## 49. Why a README matters
+
+A project README should explain:
+- Project purpose.
+- Python version.
+- Django version.
+- Environment setup.
+- Dependency installation.
+- Commands to run.
+- Main app names.
+- Known limitations.
+
+A new developer should be able to set up the project without asking which folder to open.
+
+## 50. Self-check scenario
+
+A learner runs python manage.py startapp profiles and receives "can't open file manage.py".
+
+What should they do?
+
+Answer:
+1. Run Get-Location.
+2. Run Get-ChildItem.
+3. Locate the folder containing manage.py.
+4. Change to that folder.
+5. Activate the correct virtual environment.
+6. Run the command again.
+
+Do not create another project as the first response.
+
+## 51. Self-check scenario
+
+A learner sees No module named django.
+
+What should they check?
+
+Answer:
+1. Is the virtual environment active?
+2. Which Python executable is active?
+3. Is Django installed in that environment?
+4. Does python -m django --version work?
+5. Is VS Code using the same interpreter as the terminal?
+
+## 52. Self-check scenario
+
+A learner created an app but Django does not detect its models.
+
+Answer:
+1. Check app folder spelling.
+2. Check apps.py.
+3. Add the app's AppConfig path to INSTALLED_APPS.
+4. Save settings.py.
+5. Run python manage.py check.
+6. Confirm the command is running from the intended project.
+
+## 53. Explain the difference to a reviewer
+
+Give a one-minute explanation:
+
+- The project is the complete website configuration.
+- An app is a feature module inside the project.
+- manage.py runs project management commands.
+- settings.py configures the project.
+- urls.py maps paths to views.
+- models.py defines stored data.
+- views.py handles requests.
+
+Use your own words and a real institute portal example.
+
+## 54. Final workbook submission
+
+Submit:
+- Project tree screenshot.
+- Python executable path.
+- Django version.
+- check output.
+- Written command predictions.
+- Explanation of project versus app.
+- One debugging scenario and the steps used to fix it.
