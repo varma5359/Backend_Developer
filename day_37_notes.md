@@ -260,7 +260,7 @@ Discuss:
 ## 13. Approved mini-project — Employee Query Explorer
 
 ### Objective
-Build the relationship/query/admin feature described in today's lesson using the existing Student Portal.
+Build the admin/query feature described in today's lesson using the existing Employee model in the profiles app.
 
 ### Tasks
 
